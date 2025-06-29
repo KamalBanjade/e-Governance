@@ -1,0 +1,389 @@
+[
+  {
+    "ContainingType": "e_Governance.Controllers.CustomersController",
+    "Method": "Index",
+    "RelativePath": "api/Customers",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.CustomersController",
+    "Method": "GetBranches",
+    "RelativePath": "api/Customers/branches",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.CustomersController",
+    "Method": "Create",
+    "RelativePath": "api/Customers/create",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "CusId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "SCNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Name",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Address",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "DOB",
+        "Type": "System.DateTime",
+        "IsRequired": false
+      },
+      {
+        "Name": "MobileNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "CitizenshipNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "DemandTypeId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "DemandType.DemandTypeId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "DemandType.Name",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "DemandType.Description",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "DemandType.Status",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "RegisteredBranchId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "RegisteredBranch.BranchId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "RegisteredBranch.Name",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "RegisteredBranch.Location",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "RegisteredBranch.ContactDetails",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "RegisteredBranch.InchargeName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "RegisteredBranch.Status",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "UserId",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "User.Name",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "User.Address",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "User.DOB",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "User.UserTypeId",
+        "Type": "System.Nullable\u00601[[System.Int64, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "User.UserType.UserTypeId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "User.UserType.Name",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "User.UserType.Status",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "User.Id",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "User.UserName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "User.NormalizedUserName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "User.Email",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "User.NormalizedEmail",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "User.EmailConfirmed",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "User.PasswordHash",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "User.SecurityStamp",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "User.ConcurrencyStamp",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "User.PhoneNumber",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "User.PhoneNumberConfirmed",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "User.TwoFactorEnabled",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "User.LockoutEnd",
+        "Type": "System.Nullable\u00601[[System.DateTimeOffset, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "User.LockoutEnabled",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "User.AccessFailedCount",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "CitizenshipPath",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "HouseDetailsPath",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.CustomersController",
+    "Method": "GetDemandTypes",
+    "RelativePath": "api/Customers/demandtypes",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.EmployeeDetailsController",
+    "Method": "Index",
+    "RelativePath": "api/EmployeeDetails",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.EmployeeDetailsController",
+    "Method": "GetBranches",
+    "RelativePath": "api/EmployeeDetails/branches",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.EmployeeDetailsController",
+    "Method": "Create",
+    "RelativePath": "api/EmployeeDetails/create",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "employeeDetails",
+        "Type": "e_Governance.Models.EmployeeDetails",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.EmployeeDetailsController",
+    "Method": "GetEmployeeTypes",
+    "RelativePath": "api/EmployeeDetails/employee-types",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.UserAuthController",
+    "Method": "CreateEmployee",
+    "RelativePath": "api/UserAuth/create-employee",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "server.Models.RegisterViewModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.UserAuthController",
+    "Method": "ForgotPassword",
+    "RelativePath": "api/UserAuth/forgot-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "server.Models.DTOs.ForgotPasswordDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.UserAuthController",
+    "Method": "Login",
+    "RelativePath": "api/UserAuth/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "server.Models.LoginViewModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.UserAuthController",
+    "Method": "Register",
+    "RelativePath": "api/UserAuth/register",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "server.Models.RegisterViewModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.UserAuthController",
+    "Method": "ResetPassword",
+    "RelativePath": "api/UserAuth/reset-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "server.Models.DTOs.ResetPasswordDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]

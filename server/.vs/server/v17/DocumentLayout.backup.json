@@ -1,0 +1,472 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\kamal\\source\\repos\\server\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\source\\repos\\server\\server\\models\\customer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\models\\customer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\source\\repos\\server\\server\\controllers\\customerscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\controllers\\customerscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\source\\repos\\server\\server\\controllers\\employeedetailscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\controllers\\employeedetailscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\source\\repos\\server\\server\\models\\employeedetails.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\models\\employeedetails.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\source\\repos\\server\\server\\models\\demandtype.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\models\\demandtype.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\kamal\\source\\repos\\server\\server\\Migrations\\20250629160642_UserIDCustomer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:server\\Migrations\\20250629160642_UserIDCustomer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\source\\repos\\server\\server\\models\\usertype.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\models\\usertype.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\source\\repos\\server\\server\\controllers\\userauthcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\controllers\\userauthcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\source\\repos\\server\\server\\models\\applicationuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\models\\applicationuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\source\\repos\\server\\server\\models\\payment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\models\\payment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\source\\repos\\server\\server\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\source\\repos\\server\\server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\source\\repos\\server\\server\\data\\adminseeder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\data\\adminseeder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\source\\repos\\server\\server\\models\\registerviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\models\\registerviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\source\\repos\\server\\server\\models\\employeetype.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\models\\employeetype.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\source\\repos\\server\\server\\data\\identityinitializer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\data\\identityinitializer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\source\\repos\\server\\server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\source\\repos\\server\\server\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\kamal\\source\\repos\\server\\server\\Data\\Migrations\\20250628095250_AddAuthMode4.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:server\\Data\\Migrations\\20250628095250_AddAuthMode4.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\source\\repos\\server\\server\\models\\loginviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\models\\loginviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\kamal\\source\\repos\\server\\server\\Data\\Migrations\\20250628071542_AddAuthMode3.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:server\\Data\\Migrations\\20250628071542_AddAuthMode3.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\source\\repos\\server\\server\\services\\iemailservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\services\\iemailservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\source\\repos\\server\\server\\services\\emailservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\services\\emailservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\source\\repos\\server\\server\\models\\dtos\\resetpassworddto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\models\\dtos\\resetpassworddto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\source\\repos\\server\\server\\models\\dtos\\forgotpassworddto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\models\\dtos\\forgotpassworddto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\kamal\\source\\repos\\server\\server\\Data\\Migrations\\20250628053327_AddAuthMode2.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:server\\Data\\Migrations\\20250628053327_AddAuthMode2.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 6,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "CustomersController.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Controllers\\CustomersController.cs",
+              "RelativeDocumentMoniker": "server\\Controllers\\CustomersController.cs",
+              "ToolTip": "C:\\Users\\kamal\\source\\repos\\server\\server\\Controllers\\CustomersController.cs",
+              "RelativeToolTip": "server\\Controllers\\CustomersController.cs",
+              "ViewState": "AgIAAFYAAAAAAAAAAAAUwC0AAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-26T03:26:24.836Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "EmployeeDetailsController.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Controllers\\EmployeeDetailsController.cs",
+              "RelativeDocumentMoniker": "server\\Controllers\\EmployeeDetailsController.cs",
+              "ToolTip": "C:\\Users\\kamal\\source\\repos\\server\\server\\Controllers\\EmployeeDetailsController.cs",
+              "RelativeToolTip": "server\\Controllers\\EmployeeDetailsController.cs",
+              "ViewState": "AgIAAEAAAAAAAAAAAAAUwFYAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-28T09:18:25.37Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Customer.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Models\\Customer.cs",
+              "RelativeDocumentMoniker": "server\\Models\\Customer.cs",
+              "ToolTip": "C:\\Users\\kamal\\source\\repos\\server\\server\\Models\\Customer.cs*",
+              "RelativeToolTip": "server\\Models\\Customer.cs*",
+              "ViewState": "AgIAACgAAAAAAAAAAAAcwC8AAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-28T09:08:13.542Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "EmployeeDetails.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Models\\EmployeeDetails.cs",
+              "RelativeDocumentMoniker": "server\\Models\\EmployeeDetails.cs",
+              "ToolTip": "C:\\Users\\kamal\\source\\repos\\server\\server\\Models\\EmployeeDetails.cs",
+              "RelativeToolTip": "server\\Models\\EmployeeDetails.cs",
+              "ViewState": "AgIAABEAAAAAAAAAAAAkwCYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-28T07:11:36.06Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "DemandType.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Models\\DemandType.cs",
+              "RelativeDocumentMoniker": "server\\Models\\DemandType.cs",
+              "ToolTip": "C:\\Users\\kamal\\source\\repos\\server\\server\\Models\\DemandType.cs",
+              "RelativeToolTip": "server\\Models\\DemandType.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-28T09:07:13.954Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "20250629160642_UserIDCustomer.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Migrations\\20250629160642_UserIDCustomer.cs",
+              "RelativeDocumentMoniker": "server\\Migrations\\20250629160642_UserIDCustomer.cs",
+              "ToolTip": "C:\\Users\\kamal\\source\\repos\\server\\server\\Migrations\\20250629160642_UserIDCustomer.cs",
+              "RelativeToolTip": "server\\Migrations\\20250629160642_UserIDCustomer.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-29T16:06:43.456Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "UserType.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Models\\UserType.cs",
+              "RelativeDocumentMoniker": "server\\Models\\UserType.cs",
+              "ToolTip": "C:\\Users\\kamal\\source\\repos\\server\\server\\Models\\UserType.cs",
+              "RelativeToolTip": "server\\Models\\UserType.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-28T04:36:27.121Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "UserAuthController.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Controllers\\UserAuthController.cs",
+              "RelativeDocumentMoniker": "server\\Controllers\\UserAuthController.cs",
+              "ToolTip": "C:\\Users\\kamal\\source\\repos\\server\\server\\Controllers\\UserAuthController.cs",
+              "RelativeToolTip": "server\\Controllers\\UserAuthController.cs",
+              "ViewState": "AgIAAB8AAAAAAAAAAAAQwCoAAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-28T05:02:51.812Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "ApplicationUser.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Models\\ApplicationUser.cs",
+              "RelativeDocumentMoniker": "server\\Models\\ApplicationUser.cs",
+              "ToolTip": "C:\\Users\\kamal\\source\\repos\\server\\server\\Models\\ApplicationUser.cs",
+              "RelativeToolTip": "server\\Models\\ApplicationUser.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-28T05:03:53.774Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Payment.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Models\\Payment.cs",
+              "RelativeDocumentMoniker": "server\\Models\\Payment.cs",
+              "ToolTip": "C:\\Users\\kamal\\source\\repos\\server\\server\\Models\\Payment.cs",
+              "RelativeToolTip": "server\\Models\\Payment.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-28T09:09:17.642Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "ApplicationDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Data\\ApplicationDbContext.cs",
+              "RelativeDocumentMoniker": "server\\Data\\ApplicationDbContext.cs",
+              "ToolTip": "C:\\Users\\kamal\\source\\repos\\server\\server\\Data\\ApplicationDbContext.cs",
+              "RelativeToolTip": "server\\Data\\ApplicationDbContext.cs",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAcwBgAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-28T04:36:43.251Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Program.cs",
+              "RelativeDocumentMoniker": "server\\Program.cs",
+              "ToolTip": "C:\\Users\\kamal\\source\\repos\\server\\server\\Program.cs",
+              "RelativeToolTip": "server\\Program.cs",
+              "ViewState": "AgIAADkAAAAAAAAAAAAcwEYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-26T02:44:57.731Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "AdminSeeder.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Data\\AdminSeeder.cs",
+              "RelativeDocumentMoniker": "server\\Data\\AdminSeeder.cs",
+              "ToolTip": "C:\\Users\\kamal\\source\\repos\\server\\server\\Data\\AdminSeeder.cs",
+              "RelativeToolTip": "server\\Data\\AdminSeeder.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-28T15:49:13.324Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "RegisterViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Models\\RegisterViewModel.cs",
+              "RelativeDocumentMoniker": "server\\Models\\RegisterViewModel.cs",
+              "ToolTip": "C:\\Users\\kamal\\source\\repos\\server\\server\\Models\\RegisterViewModel.cs",
+              "RelativeToolTip": "server\\Models\\RegisterViewModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-28T05:01:39.014Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "EmployeeType.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Models\\EmployeeType.cs",
+              "RelativeDocumentMoniker": "server\\Models\\EmployeeType.cs",
+              "ToolTip": "C:\\Users\\kamal\\source\\repos\\server\\server\\Models\\EmployeeType.cs",
+              "RelativeToolTip": "server\\Models\\EmployeeType.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-28T09:07:49.354Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "IdentityInitializer.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Data\\IdentityInitializer.cs",
+              "RelativeDocumentMoniker": "server\\Data\\IdentityInitializer.cs",
+              "ToolTip": "C:\\Users\\kamal\\source\\repos\\server\\server\\Data\\IdentityInitializer.cs",
+              "RelativeToolTip": "server\\Data\\IdentityInitializer.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-28T09:24:00.281Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\appsettings.json",
+              "RelativeDocumentMoniker": "server\\appsettings.json",
+              "ToolTip": "C:\\Users\\kamal\\source\\repos\\server\\server\\appsettings.json",
+              "RelativeToolTip": "server\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-06-26T02:45:31.726Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "launchSettings.json",
+              "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Properties\\launchSettings.json",
+              "RelativeDocumentMoniker": "server\\Properties\\launchSettings.json",
+              "ToolTip": "C:\\Users\\kamal\\source\\repos\\server\\server\\Properties\\launchSettings.json",
+              "RelativeToolTip": "server\\Properties\\launchSettings.json",
+              "ViewState": "AgIAAAIAAAAAAAAAAAAAwA8AAAAdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-06-28T11:00:57.135Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "20250628095250_AddAuthMode4.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Data\\Migrations\\20250628095250_AddAuthMode4.cs",
+              "RelativeDocumentMoniker": "server\\Data\\Migrations\\20250628095250_AddAuthMode4.cs",
+              "ToolTip": "C:\\Users\\kamal\\source\\repos\\server\\server\\Data\\Migrations\\20250628095250_AddAuthMode4.cs",
+              "RelativeToolTip": "server\\Data\\Migrations\\20250628095250_AddAuthMode4.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-28T09:52:51.492Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "LoginViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Models\\LoginViewModel.cs",
+              "RelativeDocumentMoniker": "server\\Models\\LoginViewModel.cs",
+              "ToolTip": "C:\\Users\\kamal\\source\\repos\\server\\server\\Models\\LoginViewModel.cs",
+              "RelativeToolTip": "server\\Models\\LoginViewModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-28T05:02:26.926Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "20250628071542_AddAuthMode3.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Data\\Migrations\\20250628071542_AddAuthMode3.cs",
+              "RelativeDocumentMoniker": "server\\Data\\Migrations\\20250628071542_AddAuthMode3.cs",
+              "ToolTip": "C:\\Users\\kamal\\source\\repos\\server\\server\\Data\\Migrations\\20250628071542_AddAuthMode3.cs",
+              "RelativeToolTip": "server\\Data\\Migrations\\20250628071542_AddAuthMode3.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-28T07:15:42.744Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "ResetPasswordDto.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Models\\DTOs\\ResetPasswordDto.cs",
+              "RelativeDocumentMoniker": "server\\Models\\DTOs\\ResetPasswordDto.cs",
+              "ToolTip": "C:\\Users\\kamal\\source\\repos\\server\\server\\Models\\DTOs\\ResetPasswordDto.cs",
+              "RelativeToolTip": "server\\Models\\DTOs\\ResetPasswordDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-28T06:21:54.029Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "IEmailService.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Services\\IEmailService.cs",
+              "RelativeDocumentMoniker": "server\\Services\\IEmailService.cs",
+              "ToolTip": "C:\\Users\\kamal\\source\\repos\\server\\server\\Services\\IEmailService.cs",
+              "RelativeToolTip": "server\\Services\\IEmailService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-28T06:22:57.608Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "EmailService.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Services\\EmailService.cs",
+              "RelativeDocumentMoniker": "server\\Services\\EmailService.cs",
+              "ToolTip": "C:\\Users\\kamal\\source\\repos\\server\\server\\Services\\EmailService.cs",
+              "RelativeToolTip": "server\\Services\\EmailService.cs",
+              "ViewState": "AgIAAAoAAAAAAAAAAAA2wCQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-28T06:23:27.611Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "ForgotPasswordDto.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Models\\DTOs\\ForgotPasswordDto.cs",
+              "RelativeDocumentMoniker": "server\\Models\\DTOs\\ForgotPasswordDto.cs",
+              "ToolTip": "C:\\Users\\kamal\\source\\repos\\server\\server\\Models\\DTOs\\ForgotPasswordDto.cs",
+              "RelativeToolTip": "server\\Models\\DTOs\\ForgotPasswordDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-28T06:21:20.628Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "20250628053327_AddAuthMode2.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Data\\Migrations\\20250628053327_AddAuthMode2.cs",
+              "RelativeDocumentMoniker": "server\\Data\\Migrations\\20250628053327_AddAuthMode2.cs",
+              "ToolTip": "C:\\Users\\kamal\\source\\repos\\server\\server\\Data\\Migrations\\20250628053327_AddAuthMode2.cs",
+              "RelativeToolTip": "server\\Data\\Migrations\\20250628053327_AddAuthMode2.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-28T05:33:29.394Z"
+            }
+          ]
+        },
+        {
+          "DockedWidth": 2788,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

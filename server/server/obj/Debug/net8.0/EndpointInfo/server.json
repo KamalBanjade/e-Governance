@@ -1,0 +1,858 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "server",
+    "version": "1.0"
+  },
+  "paths": {
+    "/api/Customers/branches": {
+      "get": {
+        "tags": [
+          "Customers"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Customers/demandtypes": {
+      "get": {
+        "tags": [
+          "Customers"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Customers/create": {
+      "post": {
+        "tags": [
+          "Customers"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "Address",
+                  "CitizenshipNo",
+                  "DOB",
+                  "MobileNo",
+                  "Name",
+                  "RegisteredBranchId",
+                  "SCNo"
+                ],
+                "type": "object",
+                "properties": {
+                  "CusId": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "SCNo": {
+                    "type": "string"
+                  },
+                  "Name": {
+                    "type": "string"
+                  },
+                  "Address": {
+                    "type": "string"
+                  },
+                  "DOB": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "MobileNo": {
+                    "type": "string"
+                  },
+                  "CitizenshipNo": {
+                    "type": "string"
+                  },
+                  "DemandTypeId": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "DemandType.DemandTypeId": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "DemandType.Name": {
+                    "type": "string"
+                  },
+                  "DemandType.Description": {
+                    "type": "string"
+                  },
+                  "DemandType.Status": {
+                    "type": "string"
+                  },
+                  "RegisteredBranchId": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "RegisteredBranch.BranchId": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "RegisteredBranch.Name": {
+                    "type": "string"
+                  },
+                  "RegisteredBranch.Location": {
+                    "type": "string"
+                  },
+                  "RegisteredBranch.ContactDetails": {
+                    "type": "string"
+                  },
+                  "RegisteredBranch.InchargeName": {
+                    "type": "string"
+                  },
+                  "RegisteredBranch.Status": {
+                    "type": "string"
+                  },
+                  "UserId": {
+                    "type": "string"
+                  },
+                  "User.Name": {
+                    "type": "string"
+                  },
+                  "User.Address": {
+                    "type": "string"
+                  },
+                  "User.DOB": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "User.UserTypeId": {
+                    "type": "integer",
+                    "format": "int64"
+                  },
+                  "User.UserType.UserTypeId": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "User.UserType.Name": {
+                    "type": "string"
+                  },
+                  "User.UserType.Status": {
+                    "type": "string"
+                  },
+                  "User.Id": {
+                    "type": "string"
+                  },
+                  "User.UserName": {
+                    "type": "string"
+                  },
+                  "User.NormalizedUserName": {
+                    "type": "string"
+                  },
+                  "User.Email": {
+                    "type": "string"
+                  },
+                  "User.NormalizedEmail": {
+                    "type": "string"
+                  },
+                  "User.EmailConfirmed": {
+                    "type": "boolean"
+                  },
+                  "User.PasswordHash": {
+                    "type": "string"
+                  },
+                  "User.SecurityStamp": {
+                    "type": "string"
+                  },
+                  "User.ConcurrencyStamp": {
+                    "type": "string"
+                  },
+                  "User.PhoneNumber": {
+                    "type": "string"
+                  },
+                  "User.PhoneNumberConfirmed": {
+                    "type": "boolean"
+                  },
+                  "User.TwoFactorEnabled": {
+                    "type": "boolean"
+                  },
+                  "User.LockoutEnd": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "User.LockoutEnabled": {
+                    "type": "boolean"
+                  },
+                  "User.AccessFailedCount": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "CitizenshipPath": {
+                    "type": "string"
+                  },
+                  "HouseDetailsPath": {
+                    "type": "string"
+                  }
+                }
+              },
+              "encoding": {
+                "CusId": {
+                  "style": "form"
+                },
+                "SCNo": {
+                  "style": "form"
+                },
+                "Name": {
+                  "style": "form"
+                },
+                "Address": {
+                  "style": "form"
+                },
+                "DOB": {
+                  "style": "form"
+                },
+                "MobileNo": {
+                  "style": "form"
+                },
+                "CitizenshipNo": {
+                  "style": "form"
+                },
+                "DemandTypeId": {
+                  "style": "form"
+                },
+                "DemandType.DemandTypeId": {
+                  "style": "form"
+                },
+                "DemandType.Name": {
+                  "style": "form"
+                },
+                "DemandType.Description": {
+                  "style": "form"
+                },
+                "DemandType.Status": {
+                  "style": "form"
+                },
+                "RegisteredBranchId": {
+                  "style": "form"
+                },
+                "RegisteredBranch.BranchId": {
+                  "style": "form"
+                },
+                "RegisteredBranch.Name": {
+                  "style": "form"
+                },
+                "RegisteredBranch.Location": {
+                  "style": "form"
+                },
+                "RegisteredBranch.ContactDetails": {
+                  "style": "form"
+                },
+                "RegisteredBranch.InchargeName": {
+                  "style": "form"
+                },
+                "RegisteredBranch.Status": {
+                  "style": "form"
+                },
+                "UserId": {
+                  "style": "form"
+                },
+                "User.Name": {
+                  "style": "form"
+                },
+                "User.Address": {
+                  "style": "form"
+                },
+                "User.DOB": {
+                  "style": "form"
+                },
+                "User.UserTypeId": {
+                  "style": "form"
+                },
+                "User.UserType.UserTypeId": {
+                  "style": "form"
+                },
+                "User.UserType.Name": {
+                  "style": "form"
+                },
+                "User.UserType.Status": {
+                  "style": "form"
+                },
+                "User.Id": {
+                  "style": "form"
+                },
+                "User.UserName": {
+                  "style": "form"
+                },
+                "User.NormalizedUserName": {
+                  "style": "form"
+                },
+                "User.Email": {
+                  "style": "form"
+                },
+                "User.NormalizedEmail": {
+                  "style": "form"
+                },
+                "User.EmailConfirmed": {
+                  "style": "form"
+                },
+                "User.PasswordHash": {
+                  "style": "form"
+                },
+                "User.SecurityStamp": {
+                  "style": "form"
+                },
+                "User.ConcurrencyStamp": {
+                  "style": "form"
+                },
+                "User.PhoneNumber": {
+                  "style": "form"
+                },
+                "User.PhoneNumberConfirmed": {
+                  "style": "form"
+                },
+                "User.TwoFactorEnabled": {
+                  "style": "form"
+                },
+                "User.LockoutEnd": {
+                  "style": "form"
+                },
+                "User.LockoutEnabled": {
+                  "style": "form"
+                },
+                "User.AccessFailedCount": {
+                  "style": "form"
+                },
+                "CitizenshipPath": {
+                  "style": "form"
+                },
+                "HouseDetailsPath": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Customers": {
+      "get": {
+        "tags": [
+          "Customers"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/EmployeeDetails": {
+      "get": {
+        "tags": [
+          "EmployeeDetails"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/EmployeeDetails/branches": {
+      "get": {
+        "tags": [
+          "EmployeeDetails"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/EmployeeDetails/employee-types": {
+      "get": {
+        "tags": [
+          "EmployeeDetails"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/EmployeeDetails/create": {
+      "post": {
+        "tags": [
+          "EmployeeDetails"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployeeDetails"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployeeDetails"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployeeDetails"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/UserAuth/register": {
+      "post": {
+        "tags": [
+          "UserAuth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterViewModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterViewModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterViewModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/UserAuth/create-employee": {
+      "post": {
+        "tags": [
+          "UserAuth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterViewModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterViewModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterViewModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/UserAuth/login": {
+      "post": {
+        "tags": [
+          "UserAuth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginViewModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginViewModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginViewModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/UserAuth/forgot-password": {
+      "post": {
+        "tags": [
+          "UserAuth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/UserAuth/reset-password": {
+      "post": {
+        "tags": [
+          "UserAuth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApplicationUser": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "normalizedUserName": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "normalizedEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "emailConfirmed": {
+            "type": "boolean"
+          },
+          "passwordHash": {
+            "type": "string",
+            "nullable": true
+          },
+          "securityStamp": {
+            "type": "string",
+            "nullable": true
+          },
+          "concurrencyStamp": {
+            "type": "string",
+            "nullable": true
+          },
+          "phoneNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "phoneNumberConfirmed": {
+            "type": "boolean"
+          },
+          "twoFactorEnabled": {
+            "type": "boolean"
+          },
+          "lockoutEnd": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "lockoutEnabled": {
+            "type": "boolean"
+          },
+          "accessFailedCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "dob": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "userTypeId": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "userType": {
+            "$ref": "#/components/schemas/UserType"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Branch": {
+        "type": "object",
+        "properties": {
+          "branchId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "location": {
+            "type": "string",
+            "nullable": true
+          },
+          "contactDetails": {
+            "type": "string",
+            "nullable": true
+          },
+          "inchargeName": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EmployeeDetails": {
+        "required": [
+          "branchId",
+          "contactNo",
+          "employeeName",
+          "employeeTypeId",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "empId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "employeeTypeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "employeeType": {
+            "$ref": "#/components/schemas/EmployeeType"
+          },
+          "branchId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "branch": {
+            "$ref": "#/components/schemas/Branch"
+          },
+          "employeeName": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "contactNo": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "status": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
+          "user": {
+            "$ref": "#/components/schemas/ApplicationUser"
+          }
+        },
+        "additionalProperties": false
+      },
+      "EmployeeType": {
+        "type": "object",
+        "properties": {
+          "employeeTypeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ForgotPasswordDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "LoginViewModel": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RegisterViewModel": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "dob": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "userTypeId": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ResetPasswordDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "token": {
+            "type": "string",
+            "nullable": true
+          },
+          "newPassword": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserType": {
+        "type": "object",
+        "properties": {
+          "userTypeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}
