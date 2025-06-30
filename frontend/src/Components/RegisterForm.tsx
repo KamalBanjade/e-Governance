@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { FiEye, FiEyeOff, FiUser } from 'react-icons/fi';
 
 const RegisterForm = () => {
     const navigate = useNavigate();
@@ -13,13 +14,17 @@ const RegisterForm = () => {
         address: '',
         dob: '',
         email: '',
-        userTypeId: 3
+        userTypeId: 3,
     });
 
     const [errors, setErrors] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [focusedField, setFocusedField] = useState<string | null>(null);
+    const [showPassword, setShowPassword] = useState(false);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const handleChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    ) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
@@ -45,13 +50,23 @@ const RegisterForm = () => {
 
             if (res.ok) {
                 toast.success('Account created successfully! Redirecting to login...');
-                setForm({ username: '', password: '', name: '', address: '', dob: '', email: '', userTypeId: 3 });
+                setForm({
+                    username: '',
+                    password: '',
+                    name: '',
+                    address: '',
+                    dob: '',
+                    email: '',
+                    userTypeId: 3,
+                });
                 setTimeout(() => navigate('/login'), 1000);
             } else {
                 if (result.errors) {
                     const errorMessages: string[] = [];
-                    Object.keys(result.errors).forEach(key => {
-                        result.errors[key].forEach((error: string) => errorMessages.push(`${key}: ${error}`));
+                    Object.keys(result.errors).forEach((key) => {
+                        result.errors[key].forEach((error: string) =>
+                            errorMessages.push(`${key}: ${error}`)
+                        );
                     });
                     setErrors(errorMessages);
                     if (errorMessages.length > 0) toast.error(errorMessages[0]);
@@ -61,8 +76,9 @@ const RegisterForm = () => {
                     toast.error(errorMessage);
                 }
             }
-        } catch (error) {
-            const errorMessage = 'Network error occurred. Please check your connection.';
+        } catch {
+            const errorMessage =
+                'Network error occurred. Please check your connection.';
             setErrors([errorMessage]);
             toast.error(errorMessage);
         } finally {
@@ -71,59 +87,142 @@ const RegisterForm = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-indigo-100 px-4">
-            <div className="max-w-lg w-full space-y-8">
-                <div className="bg-white rounded-2xl shadow-xl p-8">
-                    <div className="text-center mb-8">
-                        <div className="mx-auto h-12 w-12 bg-purple-100 rounded-full flex items-center justify-center mb-4">
-                            <svg className="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                            </svg>
-                        </div>
-                        <h2 className="text-3xl font-bold text-gray-900">Create Account</h2>
+        <div className="flex items-center justify-center bg-gradient-to-tr from-blue-100 to-white px-4 py-10">
+            <div className="max-w-lg w-full bg-gradient-to-tr from-blue-200 to-white rounded-2xl shadow-lg p-8">
+                <div className="text-center mb-10">
+                    <div className="inline-flex items-center justify-center w-14 h-14 bg-blue-600 text-white rounded-xl mb-5 shadow-md animate-bounce">
+                        <FiUser className="w-6 h-6" />
                     </div>
+                    <h2 className="text-3xl font-semibold text-gray-800">Create Account</h2>
+                </div>
 
-                    {errors.length > 0 && (
-                        <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-400 rounded-md">
-                            <h4 className="text-sm font-medium text-red-800 mb-2">Please fix the following errors:</h4>
-                            <ul className="list-disc list-inside text-sm text-red-700 space-y-1">
-                                {errors.map((error, index) => (
-                                    <li key={index}>{error}</li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
-
-                    <div className="space-y-5">
-                        <InputField label="Username" name="username" value={form.username} onChange={handleChange} onKeyPress={handleKeyPress} disabled={isLoading} />
-                        <InputField label="Password" name="password" type="password" value={form.password} onChange={handleChange} onKeyPress={handleKeyPress} disabled={isLoading} />
-                        <InputField label="Full Name" name="name" value={form.name} onChange={handleChange} onKeyPress={handleKeyPress} disabled={isLoading} />
-                        <InputField label="Email Address" name="email" type="email" value={form.email} onChange={handleChange} onKeyPress={handleKeyPress} disabled={isLoading} />
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <InputField label="Address (optional)" name="address" value={form.address} onChange={handleChange} onKeyPress={handleKeyPress} disabled={isLoading} />
-                            <InputField label="Date of Birth (optional)" name="dob" type="date" value={form.dob} onChange={handleChange} disabled={isLoading} />
-                        </div>
-
+                {errors.length > 0 && (
+                    <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-400 rounded-md">
+                        <h4 className="text-sm font-medium text-red-800 mb-2">
+                            Please fix the following errors:
+                        </h4>
+                        <ul className="list-disc list-inside text-sm text-red-700 space-y-1">
+                            {errors.map((error, index) => (
+                                <li key={index}>{error}</li>
+                            ))}
+                        </ul>
                     </div>
+                )}
 
-                    <div className="pt-4">
+                <div className="space-y-5">
+                    <InputField
+                        label="Username"
+                        name="username"
+                        value={form.username}
+                        onChange={handleChange}
+                        onKeyPress={handleKeyPress}
+                        disabled={isLoading}
+                        focusedField={focusedField}
+                        setFocusedField={setFocusedField}
+                    />
+
+                    <div className="relative">
+                        <InputField
+                            label="Password"
+                            name="password"
+                            type={showPassword ? 'text' : 'password'}
+                            value={form.password}
+                            onChange={handleChange}
+                            onKeyPress={handleKeyPress}
+                            disabled={isLoading}
+                            focusedField={focusedField}
+                            setFocusedField={setFocusedField}
+                        />
                         <button
                             type="button"
-                            onClick={handleSubmit}
-                            disabled={isLoading}
-                            className="w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition duration-200 ease-in-out disabled:opacity-50"
+                            onClick={() => setShowPassword((prev) => !prev)}
+                            className="absolute right-3 top-12 text-gray-500 hover:text-gray-700"
+                            tabIndex={-1}
+                            aria-label={showPassword ? 'Hide password' : 'Show password'}
                         >
-                            {isLoading ? 'Creating Account...' : 'Create Account'}
+                            {showPassword ? (
+                                <FiEyeOff className="w-5 h-5" />
+                            ) : (
+                                <FiEye className="w-5 h-5" />
+                            )}
                         </button>
                     </div>
+
+                    <InputField
+                        label="Full Name"
+                        name="name"
+                        value={form.name}
+                        onChange={handleChange}
+                        onKeyPress={handleKeyPress}
+                        disabled={isLoading}
+                        focusedField={focusedField}
+                        setFocusedField={setFocusedField}
+                    />
+
+                    <InputField
+                        label="Email Address"
+                        name="email"
+                        type="email"
+                        value={form.email}
+                        onChange={handleChange}
+                        onKeyPress={handleKeyPress}
+                        disabled={isLoading}
+                        focusedField={focusedField}
+                        setFocusedField={setFocusedField}
+                    />
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <InputField
+                            label="Address"
+                            name="address"
+                            value={form.address}
+                            onChange={handleChange}
+                            onKeyPress={handleKeyPress}
+                            disabled={isLoading}
+                            focusedField={focusedField}
+                            setFocusedField={setFocusedField}
+                        />
+                        <InputField
+                            label="Date of Birth"
+                            name="dob"
+                            type="date"
+                            value={form.dob}
+                            onChange={handleChange}
+                            disabled={isLoading}
+                            focusedField={focusedField}
+                            setFocusedField={setFocusedField}
+                        />
+                    </div>
+                </div>
+
+                <div className="pt-6">
+                    <button
+                        type="button"
+                        onClick={handleSubmit}
+                        disabled={isLoading}
+                        className="w-full bg-blue-600 text-white py-3 px-4 rounded-xl hover:bg-blue-700 transition duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {isLoading ? 'Creating Account...' : 'Create Account'}
+                    </button>
+                </div>
+
+                <div className="mt-8 text-center">
+                    <p className="text-sm text-gray-600">
+                        Already have an account?{' '}
+                        <Link
+                            to="/login"
+                            className="font-medium text-blue-600 hover:text-blue-500 transition duration-200"
+                        >
+                            Login
+                        </Link>
+                    </p>
                 </div>
             </div>
         </div>
     );
 };
 
-const InputField = ({ label, name, value, onChange, onKeyPress, disabled = false, type = 'text' }: {
+interface InputFieldProps {
     label: string;
     name: string;
     value: string;
@@ -131,20 +230,44 @@ const InputField = ({ label, name, value, onChange, onKeyPress, disabled = false
     onKeyPress?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
     disabled?: boolean;
     type?: string;
-}) => (
-    <div>
-        <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
-        <input
-            id={name}
-            name={name}
-            type={type}
-            value={value}
-            onChange={onChange}
-            onKeyPress={onKeyPress}
-            disabled={disabled}
-            className="w-full pl-3 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition duration-200 ease-in-out disabled:opacity-50"
-        />
-    </div>
-);
+    focusedField: string | null;
+    setFocusedField: React.Dispatch<React.SetStateAction<string | null>>;
+}
+
+const InputField: React.FC<InputFieldProps> = ({
+    label,
+    name,
+    value,
+    onChange,
+    onKeyPress,
+    disabled = false,
+    type = 'text',
+    setFocusedField,
+}) => {
+    return (
+        <div>
+            <label
+                htmlFor={name}
+                className="block text-sm font-medium text-gray-700 mb-2"
+            >
+                {label}
+            </label>
+            <input
+                id={name}
+                name={name}
+                type={type}
+                value={value}
+                onChange={onChange}
+                onKeyPress={onKeyPress}
+                disabled={disabled}
+                onFocus={() => setFocusedField(name)}
+                onBlur={() => setFocusedField(null)}
+                className={`w-full pl-3 pr-4 py-3 border border-gray-300 rounded-xl transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50`}
+                placeholder={label}
+                autoComplete="off"
+            />
+        </div>
+    );
+};
 
 export default RegisterForm;

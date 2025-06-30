@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import type { EmployeeDetails } from '../types/models';
-import { isAdmin } from '../utility/auth';
-import { useNavigate } from 'react-router-dom';
+// import { isAdmin } from '../utility/auth';
+// import { useNavigate } from 'react-router-dom';
 const EmployeeList = () => {
   const [employees, setEmployees] = useState<EmployeeDetails[]>([]);
-   const navigate = useNavigate();
+  //  const navigate = useNavigate();
 
   useEffect(() => {
     fetch('http://localhost:5008/api/employeedetails', {
@@ -23,11 +23,11 @@ const EmployeeList = () => {
   });
 
   }, []);
-useEffect(() => {
-    if (!isAdmin()) {
-      navigate('/unauthorized');
-    }
-  }, []);
+// useEffect(() => {
+//     if (!isAdmin()) {
+//       navigate('/unauthorized');
+//     }
+//   }, []);
   return (
     <div className="max-w-6xl mx-auto p-4">
       <h2 className="text-xl font-bold mb-4">Employee List</h2>

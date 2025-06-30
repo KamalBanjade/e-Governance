@@ -1,0 +1,270 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FiPlus, FiEdit, FiTrash2, FiTag, FiFileText, FiList, FiSend } from 'react-icons/fi';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import type { DemandType } from '../types/models';
+// import { isAdmin } from '../utility/auth';
+
+const DemandManagement = () => {
+  const navigate = useNavigate();
+  const [demandTypes, setDemandTypes] = useState<DemandType[]>([]);
+  const [formData, setFormData] = useState<DemandType>({
+    demandTypeId: 0,
+    name: '',
+    description: '',
+    status: 'Active',
+  });
+  const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+//   useEffect(() => {
+//     if (!isAdmin()) {
+//       toast.error('Unauthorized access. Redirecting to login.');
+//       navigate('/unauthorized');
+//     }
+//   }, [navigate]);
+
+  useEffect(() => {
+    fetchDemandTypes();
+  }, []);
+
+  const fetchDemandTypes = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('http://localhost:5008/api/DemandType', { credentials: 'include' });
+      if (response.status === 401) {
+        toast.error('Session expired. Please log in again.');
+        navigate('/login');
+        return;
+      }
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const data = await response.json();
+      setDemandTypes(data);
+    } catch (err) {
+      toast.error('Failed to fetch demand types. Please try again.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const validateForm = () => {
+    const { name, description } = formData;
+    return name && description;
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) {
+      toast.error('Please fill in all required fields.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const url = isEditing
+        ? `http://localhost:5008/api/DemandType/${formData.demandTypeId}`
+        : 'http://localhost:5008/api/DemandType';
+      const method = isEditing ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+        credentials: 'include',
+      });
+
+      if (response.status === 401) {
+        toast.error('You are not authorized. Please log in.');
+        navigate('/login');
+        return;
+      }
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        throw new Error(errorData || 'Failed to save demand type');
+      }
+
+      await fetchDemandTypes();
+      resetForm();
+      toast.success(isEditing ? 'Demand type updated successfully!' : 'Demand type added successfully!');
+    } catch (err) {
+      toast.error('Failed to save demand type. Please try again.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEdit = (demandType: DemandType) => {
+    setFormData(demandType);
+    setIsEditing(true);
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!window.confirm('Are you sure you want to delete this demand type?')) return;
+
+    setLoading(true);
+    try {
+      const response = await fetch(`http://localhost:5008/api/DemandType/${id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (response.status === 401) {
+        toast.error('You are not authorized. Please log in.');
+        navigate('/login');
+        return;
+      }
+
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+      await fetchDemandTypes();
+      toast.success('Demand type deleted successfully!');
+    } catch (err) {
+      toast.error('Failed to delete demand type. Please try again.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      demandTypeId: 0,
+      name: '',
+      description: '',
+      status: 'Active',
+    });
+    setIsEditing(false);
+  };
+
+  return (
+    <>
+      <ToastContainer position="top-right" autoClose={3000} />
+      <div className="max-w-2xl mx-auto p-8 bg-gradient-to-tr from-blue-100 to-white rounded-2xl shadow-lg mt-10">
+        <h2 className="text-3xl font-bold text-blue-700 text-center mb-8 flex items-center justify-center">
+          <FiPlus className="mr-2 h-8 w-8" />
+          {isEditing ? 'Edit Demand Type' : 'Add New Demand Type'}
+        </h2>
+
+        <div className="grid grid-cols-1 gap-6">
+          {[
+            { label: 'Name', name: 'name', type: 'text', icon: <FiTag className="h-5 w-5 text-gray-700" />, required: true, placeholder: 'e.g., 5A' },
+            { label: 'Description', name: 'description', type: 'text', icon: <FiFileText className="h-5 w-5 text-gray-700" />, required: true, placeholder: 'e.g., 5 Ampere Connection' },
+            { label: 'Status', name: 'status', type: 'select', icon: <FiList className="h-5 w-5 text-gray-700" />, options: [
+              { value: 'Active', label: 'Active' },
+              { value: 'Inactive', label: 'Inactive' }
+            ] },
+          ].map(({ label, name, type, icon, options, required, placeholder }) => (
+            <div key={name} className="flex flex-col space-y-2">
+              <label className="flex items-center text-gray-700 font-medium">
+                {icon}
+                <span className="ml-2">{label}{required ? ' *' : ''}:</span>
+              </label>
+              {type === 'select' ? (
+                <select
+                  name={name}
+                  value={formData[name as keyof DemandType]}
+                  onChange={handleChange}
+                  className="p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 w-full"
+                >
+                  {options?.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type={type}
+                  name={name}
+                  value={formData[name as keyof DemandType]}
+                  onChange={handleChange}
+                  placeholder={placeholder}
+                  className="p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 w-full"
+                  required={required}
+                />
+              )}
+            </div>
+          ))}
+
+          <div className="flex justify-center space-x-4 mt-8">
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className={`px-8 py-3 rounded-lg text-white font-semibold transition duration-300 flex items-center justify-center ${
+                loading ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+              }`}
+            >
+              <FiSend className="h-5 w-5 mr-2" />
+              {loading ? 'Processing...' : isEditing ? 'Update Demand Type' : 'Add Demand Type'}
+            </button>
+            {isEditing && (
+              <button
+                onClick={resetForm}
+                className="px-8 py-3 rounded-lg bg-gray-300 text-gray-800 font-semibold hover:bg-gray-400 transition duration-300"
+              >
+                Cancel
+              </button>
+            )}
+          </div>
+        </div>
+
+        <div className="mt-10">
+          <h3 className="text-xl font-semibold text-gray-800 mb-4">Demand Type List</h3>
+          {loading ? (
+            <div className="text-center text-gray-600">Loading...</div>
+          ) : demandTypes.length === 0 ? (
+            <div className="text-center text-gray-600">No demand types found</div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full bg-white border border-gray-200 rounded-xl">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">DemandTypeId</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Description</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {demandTypes.map(demandType => (
+                    <tr key={demandType.demandTypeId} className="border-t border-gray-200 hover:bg-gray-50">
+                      <td className="px-4 py-3">{demandType.demandTypeId}</td>
+                      <td className="px-4 py-3">{demandType.name}</td>
+                      <td className="px-4 py-3">{demandType.description}</td>
+                      <td className="px-4 py-3">{demandType.status}</td>
+                      <td className="px-4 py-3 flex space-x-2">
+                        <button
+                          onClick={() => handleEdit(demandType)}
+                          className="p-2 text-blue-600 hover:text-blue-800"
+                          title="Edit"
+                        >
+                          <FiEdit className="h-5 w-5" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(demandType.demandTypeId)}
+                          className="p-2 text-red-600 hover:text-red-800"
+                          title="Delete"
+                        >
+                          <FiTrash2 className="h-5 w-5" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default DemandManagement;

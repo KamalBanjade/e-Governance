@@ -1,16 +1,21 @@
 import { Navigate } from 'react-router-dom';
 import type { ReactNode } from 'react';
 
-
 interface RequireRoleProps {
+  allowedRoles: string[];
   children: ReactNode;
-  allowedRoles: number[];
-  userTypeId: number;
 }
 
-const RequireRole = ({ children, allowedRoles, userTypeId }: RequireRoleProps) => {
-  if (!allowedRoles.includes(userTypeId)) {
-    return <Navigate to="/unauthorized" />;
+const RequireRole = ({ allowedRoles, children }: RequireRoleProps) => {
+  const token = localStorage.getItem('authToken');
+  const userRole = localStorage.getItem('userRole');
+
+  if (!token) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (!userRole || !allowedRoles.includes(userRole)) {
+    return <Navigate to="/unauthorized" replace />;
   }
 
   return <>{children}</>;

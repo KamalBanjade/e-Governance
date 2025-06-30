@@ -1,60 +1,90 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FiUser, FiMapPin, FiCalendar, FiPhone, FiFileText, FiList, FiMap, FiUpload, FiSend } from 'react-icons/fi';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import type { Customer, Branch, DemandType } from '../types/models';
 import { isAdmin, isEmployee, isCustomer } from '../utility/auth';
-import { useNavigate } from 'react-router-dom';
+
+// Create a type for the form data without cusId
+type CustomerFormData = Omit<Customer, 'cusId'>;
 
 const CustomerForm = () => {
-  const [customer, setCustomer] = useState<Customer>({
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [branches, setBranches] = useState<Branch[]>([]);
+  const [demandTypes, setDemandTypes] = useState<DemandType[]>([]);
+
+  const [customer, setCustomer] = useState<CustomerFormData>({
     scNo: '', name: '', address: '', dob: '', mobileNo: '', citizenshipNo: '',
     demandType: '', registeredBranchId: 0, citizenshipFile: null, houseFile: null
   });
 
-  const [branches, setBranches] = useState<Branch[]>([]);
-  const [demandTypes, setDemandTypes] = useState<DemandType[]>([]);
-  const navigate = useNavigate();
-
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchDropdownData = async () => {
       if (!isAdmin() && !isEmployee() && !isCustomer()) {
-        navigate('/unauthorized');
-        return;
+        toast.error('Unauthorized access. Redirecting to login.');
+        return navigate('/unauthorized');
       }
 
       try {
-        // Fetch Branches
-        const branchRes = await fetch('http://localhost:5008/api/Customers/branches', {
-          credentials: 'include'
-        });
-        if (branchRes.status === 401) return navigate('/login');
-        const branchData = await branchRes.json();
-        setBranches(branchData); // No need to reset state manually, this replaces old values
+        const [branchRes, demandRes] = await Promise.all([
+          fetch('http://localhost:5008/api/Customers/branches', { credentials: 'include' }),
+          fetch('http://localhost:5008/api/Customers/demandtypes', { credentials: 'include' })
+        ]);
 
-        // Fetch Demand Types
-        const demandRes = await fetch('http://localhost:5008/api/Customers/demandtypes', {
-          credentials: 'include'
-        });
-        if (demandRes.status === 401) return navigate('/login');
-        const demandData = await demandRes.json();
-        setDemandTypes(demandData);
-      } catch (err) {
-        console.error("Error fetching form data:", err);
+        if (branchRes.status === 401 || demandRes.status === 401) {
+          toast.error('Session expired. Please log in again.');
+          return navigate('/login');
+        }
+
+        const branchesData = await branchRes.json();
+        const demandTypesData = await demandRes.json();
+
+        setBranches(branchesData);
+        setDemandTypes(demandTypesData);
+      } catch (error) {
+        toast.error('Failed to load dropdown data. Please try again.');
+        console.error('Error fetching dropdown data:', error);
       }
     };
 
-    fetchData();
-  }, []); // ✅ empty dependency array to run only once
+    fetchDropdownData();
+  }, [navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setCustomer({ ...customer, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setCustomer(prev => ({
+      ...prev,
+      [name]: name === 'registeredBranchId' ? parseInt(value) : value
+    }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setCustomer({ ...customer, [e.target.name]: e.target.files[0] });
+    if (e.target.files?.length) {
+      const file = e.target.files[0];
+      setCustomer(prev => ({ ...prev, [e.target.name]: file }));
     }
   };
 
+  const validateForm = () => {
+    const { scNo, name, mobileNo, demandType, registeredBranchId } = customer;
+    return scNo && name && mobileNo && demandType && registeredBranchId;
+  };
+
+  const resetForm = () => {
+    setCustomer({
+      scNo: '', name: '', address: '', dob: '', mobileNo: '', citizenshipNo: '',
+      demandType: '', registeredBranchId: 0, citizenshipFile: null, houseFile: null
+    });
+  };
+
   const handleSubmit = async () => {
+    if (!validateForm()) {
+      toast.error('Please fill in all required fields.');
+      return;
+    }
+
     const formData = new FormData();
     formData.append("SCNo", customer.scNo);
     formData.append("Name", customer.name);
@@ -68,6 +98,7 @@ const CustomerForm = () => {
     if (customer.citizenshipFile) formData.append("CitizenshipFile", customer.citizenshipFile);
     if (customer.houseFile) formData.append("HouseFile", customer.houseFile);
 
+    setLoading(true);
     try {
       const res = await fetch("http://localhost:5008/api/Customers/create", {
         method: "POST",
@@ -76,115 +107,140 @@ const CustomerForm = () => {
       });
 
       if (res.status === 401) {
-        alert("You are not authorized. Please log in.");
-        navigate('/login');
-        return;
+        toast.error('You are not authorized. Please log in.');
+        return navigate('/login');
       }
 
-      const contentType = res.headers.get('content-type');
-      const result = contentType?.includes('application/json')
+      const contentType = res.headers.get("content-type");
+      const result = contentType?.includes("application/json")
         ? await res.json()
         : { message: await res.text() };
 
       if (!res.ok) {
-        alert(result.message || "An error occurred.");
-        console.error("Error detail:", result);
+        toast.error(result.message || 'Something went wrong.');
+        console.error("Error:", result);
       } else {
-        alert(result.message || "Customer created successfully!");
+        toast.success(result.message || 'Customer registered successfully!');
+        resetForm();
       }
-    } catch (err) {
-      alert("Error submitting form. Please try again.");
-      console.error("Submission error:", err);
+    } catch (error) {
+      toast.error('Failed to submit the form. Please try again.');
+      console.error("Submit error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // ✅ Only one dropdown per branch/demandType will show now
   return (
-    <div className="max-w-5xl mx-auto p-8 bg-gradient-to-br from-blue-50 to-white rounded-2xl shadow-xl my-10">
-      <h2 className="text-3xl font-extrabold text-center text-blue-800 mb-8">Register New Customer</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Input Fields */}
-        {[
-          { label: 'SC No', name: 'scNo', type: 'text' },
-          { label: 'Name', name: 'name', type: 'text' },
-          { label: 'Address', name: 'address', type: 'text' },
-          { label: 'Date of Birth', name: 'dob', type: 'date' },
-          { label: 'Mobile No', name: 'mobileNo', type: 'text' },
-          { label: 'Citizenship No', name: 'citizenshipNo', type: 'text' },
-        ].map(({ label, name, type }) => (
-          <div key={name} className="flex items-center space-x-4">
-            <label className="w-1/3 text-gray-700 font-medium">{label}:</label>
-            <input
-              type={type}
-              name={name}
-              className="w-2/3 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+    <>
+      <ToastContainer position="top-right" autoClose={3000} />
+      <div className="max-w-5xl mx-auto p-8 bg-gradient-to-tr from-blue-100 to-white rounded-2xl shadow-lg mt-10">
+        <h2 className="text-3xl font-bold text-blue-500 text-center mb-8 flex items-center justify-center">
+          <FiUser className="mr-2 h-8 w-8" /> Register New Customer
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Text Inputs */}
+          {[
+            { label: "SC No", name: "scNo", type: "text", icon: <FiFileText className="h-5 w-5 text-gray-700" /> },
+            { label: "Name", name: "name", type: "text", icon: <FiUser className="h-5 w-5 text-gray-700" /> },
+            { label: "Address", name: "address", type: "text", icon: <FiMapPin className="h-5 w-5 text-gray-700" /> },
+            { label: "Date of Birth", name: "dob", type: "date", icon: <FiCalendar className="h-5 w-5 text-gray-700" /> },
+            { label: "Mobile No", name: "mobileNo", type: "text", icon: <FiPhone className="h-5 w-5 text-gray-700" /> },
+            { label: "Citizenship No", name: "citizenshipNo", type: "text", icon: <FiFileText className="h-5 w-5 text-gray-700" /> },
+          ].map(({ label, name, type, icon }) => (
+            <div key={name} className="flex items-center space-x-4">
+              <label className="w-1/3 flex items-center text-gray-700 font-medium">
+                {icon}
+                <span className="ml-2">{label}:</span>
+              </label>
+              <input
+                type={type}
+                name={name}
+                value={(customer as any)[name]}
+                onChange={handleChange}
+                className="w-2/3 p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          ))}
+
+          {/* Demand Type Dropdown */}
+          <div className="flex items-center space-x-4">
+            <label className="w-1/3 flex items-center text-gray-700 font-medium">
+              <FiList className="h-5 w-5 text-gray-700" />
+              <span className="ml-2">Demand Type:</span>
+            </label>
+            <select
+              name="demandType"
+              value={customer.demandType}
               onChange={handleChange}
-              value={(customer as any)[name]}
-            />
+              className="w-2/3 p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Select Demand Type</option>
+              {demandTypes.map(d => (
+                <option key={d.demandTypeId} value={d.demandTypeId}>
+                  {d.name}
+                </option>
+              ))}
+            </select>
           </div>
-        ))}
 
-        {/* Dropdowns */}
-        <div className="flex items-center space-x-4">
-          <label className="w-1/3 text-gray-700 font-medium">Demand Type:</label>
-          <select
-            name="demandType"
-            className="w-2/3 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-            onChange={handleChange}
-            value={customer.demandType}
-          >
-            <option value="">Select Demand Type</option>
-            {demandTypes.map(d => (
-              <option key={d.demandTypeId} value={d.demandTypeId}>
-                {d.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="flex items-center space-x-4">
-          <label className="w-1/3 text-gray-700 font-medium">Branch:</label>
-          <select
-            name="registeredBranchId"
-            className="w-2/3 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-            onChange={handleChange}
-            value={customer.registeredBranchId}
-          >
-            <option value="">Select Branch</option>
-            {branches.map(b => (
-              <option key={b.branchId} value={b.branchId}>
-                {b.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* File Inputs */}
-        {[
-          { label: 'Citizenship File', name: 'citizenshipFile' },
-          { label: 'House File', name: 'houseFile' },
-        ].map(({ label, name }) => (
-          <div key={name} className="flex items-center space-x-4">
-            <label className="w-1/3 text-gray-700 font-medium">{label}:</label>
-            <input
-              type="file"
-              name={name}
-              className="w-2/3 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-              onChange={handleFileChange}
-            />
+          {/* Branch Dropdown */}
+          <div className="flex items-center space-x-4">
+            <label className="w-1/3 flex items-center text-gray-700 font-medium">
+              <FiMap className="h-5 w-5 text-gray-700" />
+              <span className="ml-2">Branch:</span>
+            </label>
+            <select
+              name="registeredBranchId"
+              value={customer.registeredBranchId}
+              onChange={handleChange}
+              className="w-2/3 p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Select Branch</option>
+              {branches.map(b => (
+                <option key={b.branchId} value={b.branchId}>
+                  {b.name}
+                </option>
+              ))}
+            </select>
           </div>
-        ))}
 
-        <div className="col-span-2 text-center mt-6">
-          <button
-            onClick={handleSubmit}
-            className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 shadow-md"
-          >
-            Submit
-          </button>
+          {/* File Inputs */}
+          {[
+            { label: "Citizenship File", name: "citizenshipFile" },
+            { label: "House File", name: "houseFile" }
+          ].map(({ label, name }) => (
+            <div key={name} className="flex items-center space-x-4">
+              <label className="w-1/3 flex items-center text-gray-700 font-medium">
+                <FiUpload className="h-5 w-5 text-gray-700" />
+                <span className="ml-2">{label}:</span>
+              </label>
+              <input
+                type="file"
+                name={name}
+                onChange={handleFileChange}
+                className="w-2/3 p-2 rounded-lg border border-gray-300"
+              />
+            </div>
+          ))}
+
+          {/* Submit Button */}
+          <div className="col-span-2 text-center mt-6">
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className={`px-8 py-3 rounded-lg text-white font-semibold transition duration-300 flex items-center justify-center mx-auto ${
+                loading ? "bg-blue-300 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-700"
+              }`}
+            >
+              <FiSend className="h-5 w-5 mr-2" />
+              {loading ? "Submitting..." : "Submit"}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
