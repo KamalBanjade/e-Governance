@@ -4,7 +4,6 @@ import { FiPlus, FiEdit, FiTrash2, FiTag, FiFileText, FiList, FiSend } from 'rea
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import type { DemandType } from '../types/models';
-// import { isAdmin } from '../utility/auth';
 
 const DemandManagement = () => {
   const navigate = useNavigate();
@@ -17,13 +16,7 @@ const DemandManagement = () => {
   });
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
-
-//   useEffect(() => {
-//     if (!isAdmin()) {
-//       toast.error('Unauthorized access. Redirecting to login.');
-//       navigate('/unauthorized');
-//     }
-//   }, [navigate]);
+  const [showList, setShowList] = useState(false);
 
   useEffect(() => {
     fetchDemandTypes();
@@ -157,10 +150,12 @@ const DemandManagement = () => {
           {[
             { label: 'Name', name: 'name', type: 'text', icon: <FiTag className="h-5 w-5 text-gray-700" />, required: true, placeholder: 'e.g., 5A' },
             { label: 'Description', name: 'description', type: 'text', icon: <FiFileText className="h-5 w-5 text-gray-700" />, required: true, placeholder: 'e.g., 5 Ampere Connection' },
-            { label: 'Status', name: 'status', type: 'select', icon: <FiList className="h-5 w-5 text-gray-700" />, options: [
-              { value: 'Active', label: 'Active' },
-              { value: 'Inactive', label: 'Inactive' }
-            ] },
+            {
+              label: 'Status', name: 'status', type: 'select', icon: <FiList className="h-5 w-5 text-gray-700" />, options: [
+                { value: 'Active', label: 'Active' },
+                { value: 'Inactive', label: 'Inactive' }
+              ]
+            },
           ].map(({ label, name, type, icon, options, required, placeholder }) => (
             <div key={name} className="flex flex-col space-y-2">
               <label className="flex items-center text-gray-700 font-medium">
@@ -214,9 +209,18 @@ const DemandManagement = () => {
           </div>
         </div>
 
-        <div className="mt-10">
-          <h3 className="text-xl font-semibold text-gray-800 mb-4">Demand Type List</h3>
-          {loading ? (
+        <div className="flex justify-between items-center mt-10 mb-4">
+          <h3 className="text-xl font-semibold text-gray-800">Demand Type List</h3>
+          <button
+            onClick={() => setShowList(prev => !prev)}
+            className="text-blue-600 hover:text-blue-800 font-medium underline"
+          >
+            {showList ? 'Hide Demand Type List' : 'View Demand Type List'}
+          </button>
+        </div>
+
+        {showList && (
+          loading ? (
             <div className="text-center text-gray-600">Loading...</div>
           ) : demandTypes.length === 0 ? (
             <div className="text-center text-gray-600">No demand types found</div>
@@ -225,7 +229,7 @@ const DemandManagement = () => {
               <table className="min-w-full bg-white border border-gray-200 rounded-xl">
                 <thead>
                   <tr className="bg-gray-100">
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">DemandTypeId</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">ID</th>
                     <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
                     <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Description</th>
                     <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
@@ -260,8 +264,8 @@ const DemandManagement = () => {
                 </tbody>
               </table>
             </div>
-          )}
-        </div>
+          )
+        )}
       </div>
     </>
   );

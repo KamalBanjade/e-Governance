@@ -3,32 +3,26 @@ import { useNavigate } from 'react-router-dom';
 import { FiTag, FiLink, FiList, FiPlus, FiEdit, FiTrash2, FiSend } from 'react-icons/fi';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-// import type { PaymentMethod } from '../types/models';
-// import { isAdmin } from '../utility/auth';
-interface PaymentMethod {
+
+interface IPaymentMethod {
   paymentMethodId: number;
   name: string;
   logoURL: string;
   status: string;
 }
+
 const PaymentMethod = () => {
   const navigate = useNavigate();
-  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
-  const [formData, setFormData] = useState<PaymentMethod>({
+  const [paymentMethods, setPaymentMethods] = useState<IPaymentMethod[]>([]);
+  const [formData, setFormData] = useState<IPaymentMethod>({
     paymentMethodId: 0,
     name: '',
     logoURL: '',
-    status: '',
+    status: 'Active',
   });
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
-
-//   useEffect(() => {
-//     if (!isAdmin()) {
-//       toast.error('Unauthorized access. Redirecting to login.');
-//       navigate('/unauthorized');
-//     }
-//   }, [navigate]);
+  const [showList, setShowList] = useState(false);
 
   useEffect(() => {
     fetchPaymentMethods();
@@ -113,7 +107,7 @@ const PaymentMethod = () => {
     }
   };
 
-  const handleEdit = (paymentMethod: PaymentMethod) => {
+  const handleEdit = (paymentMethod: IPaymentMethod) => {
     setFormData(paymentMethod);
     setIsEditing(true);
   };
@@ -151,7 +145,7 @@ const PaymentMethod = () => {
       paymentMethodId: 0,
       name: '',
       logoURL: '',
-      status: '',
+      status: 'Active',
     });
     setIsEditing(false);
   };
@@ -204,7 +198,7 @@ const PaymentMethod = () => {
               {type === 'select' ? (
                 <select
                   name={name}
-                  value={formData[name as keyof PaymentMethod]}
+                  value={formData[name as keyof IPaymentMethod]}
                   onChange={handleChange}
                   className="p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 w-full"
                   required={required}
@@ -218,7 +212,7 @@ const PaymentMethod = () => {
                 <input
                   type={type}
                   name={name}
-                  value={formData[name as keyof PaymentMethod]}
+                  value={formData[name as keyof IPaymentMethod]}
                   onChange={handleChange}
                   placeholder={placeholder}
                   className="p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 w-full"
@@ -228,7 +222,6 @@ const PaymentMethod = () => {
             </div>
           ))}
 
-          {/* Submit Button */}
           <div className="lg:col-span-2 flex justify-center mt-8">
             <button
               onClick={handleSubmit}
@@ -251,9 +244,18 @@ const PaymentMethod = () => {
           </div>
         </div>
 
-        <div className="mt-10">
-          <h3 className="text-xl font-semibold text-gray-800 mb-4">Payment Method List</h3>
-          {loading ? (
+        <div className="flex justify-between items-center mt-10 mb-4">
+          <h3 className="text-xl font-semibold text-gray-800">Payment Method List</h3>
+          <button
+            onClick={() => setShowList(prev => !prev)}
+            className="text-blue-600 hover:text-blue-800 font-medium underline"
+          >
+            {showList ? 'Hide Payment Method List' : 'View Payment Method List'}
+          </button>
+        </div>
+
+        {showList && (
+          loading ? (
             <div className="text-center text-gray-600">Loading...</div>
           ) : paymentMethods.length === 0 ? (
             <div className="text-center text-gray-600">No payment methods found</div>
@@ -262,7 +264,7 @@ const PaymentMethod = () => {
               <table className="min-w-full bg-white border border-gray-200 rounded-xl">
                 <thead>
                   <tr className="bg-gray-100">
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">PaymentMethodId</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">ID</th>
                     <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Name</th>
                     <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Logo URL</th>
                     <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
@@ -270,26 +272,26 @@ const PaymentMethod = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {paymentMethods.map(paymentMethod => (
-                    <tr key={paymentMethod.paymentMethodId} className="border-t border-gray-200 hover:bg-gray-50">
-                      <td className="px-4 py-3">{paymentMethod.paymentMethodId}</td>
-                      <td className="px-4 py-3">{paymentMethod.name}</td>
+                  {paymentMethods.map(pm => (
+                    <tr key={pm.paymentMethodId} className="border-t border-gray-200 hover:bg-gray-50">
+                      <td className="px-4 py-3">{pm.paymentMethodId}</td>
+                      <td className="px-4 py-3">{pm.name}</td>
                       <td className="px-4 py-3">
-                        <a href={paymentMethod.logoURL} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                          {paymentMethod.logoURL}
+                        <a href={pm.logoURL} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                          {pm.logoURL}
                         </a>
                       </td>
-                      <td className="px-4 py-3">{paymentMethod.status}</td>
+                      <td className="px-4 py-3">{pm.status}</td>
                       <td className="px-4 py-3 flex space-x-2">
                         <button
-                          onClick={() => handleEdit(paymentMethod)}
+                          onClick={() => handleEdit(pm)}
                           className="p-2 text-blue-600 hover:text-blue-800"
                           title="Edit"
                         >
                           <FiEdit className="h-5 w-5" />
                         </button>
                         <button
-                          onClick={() => handleDelete(paymentMethod.paymentMethodId)}
+                          onClick={() => handleDelete(pm.paymentMethodId)}
                           className="p-2 text-red-600 hover:text-red-800"
                           title="Delete"
                         >
@@ -301,8 +303,8 @@ const PaymentMethod = () => {
                 </tbody>
               </table>
             </div>
-          )}
-        </div>
+          )
+        )}
       </div>
     </>
   );

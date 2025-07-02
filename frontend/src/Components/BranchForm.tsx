@@ -9,6 +9,7 @@ import type { Branch } from '../types/models';
 const BranchForm = () => {
   const navigate = useNavigate();
   const [branches, setBranches] = useState<Branch[]>([]);
+  const [showList, setShowList] = useState(false);
   const [formData, setFormData] = useState<Branch>({
     branchId: 0,
     name: '',
@@ -219,11 +220,20 @@ const BranchForm = () => {
             )}
           </div>
         </div>
+{/* Branch List Toggle */}
+        <div className="flex justify-between items-center mt-10 mb-4">
+          <h3 className="text-xl font-semibold text-gray-800">Branch List</h3>
+          <button
+            onClick={() => setShowList(prev => !prev)}
+            className="text-blue-600 hover:text-blue-800 font-medium underline"
+          >
+            {showList ? 'Hide Branch List' : 'View Branch List'}
+          </button>
+        </div>
 
-        {/* Branch List */}
-        <div className="mt-10">
-          <h3 className="text-xl font-semibold text-gray-800 mb-4">Branch List</h3>
-          {loading ? (
+        {/* Branch List Table */}
+        {showList && (
+          loading ? (
             <div className="text-center text-gray-600">Loading...</div>
           ) : branches.length === 0 ? (
             <div className="text-center text-gray-600">No branches found</div>
@@ -269,8 +279,8 @@ const BranchForm = () => {
                 </tbody>
               </table>
             </div>
-          )}
-        </div>
+          )
+        )}
       </div>
     </>
   );

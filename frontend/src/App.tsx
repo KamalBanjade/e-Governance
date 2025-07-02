@@ -84,7 +84,7 @@ function App() {
           )}
 
           <Routes>
-            {/* Public Routes (Unauthenticated) */}
+            <Route path="/" element={<Navigate to="/login" replace />} />
             <Route
               path="/"
               element={
@@ -96,27 +96,19 @@ function App() {
               element={
                 <div className="max-w-auto mx-auto mt-10">
                   <LoginForm onLogin={handleLogin} />
-                  <div className="text-center mt-4">
-                    <NavLink to="/register" className="text-blue-600 hover:underline">
-                      Create an account
-                    </NavLink>
-                  </div>
                 </div>
               }
             />
+
             <Route
               path="/register"
               element={
                 <div className="max-w-auto mx-auto mt-10">
                   <RegisterForm />
-                  <div className="text-center mt-4">
-                    <NavLink to="/login" className="text-blue-600 hover:underline">
-                      Already have an account? Sign in
-                    </NavLink>
-                  </div>
                 </div>
               }
             />
+
 
             <Route path="/forgot-password" element={<ForgotPasswordForm />} />
             <Route path="/reset-password" element={<ResetPasswordForm />} />

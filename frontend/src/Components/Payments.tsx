@@ -51,13 +51,14 @@ const Payments = () => {
   });
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showList, setShowList] = useState(false);
 
-//   useEffect(() => {
-//     if (!isAdmin()) {
-//       toast.error('Unauthorized access. Redirecting to login.');
-//       navigate('/unauthorized');
-//     }
-//   }, [navigate]);
+  //   useEffect(() => {
+  //     if (!isAdmin()) {
+  //       toast.error('Unauthorized access. Redirecting to login.');
+  //       navigate('/unauthorized');
+  //     }
+  //   }, [navigate]);
 
   useEffect(() => {
     fetchPayments();
@@ -126,8 +127,8 @@ const Payments = () => {
       [name]: ['totalAmountPaid', 'rebateAmount', 'penaltyAmount'].includes(name)
         ? parseFloat(value) || 0
         : ['billNo', 'paymentMethodId'].includes(name)
-        ? parseInt(value) || 0
-        : value,
+          ? parseInt(value) || 0
+          : value,
     }));
   };
 
@@ -236,9 +237,9 @@ const Payments = () => {
     });
     setIsEditing(false);
   };
-return (
+  return (
     <>
-     <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="top-right" autoClose={3000} />
       <div className="max-w-2xl mx-auto p-8 bg-gradient-to-tr from-blue-100 to-white rounded-2xl shadow-lg mt-10">
         <h2 className="text-3xl font-bold text-blue-700 text-center mb-8 flex items-center justify-center">
           <FiPlus className="mr-2 h-8 w-8" />
@@ -378,9 +379,8 @@ return (
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className={`px-8 py-3 rounded-lg text-white font-semibold transition duration-300 flex items-center justify-center ${
-                loading ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
-              }`}
+              className={`px-8 py-3 rounded-lg text-white font-semibold transition duration-300 flex items-center justify-center ${loading ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                }`}
             >
               <FiSend className="h-5 w-5 mr-2" />
               {loading ? 'Processing...' : isEditing ? 'Update Payment' : 'Add Payment'}
@@ -395,61 +395,71 @@ return (
             )}
           </div>
         </div>
-
         <div className="mt-10">
-          <h3 className="text-xl font-semibold text-gray-800 mb-4">Payment List</h3>
-          {loading ? (
-            <div className="text-center text-gray-600">Loading...</div>
-          ) : payments.length === 0 ? (
-            <div className="text-center text-gray-600">No payments found</div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white border border-gray-200 rounded-xl">
-                <thead>
-                  <tr className="bg-gray-100">
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">PaymentId</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">BillNo</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Payment Method</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">TotalAmountPaid</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">RebateAmount</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">PenaltyAmount</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">PaymentDate</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">TransactionId</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {payments.map(payment => (
-                    <tr key={payment.paymentId} className="border-t border-gray-200 hover:bg-gray-50">
-                      <td className="px-4 py-3">{payment.paymentId}</td>
-                      <td className="px-4 py-3">{payment.billNo}</td>
-                      <td className="px-4 py-3">{payment.paymentMethod?.name || payment.paymentMethodId}</td>
-                      <td className="px-4 py-3">${payment.totalAmountPaid.toFixed(2)}</td>
-                      <td className="px-4 py-3">${payment.rebateAmount.toFixed(2)}</td>
-                      <td className="px-4 py-3">${payment.penaltyAmount.toFixed(2)}</td>
-                      <td className="px-4 py-3">{new Date(payment.paymentDate).toLocaleDateString()}</td>
-                      <td className="px-4 py-3">{payment.transactionId}</td>
-                      <td className="px-4 py-3 flex space-x-2">
-                        <button
-                          onClick={() => handleEdit(payment)}
-                          className="p-2 text-blue-600 hover:text-blue-800"
-                          title="Edit"
-                        >
-                          <FiEdit className="h-5 w-5" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(payment.paymentId)}
-                          className="p-2 text-red-600 hover:text-red-800"
-                          title="Delete"
-                        >
-                          <FiTrash2 className="h-5 w-5" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-semibold text-gray-800">Payment List</h3>
+            <button
+              onClick={() => setShowList(prev => !prev)}
+              className="text-blue-600 hover:text-blue-800 font-medium underline"
+            >
+              {showList ? 'Hide Payment List' : 'View Payment List'}
+            </button>
+          </div>
+
+          {showList && (
+            loading ? (
+              <div className="text-center text-gray-600">Loading...</div>
+            ) : payments.length === 0 ? (
+              <div className="text-center text-gray-600">No payments found</div>
+            ) : (
+              <div className="overflow-x-auto">
+                  <table className="min-w-full bg-white border border-gray-200 rounded-xl">
+                    <thead>
+                      <tr className="bg-gray-100">
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">PaymentId</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">BillNo</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Payment Method</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">TotalAmountPaid</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">RebateAmount</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">PenaltyAmount</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">PaymentDate</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">TransactionId</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {payments.map(payment => (
+                        <tr key={payment.paymentId} className="border-t border-gray-200 hover:bg-gray-50">
+                          <td className="px-4 py-3">{payment.paymentId}</td>
+                          <td className="px-4 py-3">{payment.billNo}</td>
+                          <td className="px-4 py-3">{payment.paymentMethod?.name || payment.paymentMethodId}</td>
+                          <td className="px-4 py-3">${payment.totalAmountPaid.toFixed(2)}</td>
+                          <td className="px-4 py-3">${payment.rebateAmount.toFixed(2)}</td>
+                          <td className="px-4 py-3">${payment.penaltyAmount.toFixed(2)}</td>
+                          <td className="px-4 py-3">{new Date(payment.paymentDate).toLocaleDateString()}</td>
+                          <td className="px-4 py-3">{payment.transactionId}</td>
+                          <td className="px-4 py-3 flex space-x-2">
+                            <button
+                              onClick={() => handleEdit(payment)}
+                              className="p-2 text-blue-600 hover:text-blue-800"
+                              title="Edit"
+                            >
+                              <FiEdit className="h-5 w-5" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(payment.paymentId)}
+                              className="p-2 text-red-600 hover:text-red-800"
+                              title="Delete"
+                            >
+                              <FiTrash2 className="h-5 w-5" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+              </div>
+            )
           )}
         </div>
       </div>
