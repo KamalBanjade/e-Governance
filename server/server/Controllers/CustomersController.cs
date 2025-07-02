@@ -1,11 +1,9 @@
 ﻿using e_Governance.Data;
 using e_Governance.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace e_Governance.Controllers
 {

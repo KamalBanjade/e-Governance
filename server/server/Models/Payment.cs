@@ -10,11 +10,11 @@ namespace e_Governance.Models
         public int PaymentId { get; set; }
         public int BillNo { get; set; }
         [ForeignKey("BillNo")]
-        public Bill Bill { get; set; }
+        public Bill? Bill { get; set; }
         public int PaymentMethodId { get; set; }
 
         [ForeignKey("PaymentMethodId")]
-        public PaymentMethod PaymentMethod { get; set; }
+        public PaymentMethod? PaymentMethod { get; set; }
 
         public decimal TotalAmountPaid { get; set; }
         public decimal RebateAmount { get; set; }

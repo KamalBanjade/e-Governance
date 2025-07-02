@@ -22,7 +22,6 @@ namespace e_Governance.Controllers
         {
             _context = context;
             _userManager = userManager;
-            Console.WriteLine("EmployeeDetailsController initialized");
         }
 
         [HttpGet]

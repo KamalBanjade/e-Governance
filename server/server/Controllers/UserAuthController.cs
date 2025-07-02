@@ -19,10 +19,10 @@ namespace e_Governance.Controllers
         private readonly IEmailService _emailService;
 
         public UserAuthController(
-        UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager,
-        IConfiguration configuration,
-        IEmailService emailService)
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
+            IConfiguration configuration,
+            IEmailService emailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -33,6 +33,18 @@ namespace e_Governance.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
+            var existingUserByEmail = await _userManager.FindByEmailAsync(model.Email);
+            if (existingUserByEmail != null)
+            {
+                return BadRequest(new { message = "Email is already registered." });
+            }
+
+            var existingUserByUsername = await _userManager.FindByNameAsync(model.Username);
+            if (existingUserByUsername != null)
+            {
+                return BadRequest(new { message = "Username is already taken." });
+            }
+
             var user = new ApplicationUser
             {
                 UserName = model.Username,
@@ -51,7 +63,7 @@ namespace e_Governance.Controllers
                 return Ok(new { message = "Account created successfully." });
             }
 
-            return BadRequest(result.Errors);
+            return BadRequest(new { errors = result.Errors });
         }
 
         [HttpPost("create-employee")]
@@ -86,7 +98,6 @@ namespace e_Governance.Controllers
             return BadRequest(result.Errors);
         }
 
-
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
@@ -104,7 +115,6 @@ namespace e_Governance.Controllers
 
             return Unauthorized(new { message = "Invalid username or password." });
         }
-
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto model)
         {
@@ -121,6 +131,7 @@ namespace e_Governance.Controllers
             return Ok(new { message = "Password reset link sent to email" });
         }
 
+
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto model)
         {
@@ -134,8 +145,5 @@ namespace e_Governance.Controllers
 
             return Ok(new { message = "Password reset successful" });
         }
-
-
-
     }
 }
