@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, NavLink, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
+import { jwtDecode } from 'jwt-decode';
+import { FiLogOut } from 'react-icons/fi';
+
 import 'react-toastify/dist/ReactToastify.css';
 
 import CustomerForm from './Components/CustomerForm';
-// import CustomerList from './Components/CustomerList';
 import EmployeeForm from './Components/EmployeeForm';
-import EmployeeList from './Components/EmployeeList';
 import LoginForm from './Components/LoginForm';
 import RegisterForm from './Components/RegisterForm';
 import ForgotPasswordForm from './Components/ForgotPasswordForm';
@@ -18,98 +19,133 @@ import BranchForm from './Components/BranchForm';
 import DemandManagement from './Components/DemandManagement';
 import PaymentMethod from './Components/PaymentMethod';
 import Payments from './Components/Payments';
+import AdminDashboard from './Dashboards/AdminDashboard';
+import CustomerDashboard from './Dashboards/CustomerDashboard';
+import EmployeeDashboard from './Dashboards/EmployeeDashboard';
+import GoBackButton from './Components/GoBackButton';
+
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [, setUserRole] = useState('');
+  const [, setUserTypeId] = useState('');
 
-  // Check for authentication status on mount
-  useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    const role = localStorage.getItem('userRole');
-    if (token && role) {
-      setIsAuthenticated(true);
+  const isTokenValid = (token: string | null): boolean => {
+    if (!token) return false;
+    try {
+      const decoded: any = jwtDecode(token);
+      return decoded.exp * 1000 > Date.now();
+    } catch {
+      return false;
     }
-  }, []);
-
-  // Handle login
-  const handleLogin = (userTypeId: number) => {
-    const roleMap: { [key: number]: string } = {
-      1: 'Admin',
-      2: 'Employee',
-      3: 'Customer',
-    };
-    const role = roleMap[userTypeId] || 'Customer';
-    const token = 'session-token'; // Placeholder; use actual token if returned by API
-    localStorage.setItem('authToken', token);
-    localStorage.setItem('userRole', role);
-    setIsAuthenticated(true);
   };
 
-  // Handle logout
   const handleLogout = () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userRole');
+    localStorage.removeItem('userTypeId');
     setIsAuthenticated(false);
+    setUserRole('');
+    setUserTypeId('');
   };
 
-  const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-    isActive
-      ? 'text-blue-800 font-semibold underline'
-      : 'text-blue-600 hover:text-blue-800 transition-colors';
+  const handleLogin = (userTypeId: number, token: string, role: string) => {
+    localStorage.setItem('authToken', token);
+    localStorage.setItem('userRole', role);
+    localStorage.setItem('userTypeId', userTypeId.toString());
+    setIsAuthenticated(true);
+    setUserRole(role);
+    setUserTypeId(userTypeId.toString());
+  };
+
+  const getDefaultRoute = () => {
+    const storedRole = localStorage.getItem('userRole');
+    const storedTypeId = localStorage.getItem('userTypeId');
+
+    if (storedRole === 'Admin') return '/admin-dashboard';
+    if (storedRole === 'Clerk') return '/employee-dashboard';
+    if (storedTypeId === '3') return '/customer-dashboard';
+    return '/login';
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    const role = localStorage.getItem('userRole');
+    const typeId = localStorage.getItem('userTypeId');
+
+    if (isTokenValid(token) && role) {
+      setIsAuthenticated(true);
+      setUserRole(role);
+      setUserTypeId(typeId || '');
+    } else {
+      handleLogout();
+    }
+    setLoading(false);
+  }, []);
+
+  if (loading) {
+    return <div className="text-center mt-20 text-gray-500 text-lg">Loading...</div>;
+  }
 
   return (
     <>
       <ToastContainer position="top-right" autoClose={3000} />
       <Router>
-        <div className="p-4 bg-gray-100 min-h-screen">
-          {/* Show navigation only if authenticated */}
+        <div className="p-4 bg-gray-100 min-h-screen relative">
+
+          {/* ✅ Logout Button Only */}
           {isAuthenticated && (
-            <nav className="mb-6 flex gap-4 flex-wrap text-sm sm:text-base">
-              <NavLink to="/Customers/create" className={navLinkClass}>New Customer</NavLink>
-              <NavLink to="/billform" className={navLinkClass}>New Bill</NavLink>
-              {/* <NavLink to="/Customers" className={navLinkClass}>Customer List</NavLink> */}
-              <NavLink to="/employees/create" className={navLinkClass}>New Employee</NavLink>
-              <NavLink to="/employees" className={navLinkClass}>Employee List</NavLink>
-              <NavLink to="/branch" className={navLinkClass}>Add Branch</NavLink>
-              <NavLink to="/demand" className={navLinkClass}>Add Demand</NavLink>
-              <NavLink to="/paymentmethod" className={navLinkClass}>Payment Method</NavLink>
-              <NavLink to="/Payments" className={navLinkClass}>Payments</NavLink>
+            <div className="flex justify-between items-center mb-4">
+              <div>
+                <GoBackButton />
+              </div>
               <button
                 onClick={handleLogout}
                 className="text-blue-600 hover:text-blue-800 transition-colors"
+                title="Logout"
               >
-                Logout
+                <FiLogOut className="w-6 h-6" />
               </button>
-            </nav>
+            </div>
           )}
 
+
           <Routes>
-            <Route path="/" element={<Navigate to="/login" replace />} />
             <Route
               path="/"
+              element={<Navigate to={isAuthenticated ? getDefaultRoute() : "/login"} replace />}
+            />
+
+            {/* Dashboards */}
+            <Route
+              path="/admin-dashboard"
               element={
-                isAuthenticated ? <Navigate to="/Customers" replace /> : <Navigate to="/login" replace />
+                <RequireRole allowedRoles={['Admin']}>
+                  <AdminDashboard />
+                </RequireRole>
               }
             />
             <Route
-              path="/login"
+              path="/employee-dashboard"
               element={
-                <div className="max-w-auto mx-auto mt-10">
-                  <LoginForm onLogin={handleLogin} />
-                </div>
+                <RequireRole allowedRoles={['Clerk']}>
+                  <EmployeeDashboard />
+                </RequireRole>
               }
             />
-
             <Route
-              path="/register"
+              path="/customer-dashboard"
               element={
-                <div className="max-w-auto mx-auto mt-10">
-                  <RegisterForm />
-                </div>
+                <RequireRole allowedRoles={['Customer']}>
+                  <CustomerDashboard />
+                </RequireRole>
               }
             />
 
-
+            {/* Auth */}
+            <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
+            <Route path="/register" element={<RegisterForm />} />
             <Route path="/forgot-password" element={<ForgotPasswordForm />} />
             <Route path="/reset-password" element={<ResetPasswordForm />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
@@ -118,39 +154,23 @@ function App() {
             <Route
               path="/Customers/create"
               element={
-                <RequireRole allowedRoles={['Admin', 'Employee', 'Customer']}>
+                <RequireRole allowedRoles={['Admin', 'Clerk', 'Customer']}>
                   <CustomerForm />
                 </RequireRole>
               }
             />
-            {/* <Route
-              path="/Customers"
-              element={
-                <RequireRole allowedRoles={['Admin', 'Employee', 'Customer']}>
-                  <CustomerList />
-                </RequireRole>
-              }
-            /> */}
             <Route
               path="/employees/create"
               element={
-                <RequireRole allowedRoles={['Admin', 'Employee', 'Customer']}>
+                <RequireRole allowedRoles={['Admin']}>
                   <EmployeeForm />
-                </RequireRole>
-              }
-            />
-            <Route
-              path="/employees"
-              element={
-                <RequireRole allowedRoles={['Admin', 'Employee', 'Customer']}>
-                  <EmployeeList />
                 </RequireRole>
               }
             />
             <Route
               path="/billform"
               element={
-                <RequireRole allowedRoles={['Admin', 'Employee', 'Customer']}>
+                <RequireRole allowedRoles={['Admin', 'Clerk', 'Customer']}>
                   <BillForm onSave={() => { }} />
                 </RequireRole>
               }
@@ -158,7 +178,7 @@ function App() {
             <Route
               path="/branch"
               element={
-                <RequireRole allowedRoles={['Admin', 'Employee', 'Customer']}>
+                <RequireRole allowedRoles={['Admin', 'Clerk']}>
                   <BranchForm />
                 </RequireRole>
               }
@@ -166,7 +186,7 @@ function App() {
             <Route
               path="/demand"
               element={
-                <RequireRole allowedRoles={['Admin', 'Employee', 'Customer']}>
+                <RequireRole allowedRoles={['Admin', 'Clerk']}>
                   <DemandManagement />
                 </RequireRole>
               }
@@ -174,7 +194,7 @@ function App() {
             <Route
               path="/paymentmethod"
               element={
-                <RequireRole allowedRoles={['Admin', 'Employee', 'Customer']}>
+                <RequireRole allowedRoles={['Admin', 'Clerk']}>
                   <PaymentMethod />
                 </RequireRole>
               }
@@ -182,13 +202,13 @@ function App() {
             <Route
               path="/Payments"
               element={
-                <RequireRole allowedRoles={['Admin', 'Employee', 'Customer']}>
+                <RequireRole allowedRoles={['Admin', 'Clerk', 'Customer']}>
                   <Payments />
                 </RequireRole>
               }
             />
 
-            {/* 404 Fallback */}
+            {/* 404 */}
             <Route
               path="*"
               element={

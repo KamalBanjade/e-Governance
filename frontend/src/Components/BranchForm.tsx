@@ -4,9 +4,11 @@ import { FiPlus, FiEdit, FiTrash2, FiMapPin, FiPhone, FiUser, FiList, FiSend, Fi
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import type { Branch } from '../types/models';
+import { getAuthToken } from '../utility/auth';
 // import { isAdmin } from '../utility/auth';
 
 const BranchForm = () => {
+  const token = getAuthToken();
   const navigate = useNavigate();
   const [branches, setBranches] = useState<Branch[]>([]);
   const [showList, setShowList] = useState(false);
@@ -21,6 +23,15 @@ const BranchForm = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // Check if token exists on component mount
+  useEffect(() => {
+    if (!token) {
+      toast.error('No authentication token found. Please log in.');
+      navigate('/login');
+      return;
+    }
+  }, [token, navigate]);
+
 //   useEffect(() => {
 //     if (!isAdmin()) {
 //       toast.error('Unauthorized access. Redirecting to login.');
@@ -29,24 +40,54 @@ const BranchForm = () => {
 //   }, [navigate]);
 
   useEffect(() => {
-    fetchBranches();
-  }, []);
+    if (token) {
+      fetchBranches();
+    }
+  }, [token]);
+
+  // Helper function to create headers with proper error handling
+  const getAuthHeaders = () => {
+    if (!token) {
+      throw new Error('No authentication token available');
+    }
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
+  };
+
+  // Helper function to handle common response errors
+  const handleResponseError = async (response: Response) => {
+    if (response.status === 401) {
+      toast.error('Session expired. Please log in again.');
+      navigate('/login');
+      return true; // Indicates error was handled
+    }
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || `HTTP error! status: ${response.status}`);
+    }
+    return false; // No error
+  };
 
   const fetchBranches = async () => {
+    if (!token) return;
+    
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5008/api/Branch', { credentials: 'include' });
-      if (response.status === 401) {
-        toast.error('Session expired. Please log in again.');
-        navigate('/login');
-        return;
-      }
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const response = await fetch('http://localhost:5008/api/Branch', {
+        method: 'GET',
+        headers: getAuthHeaders()
+      });
+
+      const errorHandled = await handleResponseError(response);
+      if (errorHandled) return;
+
       const data = await response.json();
       setBranches(data);
     } catch (err) {
       toast.error('Failed to fetch branches. Please try again.');
-      console.error(err);
+      console.error('Fetch branches error:', err);
     } finally {
       setLoading(false);
     }
@@ -59,10 +100,16 @@ const BranchForm = () => {
 
   const validateForm = () => {
     const { name, location, contactDetails, inchargeName } = formData;
-    return name && location && contactDetails && inchargeName;
+    return name.trim() && location.trim() && contactDetails.trim() && inchargeName.trim();
   };
 
   const handleSubmit = async () => {
+    if (!token) {
+      toast.error('No authentication token. Please log in.');
+      navigate('/login');
+      return;
+    }
+
     if (!validateForm()) {
       toast.error('Please fill in all required fields.');
       return;
@@ -75,30 +122,30 @@ const BranchForm = () => {
         : 'http://localhost:5008/api/Branch';
       const method = isEditing ? 'PUT' : 'POST';
 
+      // Prepare the data to send (exclude branchId for POST requests)
+      const dataToSend = isEditing ? formData : {
+        name: formData.name,
+        location: formData.location,
+        contactDetails: formData.contactDetails,
+        inchargeName: formData.inchargeName,
+        status: formData.status
+      };
+
       const response = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-        credentials: 'include',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(dataToSend) // This was missing!
       });
 
-      if (response.status === 401) {
-        toast.error('You are not authorized. Please log in.');
-        navigate('/login');
-        return;
-      }
-
-      if (!response.ok) {
-        const errorData = await response.text();
-        throw new Error(errorData || 'Failed to save branch');
-      }
+      const errorHandled = await handleResponseError(response);
+      if (errorHandled) return;
 
       await fetchBranches();
       resetForm();
       toast.success(isEditing ? 'Branch updated successfully!' : 'Branch added successfully!');
     } catch (err) {
       toast.error('Failed to save branch. Please try again.');
-      console.error(err);
+      console.error('Submit error:', err);
     } finally {
       setLoading(false);
     }
@@ -110,28 +157,29 @@ const BranchForm = () => {
   };
 
   const handleDelete = async (id: number) => {
+    if (!token) {
+      toast.error('No authentication token. Please log in.');
+      navigate('/login');
+      return;
+    }
+
     if (!window.confirm('Are you sure you want to delete this branch?')) return;
 
     setLoading(true);
     try {
       const response = await fetch(`http://localhost:5008/api/Branch/${id}`, {
         method: 'DELETE',
-        credentials: 'include',
+        headers: getAuthHeaders()
       });
 
-      if (response.status === 401) {
-        toast.error('You are not authorized. Please log in.');
-        navigate('/login');
-        return;
-      }
-
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const errorHandled = await handleResponseError(response);
+      if (errorHandled) return;
 
       await fetchBranches();
       toast.success('Branch deleted successfully!');
     } catch (err) {
       toast.error('Failed to delete branch. Please try again.');
-      console.error(err);
+      console.error('Delete error:', err);
     } finally {
       setLoading(false);
     }
@@ -149,6 +197,18 @@ const BranchForm = () => {
     setIsEditing(false);
   };
 
+  // Don't render the form if there's no token
+  if (!token) {
+    return (
+      <div className="max-w-2xl mx-auto p-8 bg-red-100 rounded-2xl shadow-lg mt-10">
+        <div className="text-center text-red-700">
+          <h2 className="text-xl font-bold mb-4">Authentication Required</h2>
+          <p>Please log in to access this page.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <ToastContainer position="top-right" autoClose={3000} />
@@ -161,7 +221,7 @@ const BranchForm = () => {
         <div className="grid grid-cols-1 gap-6">
           {[
             { label: 'Branch Name', name: 'name', type: 'text', icon: <FiMap className="h-5 w-5 text-gray-700" />, required: true },
-            { label: 'Location', name: 'location', type: 'text', icon: <FiMapPin className="h-5 w-5 text-gray- seventy" />, required: true },
+            { label: 'Location', name: 'location', type: 'text', icon: <FiMapPin className="h-5 w-5 text-gray-700" />, required: true },
             { label: 'Contact Details', name: 'contactDetails', type: 'text', icon: <FiPhone className="h-5 w-5 text-gray-700" />, required: true },
             { label: 'Incharge Name', name: 'inchargeName', type: 'text', icon: <FiUser className="h-5 w-5 text-gray-700" />, required: true },
             { label: 'Status', name: 'status', type: 'select', icon: <FiList className="h-5 w-5 text-gray-700" />, options: [
@@ -220,7 +280,8 @@ const BranchForm = () => {
             )}
           </div>
         </div>
-{/* Branch List Toggle */}
+
+        {/* Branch List Toggle */}
         <div className="flex justify-between items-center mt-10 mb-4">
           <h3 className="text-xl font-semibold text-gray-800">Branch List</h3>
           <button

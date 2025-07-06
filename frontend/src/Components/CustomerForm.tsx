@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiUser, FiMapPin, FiCalendar, FiPhone, FiFileText, FiList, FiMap, FiUpload, FiSend } from 'react-icons/fi';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast,ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import type { Customer, Branch, DemandType } from '../types/models';
-import { isAdmin, isEmployee, isCustomer } from '../utility/auth';
+// import { isAdmin, isEmployee, isCustomer } from '../utility/auth';
 
-// Create a type for the form data without cusId
 type CustomerFormData = Omit<Customer, 'cusId'>;
 
 const CustomerForm = () => {
@@ -20,37 +19,40 @@ const CustomerForm = () => {
     demandType: '', registeredBranchId: 0, citizenshipFile: null, houseFile: null
   });
 
-  useEffect(() => {
-    const fetchDropdownData = async () => {
-      if (!isAdmin() && !isEmployee() && !isCustomer()) {
-        toast.error('Unauthorized access. Redirecting to login.');
-        return navigate('/unauthorized');
+  const token = localStorage.getItem('authToken');
+
+ useEffect(() => {
+  const fetchDropdownData = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const [branchRes, demandRes] = await Promise.all([
+        fetch('http://localhost:5008/api/Customers/branches', {
+          headers: { Authorization: `Bearer ${token}` }
+        }),
+        fetch('http://localhost:5008/api/Customers/demandtypes', {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+      ]);
+
+      if (branchRes.status === 401 || demandRes.status === 401) {
+        toast.error('Session expired. Please log in again.');
+        return navigate('/login');
       }
 
-      try {
-        const [branchRes, demandRes] = await Promise.all([
-          fetch('http://localhost:5008/api/Customers/branches', { credentials: 'include' }),
-          fetch('http://localhost:5008/api/Customers/demandtypes', { credentials: 'include' })
-        ]);
+      const branchesData = await branchRes.json();
+      const demandTypesData = await demandRes.json();
 
-        if (branchRes.status === 401 || demandRes.status === 401) {
-          toast.error('Session expired. Please log in again.');
-          return navigate('/login');
-        }
+      setBranches(branchesData);
+      setDemandTypes(demandTypesData);
+    } catch (error) {
+      toast.error('Failed to load dropdown data. Please try again.');
+      console.error('Error fetching dropdown data:', error);
+    }
+  };
 
-        const branchesData = await branchRes.json();
-        const demandTypesData = await demandRes.json();
+  fetchDropdownData();
+}, [navigate]);
 
-        setBranches(branchesData);
-        setDemandTypes(demandTypesData);
-      } catch (error) {
-        toast.error('Failed to load dropdown data. Please try again.');
-        console.error('Error fetching dropdown data:', error);
-      }
-    };
-
-    fetchDropdownData();
-  }, [navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -94,7 +96,6 @@ const CustomerForm = () => {
     formData.append("CitizenshipNo", customer.citizenshipNo);
     formData.append("DemandTypeId", customer.demandType);
     formData.append("RegisteredBranchId", customer.registeredBranchId.toString());
-
     if (customer.citizenshipFile) formData.append("CitizenshipFile", customer.citizenshipFile);
     if (customer.houseFile) formData.append("HouseFile", customer.houseFile);
 
@@ -102,8 +103,10 @@ const CustomerForm = () => {
     try {
       const res = await fetch("http://localhost:5008/api/Customers/create", {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
         body: formData,
-        credentials: 'include',
       });
 
       if (res.status === 401) {
@@ -130,7 +133,6 @@ const CustomerForm = () => {
       setLoading(false);
     }
   };
-
   return (
     <>
       <ToastContainer position="top-right" autoClose={3000} />

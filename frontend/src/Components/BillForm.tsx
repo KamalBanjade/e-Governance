@@ -5,6 +5,7 @@ import { HiOutlineCalculator } from 'react-icons/hi';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import type { Bill, Customer } from '../types/models';
+import { getAuthToken } from '../utility/auth';
 // import { isAdmin } from '../utility/auth';
 
 interface Props {
@@ -12,6 +13,7 @@ interface Props {
 }
 
 const BillForm = ({ onSave }: Props) => {
+  const token = getAuthToken();
   const navigate = useNavigate();
   const [bill, setBill] = useState<Bill>({
     cusId: 0,
@@ -44,7 +46,13 @@ const BillForm = ({ onSave }: Props) => {
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
-        const response = await fetch('http://localhost:5008/api/Customers', { credentials: 'include' });
+        const response = await fetch('http://localhost:5008/api/Customers', {
+          method: 'get',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+        });
         if (response.status === 401) {
           toast.error('Session expired. Please log in again.');
           navigate('/login');
@@ -111,13 +119,24 @@ const BillForm = ({ onSave }: Props) => {
         minimumCharge: bill.minimumCharge,
         rate: bill.rate,
       };
+
+
+
+      if (!token) {
+        toast.error('You are not logged in. Please login again.');
+        navigate('/login');
+        return;
+      }
+
+      console.log("JWT Token:", localStorage.getItem("authToken"));
+
       const response = await fetch('http://localhost:5008/api/Bills', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(billData),
-        credentials: 'include',
+        body: JSON.stringify(billData)
       });
 
       if (response.status === 401) {
@@ -336,9 +355,8 @@ const BillForm = ({ onSave }: Props) => {
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className={`px-8 py-3 rounded-lg text-white font-semibold transition duration-300 flex items-center justify-center ${
-                loading ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
-              }`}
+              className={`px-8 py-3 rounded-lg text-white font-semibold transition duration-300 flex items-center justify-center ${loading ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                }`}
             >
               <FiSend className="h-5 w-5 mr-2" />
               {loading ? 'Processing...' : 'Create Bill'}

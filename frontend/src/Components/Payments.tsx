@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiPlus, FiEdit, FiTrash2, FiFileText, FiCreditCard, FiDollarSign, FiCalendar, FiHash, FiSend } from 'react-icons/fi';
+import {
+  FiPlus, FiEdit, FiTrash2, FiFileText, FiCreditCard,
+  FiDollarSign, FiCalendar, FiHash, FiSend
+} from 'react-icons/fi';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { v4 as uuidv4 } from 'uuid';
-// import type { Payment, Bill, PaymentMethod } from '../types/models';
-// import { isAdmin } from '../utility/auth';
-
 
 interface Payment {
   paymentId: number;
@@ -17,7 +17,7 @@ interface Payment {
   penaltyAmount: number;
   paymentDate: string;
   transactionId: string;
-  paymentMethod?: { name: string }; // Optional navigation property
+  paymentMethod?: { name: string };
 }
 
 interface Bill {
@@ -28,7 +28,7 @@ interface PaymentMethod {
   paymentMethodId: number;
   name: string;
 }
-// Utility function to generate unique TransactionId
+
 const generateTransactionId = () => {
   const uuid = uuidv4().replace(/-/g, '').toUpperCase();
   return `TX${uuid.slice(0, 10)}`;
@@ -53,12 +53,7 @@ const Payments = () => {
   const [loading, setLoading] = useState(false);
   const [showList, setShowList] = useState(false);
 
-  //   useEffect(() => {
-  //     if (!isAdmin()) {
-  //       toast.error('Unauthorized access. Redirecting to login.');
-  //       navigate('/unauthorized');
-  //     }
-  //   }, [navigate]);
+  const token = localStorage.getItem('authToken');
 
   useEffect(() => {
     fetchPayments();
@@ -69,14 +64,21 @@ const Payments = () => {
   const fetchPayments = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5008/api/Payment', { credentials: 'include' });
-      if (response.status === 401) {
+      const res = await fetch('http://localhost:5008/api/Payment', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.status === 401) {
         toast.error('Session expired. Please log in again.');
         navigate('/login');
         return;
       }
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const data = await response.json();
+
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+      const data = await res.json();
       setPayments(data);
     } catch (err) {
       toast.error('Failed to fetch payments. Please try again.');
@@ -88,35 +90,49 @@ const Payments = () => {
 
   const fetchBills = async () => {
     try {
-      const response = await fetch('http://localhost:5008/api/Bills', { credentials: 'include' });
-      if (response.status === 401) {
+      const res = await fetch('http://localhost:5008/api/Bills', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.status === 401) {
         toast.error('Session expired. Please log in again.');
         navigate('/login');
         return;
       }
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const data = await response.json();
+
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+      const data = await res.json();
       setBills(data);
     } catch (err) {
       toast.error('Failed to fetch bills. Please try again.');
-      console.error('Error fetching bills:', err);
+      console.error(err);
     }
   };
 
   const fetchPaymentMethods = async () => {
     try {
-      const response = await fetch('http://localhost:5008/api/PaymentMethod', { credentials: 'include' });
-      if (response.status === 401) {
+      const res = await fetch('http://localhost:5008/api/PaymentMethod', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.status === 401) {
         toast.error('Session expired. Please log in again.');
         navigate('/login');
         return;
       }
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const data = await response.json();
+
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+      const data = await res.json();
       setPaymentMethods(data);
     } catch (err) {
       toast.error('Failed to fetch payment methods. Please try again.');
-      console.error('Error fetching payment methods:', err);
+      console.error(err);
     }
   };
 
@@ -150,28 +166,34 @@ const Payments = () => {
         : 'http://localhost:5008/api/Payment';
       const method = isEditing ? 'PUT' : 'POST';
 
-      const response = await fetch(url, {
+      const res = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           ...formData,
           paymentDate: new Date(formData.paymentDate).toISOString().split('T')[0],
-          paymentMethod: undefined, // Exclude navigation property
+          paymentMethod: undefined,
         }),
-        credentials: 'include',
       });
 
-      if (response.status === 401) {
+      if (res.status === 401) {
         toast.error('You are not authorized. Please log in.');
         navigate('/login');
         return;
       }
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMessage = errorData.errors
-          ? Object.values(errorData.errors).flat().join(', ')
-          : errorData.message || 'Failed to save payment';
+      const contentType = res.headers.get('content-type');
+      const result = contentType?.includes('application/json')
+        ? await res.json()
+        : { message: await res.text() };
+
+      if (!res.ok) {
+        const errorMessage = result.errors
+          ? Object.values(result.errors).flat().join(', ')
+          : result.message || 'Failed to save payment';
         throw new Error(errorMessage);
       }
 
@@ -190,7 +212,7 @@ const Payments = () => {
     setFormData({
       ...payment,
       paymentDate: new Date(payment.paymentDate).toISOString().split('T')[0],
-      paymentMethod: undefined, // Ensure navigation property is not included
+      paymentMethod: undefined,
     });
     setIsEditing(true);
   };
@@ -200,18 +222,20 @@ const Payments = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:5008/api/Payment/${id}`, {
+      const res = await fetch(`http://localhost:5008/api/Payment/${id}`, {
         method: 'DELETE',
-        credentials: 'include',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
-      if (response.status === 401) {
+      if (res.status === 401) {
         toast.error('You are not authorized. Please log in.');
         navigate('/login');
         return;
       }
 
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
       await fetchPayments();
       toast.success('Payment deleted successfully!');
@@ -233,10 +257,11 @@ const Payments = () => {
       penaltyAmount: 0,
       paymentDate: '',
       transactionId: generateTransactionId(),
-      paymentMethod: undefined, // Ensure navigation property is not included
+      paymentMethod: undefined,
     });
     setIsEditing(false);
   };
+
   return (
     <>
       <ToastContainer position="top-right" autoClose={3000} />

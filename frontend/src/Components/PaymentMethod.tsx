@@ -24,6 +24,8 @@ const PaymentMethod = () => {
   const [loading, setLoading] = useState(false);
   const [showList, setShowList] = useState(false);
 
+  const token = localStorage.getItem('authToken');
+
   useEffect(() => {
     fetchPaymentMethods();
   }, []);
@@ -31,18 +33,24 @@ const PaymentMethod = () => {
   const fetchPaymentMethods = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5008/api/PaymentMethod', { credentials: 'include' });
-      if (response.status === 401) {
+      const res = await fetch('http://localhost:5008/api/PaymentMethod', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.status === 401) {
         toast.error('Session expired. Please log in again.');
-        navigate('/login');
-        return;
+        return navigate('/login');
       }
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const data = await response.json();
+
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+      const data = await res.json();
       setPaymentMethods(data);
     } catch (err) {
       toast.error('Failed to fetch payment methods. Please try again.');
-      console.error(err);
+      console.error('Fetch error:', err);
     } finally {
       setLoading(false);
     }
@@ -65,6 +73,16 @@ const PaymentMethod = () => {
     return true;
   };
 
+  const resetForm = () => {
+    setFormData({
+      paymentMethodId: 0,
+      name: '',
+      logoURL: '',
+      status: 'Active',
+    });
+    setIsEditing(false);
+  };
+
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
@@ -75,24 +93,29 @@ const PaymentMethod = () => {
         : 'http://localhost:5008/api/PaymentMethod';
       const method = isEditing ? 'PUT' : 'POST';
 
-      const response = await fetch(url, {
+      const res = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(formData),
-        credentials: 'include',
       });
 
-      if (response.status === 401) {
+      if (res.status === 401) {
         toast.error('You are not authorized. Please log in.');
-        navigate('/login');
-        return;
+        return navigate('/login');
       }
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        const errorMessage = errorData.errors
-          ? Object.values(errorData.errors).flat().join(', ')
-          : errorData.message || 'Failed to save payment method';
+      const contentType = res.headers.get('content-type');
+      const result = contentType?.includes('application/json')
+        ? await res.json()
+        : { message: await res.text() };
+
+      if (!res.ok) {
+        const errorMessage = result.errors
+          ? Object.values(result.errors).flat().join(', ')
+          : result.message || 'Failed to save payment method';
         throw new Error(errorMessage);
       }
 
@@ -101,7 +124,7 @@ const PaymentMethod = () => {
       toast.success(isEditing ? 'Payment method updated successfully!' : 'Payment method added successfully!');
     } catch (err: any) {
       toast.error(err.message || 'Failed to save payment method. Please try again.');
-      console.error(err);
+      console.error('Submit error:', err);
     } finally {
       setLoading(false);
     }
@@ -117,37 +140,28 @@ const PaymentMethod = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:5008/api/PaymentMethod/${id}`, {
+      const res = await fetch(`http://localhost:5008/api/PaymentMethod/${id}`, {
         method: 'DELETE',
-        credentials: 'include',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
-      if (response.status === 401) {
+      if (res.status === 401) {
         toast.error('You are not authorized. Please log in.');
-        navigate('/login');
-        return;
+        return navigate('/login');
       }
 
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
-      await fetchPaymentMethods();
       toast.success('Payment method deleted successfully!');
+      fetchPaymentMethods();
     } catch (err) {
       toast.error('Failed to delete payment method. Please try again.');
-      console.error(err);
+      console.error('Delete error:', err);
     } finally {
       setLoading(false);
     }
-  };
-
-  const resetForm = () => {
-    setFormData({
-      paymentMethodId: 0,
-      name: '',
-      logoURL: '',
-      status: 'Active',
-    });
-    setIsEditing(false);
   };
 
   return (

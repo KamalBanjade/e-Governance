@@ -1,156 +1,158 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { FiEye, FiEyeOff, FiKey } from 'react-icons/fi';
 import 'react-toastify/dist/ReactToastify.css';
-import { Link } from 'react-router-dom';
-import { FiEye, FiEyeOff,FiKey} from 'react-icons/fi';
-
 
 interface LoginFormProps {
-    onLogin: (userTypeId: number) => void;
+  onLogin: (userTypeId: number, token: string, role: string) => void;
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
 
-    const [focusedField, setFocusedField] = useState<string | null>(null);
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const handleSubmit = async () => {
-        setIsLoading(true);
-        try {
-            const res = await fetch('http://localhost:5008/api/UserAuth/login', {
-                method: 'POST',
-                credentials: 'include',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password }),
-            });
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch('http://localhost:5008/api/UserAuth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
 
-            const result = await res.json();
+      const result = await res.json();
+      const { token, role, userTypeId } = result;
 
-            if (res.ok) {
-                toast.success(result.message || 'Logged in successfully!');
-                localStorage.setItem("userTypeId", result.userTypeId);
-                onLogin(result.userTypeId);
-                navigate('/Customers/create');
-            } else {
-                toast.error(result.message || 'Login failed');
-            }
-        } catch {
-            toast.error('Network error occurred. Please try again.');
-        } finally {
-            setIsLoading(false);
+      if (res.ok && token && role && userTypeId != null) {
+        toast.success(result.message || 'Logged in successfully!');
+        localStorage.setItem('authToken', token);
+        localStorage.setItem('userRole', role);
+        localStorage.setItem('userTypeId', userTypeId.toString());
+
+        onLogin(userTypeId, token, role);
+
+        // Redirect to appropriate dashboard
+        if (role === 'Admin') {
+          navigate('/admin-dashboard');
+        } else if (role === 'Clerk') {
+          navigate('/employee-dashboard');
+        } else if (userTypeId === 3) {
+          navigate('/customer-dashboard');
+        } else {
+          navigate('/unauthorized');
         }
-    };
+      } else {
+        toast.error(result.message || 'Login failed');
+      }
 
-    const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') handleSubmit();
-    };
+    } catch (error) {
+      console.error('Login error:', error);
+      toast.error('Network error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    return (
-        <div className="h-screen flex items-center justify-center bg-gradient-to-tr from-blue-100 to-white rounded-2xl shadow-lg  px-4">
-            <div className="w-full max-w-md bg-gradient-to-tr from-blue-200 to-white rounded-2xl shadow-lg p-8">
-                <div className="text-center mb-10">
-                  <div className="inline-flex items-center justify-center w-14 h-14 bg-blue-600 text-white rounded-xl mb-5 shadow-md animate-bounce">
-                        <FiKey className="w-6 h-6" />
-                    </div>
-                    <h1 className="text-2xl font-semibold text-gray-800 mb-1">Welcome back</h1>
-                    <p className="text-sm text-gray-500">Sign in to continue</p>
-                </div>
-
-                {/* Form Fields */}
-                <div className="space-y-6 ">
-                    <div className="relative">
-                        <input
-                            id="username"
-                            type="text"
-                            placeholder="Username"
-                            value={username}
-                            onChange={e => setUsername(e.target.value)}
-                            onKeyPress={handleKeyPress}
-                            onFocus={() => setFocusedField('username')}
-                            onBlur={() => setFocusedField(null)}
-                            disabled={isLoading}
-                            className={`w-full px-0 py-3 text-gray-800 placeholder-gray-400 bg-transparent border-0 border-b-2 transition duration-200 focus:outline-none focus:ring-0 ${focusedField === 'username' ? 'border-blue-600' : 'border-gray-300 hover:border-blue-400'
-                                } disabled:opacity-50`}
-                        />
-                    </div>
-
-                    <div className="relative">
-                        <input
-                            id="password"
-                            type={showPassword ? 'text' : 'password'}
-                            placeholder="Password"
-                            value={password}
-                            onChange={e => setPassword(e.target.value)}
-                            onKeyPress={handleKeyPress}
-                            onFocus={() => setFocusedField('password')}
-                            onBlur={() => setFocusedField(null)}
-                            disabled={isLoading}
-                            className={`w-full pr-10 px-0 py-3 text-gray-800 placeholder-gray-400 bg-transparent border-0 border-b-2 transition duration-200 focus:outline-none focus:ring-0 ${focusedField === 'password'
-                                    ? 'border-blue-600'
-                                    : 'border-gray-300 hover:border-blue-400'
-                                } disabled:opacity-50`}
-                        />
-
-                        <button
-                            type="button"
-                            onClick={() => setShowPassword(prev => !prev)}
-                            className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                            tabIndex={-1}
-                        >
-                            {showPassword ? (
-                                <FiEyeOff className="w-5 h-5" />
-                            ) : (
-                                <FiEye className="w-5 h-5" />
-                            )}
-                        </button>
-                    </div>
-
-
-                    {/* Extras */}
-                    <div className="flex items-center justify-between pt-1">
-                        <label className="flex items-center text-sm text-gray-600">
-                            <input type="checkbox" className="mr-2 rounded border-gray-300" />
-                            Remember me
-                        </label>
-                        <Link to="/forgot-password" className="text-sm text-blue-600 hover:underline">
-                            Forgot password?
-                        </Link>
-                    </div>
-
-                    {/* Submit */}
-                    <button
-                        onClick={handleSubmit}
-                        disabled={isLoading || !username || !password}
-                        className="w-full mt-6 py-3 bg-blue-600 text-white font-semibold rounded-xl transition-all duration-300 hover:bg-blue-700 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        {isLoading ? (
-                            <div className="flex items-center justify-center">
-                                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                                Signing in...
-                            </div>
-                        ) : (
-                            'Sign in'
-                        )}
-                    </button>
-                </div>
-
-                {/* Footer */}
-                <div className="text-center mt-10 pt-6 border-t border-gray-200">
-                    <p className="text-sm text-gray-500">
-                        Don't have an account?{' '}
-                        <Link to="/register" className="text-blue-600 font-medium hover:underline">
-                            Create one
-                        </Link>
-                    </p>
-                </div>
-            </div>
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') handleSubmit();
+  };
+  return (
+    <div className="h-screen flex items-center justify-center bg-gradient-to-tr from-blue-100 to-white">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center justify-center w-14 h-14 bg-blue-600 text-white rounded-xl mb-5 shadow-md animate-bounce">
+            <FiKey className="w-6 h-6" />
+          </div>
+          <h1 className="text-2xl font-semibold text-gray-800 mb-1">Welcome back</h1>
+          <p className="text-sm text-gray-500">Sign in to continue</p>
         </div>
-    );
+
+        {/* Form Fields */}
+        <div className="space-y-6">
+          <div className="relative">
+            <input
+              id="username"
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={e => setUsername(e.target.value)}
+              onKeyDown={handleKeyPress}
+              onFocus={() => setFocusedField('username')}
+              onBlur={() => setFocusedField(null)}
+              disabled={isLoading}
+              className={`w-full px-0 py-3 text-gray-800 placeholder-gray-400 bg-transparent border-0 border-b-2 transition duration-200 focus:outline-none focus:ring-0 ${focusedField === 'username' ? 'border-blue-600' : 'border-gray-300 hover:border-blue-400'} disabled:opacity-50`}
+            />
+          </div>
+
+          <div className="relative">
+            <input
+              id="password"
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              onKeyDown={handleKeyPress}
+              onFocus={() => setFocusedField('password')}
+              onBlur={() => setFocusedField(null)}
+              disabled={isLoading}
+              className={`w-full pr-10 px-0 py-3 text-gray-800 placeholder-gray-400 bg-transparent border-0 border-b-2 transition duration-200 focus:outline-none focus:ring-0 ${focusedField === 'password' ? 'border-blue-600' : 'border-gray-300 hover:border-blue-400'} disabled:opacity-50`}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(prev => !prev)}
+              className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              tabIndex={-1}
+            >
+              {showPassword ? <FiEyeOff className="w-5 h-5" /> : <FiEye className="w-5 h-5" />}
+            </button>
+          </div>
+
+          {/* Extras */}
+          <div className="flex items-center justify-between pt-1">
+            <label className="flex items-center text-sm text-gray-600">
+              <input type="checkbox" className="mr-2 rounded border-gray-300" />
+              Remember me
+            </label>
+            <Link to="/forgot-password" className="text-sm text-blue-600 hover:underline">
+              Forgot password?
+            </Link>
+          </div>
+
+          {/* Submit */}
+          <button
+            onClick={handleSubmit}
+            disabled={isLoading || !username || !password}
+            className="w-full mt-6 py-3 bg-blue-600 text-white font-semibold rounded-xl transition-all duration-300 hover:bg-blue-700 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? (
+              <div className="flex items-center justify-center">
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                Signing in...
+              </div>
+            ) : (
+              'Sign in'
+            )}
+          </button>
+        </div>
+
+        {/* Footer */}
+        <div className="text-center mt-10 pt-6 border-t border-gray-200">
+          <p className="text-sm text-gray-500">
+            Don't have an account?{' '}
+            <Link to="/register" className="text-blue-600 font-medium hover:underline">
+              Create one
+            </Link>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default LoginForm;

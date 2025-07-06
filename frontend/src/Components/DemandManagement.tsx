@@ -18,6 +18,8 @@ const DemandManagement = () => {
   const [loading, setLoading] = useState(false);
   const [showList, setShowList] = useState(false);
 
+  const token = localStorage.getItem('authToken');
+
   useEffect(() => {
     fetchDemandTypes();
   }, []);
@@ -25,18 +27,24 @@ const DemandManagement = () => {
   const fetchDemandTypes = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5008/api/DemandType', { credentials: 'include' });
-      if (response.status === 401) {
+      const res = await fetch('http://localhost:5008/api/DemandType', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (res.status === 401) {
         toast.error('Session expired. Please log in again.');
-        navigate('/login');
-        return;
+        return navigate('/login');
       }
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const data = await response.json();
+
+      if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+
+      const data = await res.json();
       setDemandTypes(data);
     } catch (err) {
       toast.error('Failed to fetch demand types. Please try again.');
-      console.error(err);
+      console.error('Fetch error:', err);
     } finally {
       setLoading(false);
     }
@@ -49,7 +57,17 @@ const DemandManagement = () => {
 
   const validateForm = () => {
     const { name, description } = formData;
-    return name && description;
+    return name.trim() !== '' && description.trim() !== '';
+  };
+
+  const resetForm = () => {
+    setFormData({
+      demandTypeId: 0,
+      name: '',
+      description: '',
+      status: 'Active',
+    });
+    setIsEditing(false);
   };
 
   const handleSubmit = async () => {
@@ -65,30 +83,36 @@ const DemandManagement = () => {
         : 'http://localhost:5008/api/DemandType';
       const method = isEditing ? 'PUT' : 'POST';
 
-      const response = await fetch(url, {
+      const res = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(formData)
       });
 
-      if (response.status === 401) {
+      if (res.status === 401) {
         toast.error('You are not authorized. Please log in.');
-        navigate('/login');
-        return;
+        return navigate('/login');
       }
 
-      if (!response.ok) {
-        const errorData = await response.text();
-        throw new Error(errorData || 'Failed to save demand type');
-      }
+      const contentType = res.headers.get("content-type");
+      const result = contentType?.includes("application/json")
+        ? await res.json()
+        : { message: await res.text() };
 
-      await fetchDemandTypes();
-      resetForm();
-      toast.success(isEditing ? 'Demand type updated successfully!' : 'Demand type added successfully!');
+      if (!res.ok) {
+        toast.error(result.message || 'Failed to save demand type.');
+        console.error('Error:', result);
+      } else {
+        toast.success(isEditing ? 'Demand type updated successfully!' : 'Demand type added successfully!');
+        resetForm();
+        fetchDemandTypes();
+      }
     } catch (err) {
       toast.error('Failed to save demand type. Please try again.');
-      console.error(err);
+      console.error('Submit error:', err);
     } finally {
       setLoading(false);
     }
@@ -104,37 +128,28 @@ const DemandManagement = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:5008/api/DemandType/${id}`, {
+      const res = await fetch(`http://localhost:5008/api/DemandType/${id}`, {
         method: 'DELETE',
-        credentials: 'include',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
 
-      if (response.status === 401) {
+      if (res.status === 401) {
         toast.error('You are not authorized. Please log in.');
-        navigate('/login');
-        return;
+        return navigate('/login');
       }
 
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
 
-      await fetchDemandTypes();
       toast.success('Demand type deleted successfully!');
+      fetchDemandTypes();
     } catch (err) {
       toast.error('Failed to delete demand type. Please try again.');
-      console.error(err);
+      console.error('Delete error:', err);
     } finally {
       setLoading(false);
     }
-  };
-
-  const resetForm = () => {
-    setFormData({
-      demandTypeId: 0,
-      name: '',
-      description: '',
-      status: 'Active',
-    });
-    setIsEditing(false);
   };
 
   return (
