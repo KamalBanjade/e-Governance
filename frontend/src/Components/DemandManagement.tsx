@@ -4,9 +4,11 @@ import { FiPlus, FiEdit, FiTrash2, FiTag, FiFileText, FiList, FiSend } from 'rea
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import type { DemandType } from '../types/models';
+import { useDialog } from '../Contexts/DialogContext';
 
 const DemandManagement = () => {
   const navigate = useNavigate();
+  const { confirm } = useDialog(); // Use the dialog hook
   const [demandTypes, setDemandTypes] = useState<DemandType[]>([]);
   const [formData, setFormData] = useState<DemandType>({
     demandTypeId: 0,
@@ -27,6 +29,12 @@ const DemandManagement = () => {
   const fetchDemandTypes = async () => {
     setLoading(true);
     try {
+      if (!token) {
+        toast.error('No authentication token. Please log in.');
+        navigate('/login');
+        return;
+      }
+
       const res = await fetch('http://localhost:5008/api/DemandType', {
         headers: {
           Authorization: `Bearer ${token}`
@@ -35,7 +43,8 @@ const DemandManagement = () => {
 
       if (res.status === 401) {
         toast.error('Session expired. Please log in again.');
-        return navigate('/login');
+        navigate('/login');
+        return;
       }
 
       if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
@@ -76,80 +85,124 @@ const DemandManagement = () => {
       return;
     }
 
-    setLoading(true);
-    try {
-      const url = isEditing
-        ? `http://localhost:5008/api/DemandType/${formData.demandTypeId}`
-        : 'http://localhost:5008/api/DemandType';
-      const method = isEditing ? 'PUT' : 'POST';
+    // Show confirmation dialog
+    confirm(
+      isEditing ? 'Update Demand Type' : 'Add Demand Type',
+      `Are you sure you want to ${isEditing ? 'update' : 'add'} the demand type "${formData.name}"?`,
+      async () => {
+        setLoading(true);
+        try {
+          if (!token) {
+            toast.error('No authentication token. Please log in.');
+            navigate('/login');
+            return;
+          }
 
-      const res = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(formData)
-      });
+          const url = isEditing
+            ? `http://localhost:5008/api/DemandType/${formData.demandTypeId}`
+            : 'http://localhost:5008/api/DemandType';
+          const method = isEditing ? 'PUT' : 'POST';
 
-      if (res.status === 401) {
-        toast.error('You are not authorized. Please log in.');
-        return navigate('/login');
+          const res = await fetch(url, {
+            method,
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify(formData)
+          });
+
+          if (res.status === 401) {
+            toast.error('You are not authorized. Please log in.');
+            navigate('/login');
+            return;
+          }
+
+          const contentType = res.headers.get("content-type");
+          const result = contentType?.includes("application/json")
+            ? await res.json()
+            : { message: await res.text() };
+
+          if (!res.ok) {
+            toast.error(result.message || 'Failed to save demand type.');
+            console.error('Error:', result);
+          } else {
+            toast.success(isEditing ? 'Demand type updated successfully!' : 'Demand type added successfully!');
+            resetForm();
+            fetchDemandTypes();
+          }
+        } catch (err) {
+          toast.error('Failed to save demand type. Please try again.');
+          console.error('Submit error:', err);
+        } finally {
+          setLoading(false);
+        }
+      },
+      {
+        type: 'success',
+        confirmText: isEditing ? 'Update' : 'Add',
+        cancelText: 'Cancel',
+        showCancel: true,
       }
+    );
+  };
 
-      const contentType = res.headers.get("content-type");
-      const result = contentType?.includes("application/json")
-        ? await res.json()
-        : { message: await res.text() };
-
-      if (!res.ok) {
-        toast.error(result.message || 'Failed to save demand type.');
-        console.error('Error:', result);
-      } else {
-        toast.success(isEditing ? 'Demand type updated successfully!' : 'Demand type added successfully!');
-        resetForm();
-        fetchDemandTypes();
-      }
-    } catch (err) {
-      toast.error('Failed to save demand type. Please try again.');
-      console.error('Submit error:', err);
-    } finally {
-      setLoading(false);
+  const handleDelete = async (id: number) => {
+    const demandType = demandTypes.find(dt => dt.demandTypeId === id);
+    if (!demandType) {
+      toast.error('Demand type not found.');
+      return;
     }
+
+    // Show confirmation dialog for deletion
+    confirm(
+      'Delete Demand Type',
+      `Are you sure you want to delete the demand type "${demandType.name}"?`,
+      async () => {
+        setLoading(true);
+        try {
+          if (!token) {
+            toast.error('No authentication token. Please log in.');
+            navigate('/login');
+            return;
+          }
+
+          const res = await fetch(`http://localhost:5008/api/DemandType/${id}`, {
+            method: 'DELETE',
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+
+          if (res.status === 401) {
+            toast.error('You are not authorized. Please log in.');
+            navigate('/login');
+            return;
+          }
+
+          if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+
+          toast.success('Demand type deleted successfully!');
+          fetchDemandTypes();
+        } catch (err) {
+          toast.error('Failed to delete demand type. Please try again.');
+          console.error('Delete error:', err);
+        } finally {
+          setLoading(false);
+        }
+      },
+      {
+        type: 'danger',
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+        showCancel: true,
+      }
+    );
   };
 
   const handleEdit = (demandType: DemandType) => {
     setFormData(demandType);
     setIsEditing(true);
-  };
-
-  const handleDelete = async (id: number) => {
-    if (!window.confirm('Are you sure you want to delete this demand type?')) return;
-
-    setLoading(true);
-    try {
-      const res = await fetch(`http://localhost:5008/api/DemandType/${id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      if (res.status === 401) {
-        toast.error('You are not authorized. Please log in.');
-        return navigate('/login');
-      }
-
-      if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
-
-      toast.success('Demand type deleted successfully!');
-      fetchDemandTypes();
-    } catch (err) {
-      toast.error('Failed to delete demand type. Please try again.');
-      console.error('Delete error:', err);
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (
@@ -257,7 +310,15 @@ const DemandManagement = () => {
                       <td className="px-4 py-3">{demandType.demandTypeId}</td>
                       <td className="px-4 py-3">{demandType.name}</td>
                       <td className="px-4 py-3">{demandType.description}</td>
-                      <td className="px-4 py-3">{demandType.status}</td>
+                      <td className="px-4 py-3">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          demandType.status === 'Active'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                        }`}>
+                          {demandType.status}
+                        </span>
+                      </td>
                       <td className="px-4 py-3 flex space-x-2">
                         <button
                           onClick={() => handleEdit(demandType)}

@@ -4,7 +4,8 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FiEye, FiEyeOff, FiUser } from 'react-icons/fi';
 
-const RegisterForm = () => {
+const RegisterForm = ({ onLogin }: { onLogin: (userTypeId: number, token: string, role: string, requiresCustomerProfile: boolean) => void }) => {
+
     const navigate = useNavigate();
 
     const [form, setForm] = useState({
@@ -22,6 +23,7 @@ const RegisterForm = () => {
     const [focusedField, setFocusedField] = useState<string | null>(null);
     const [showPassword, setShowPassword] = useState(false);
 
+
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) => {
@@ -34,57 +36,76 @@ const RegisterForm = () => {
         }
     };
 
-    const handleSubmit = async () => {
-        setErrors([]);
-        setIsLoading(true);
-
-        try {
-            const res = await fetch('http://localhost:5008/api/UserAuth/register', {
-                method: 'POST',
-                credentials: 'include',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(form),
-            });
-
-            const result = await res.json();
-
-            if (res.ok) {
-                toast.success('Account created successfully! Redirecting to login...');
-                setForm({
-                    username: '',
-                    password: '',
-                    name: '',
-                    address: '',
-                    dob: '',
-                    email: '',
-                    userTypeId: 3,
-                });
-                setTimeout(() => navigate('/login'), 1000);
+  const handleSubmit = async () => {
+    setErrors([]);
+    setIsLoading(true);
+    
+    try {
+        const res = await fetch('http://localhost:5008/api/UserAuth/register', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(form),
+        });
+        
+        const result = await res.json();
+        
+        if (res.ok) {
+            const { token, role, userTypeId, requiresCustomerProfile } = result;
+            
+            if (requiresCustomerProfile && token && role && userTypeId) {
+                // Store the auth data but don't call onLogin yet
+                localStorage.setItem('authToken', token);
+                localStorage.setItem('userRole', role);
+                localStorage.setItem('userTypeId', userTypeId.toString());
+                localStorage.setItem('requiresCustomerProfile', 'true');
+                
+                toast.success('Account created successfully! Please complete your customer profile.');
+                navigate('/complete-profile', { replace: true });
+                
+                // Call onLogin after navigation to set the auth state
+                setTimeout(() => {
+                    onLogin(userTypeId, token, role, requiresCustomerProfile);
+                }, 100);
             } else {
-                if (result.errors) {
-                    const errorMessages: string[] = [];
-                    Object.keys(result.errors).forEach((key) => {
-                        result.errors[key].forEach((error: string) =>
-                            errorMessages.push(`${key}: ${error}`)
-                        );
-                    });
-                    setErrors(errorMessages);
-                    if (errorMessages.length > 0) toast.error(errorMessages[0]);
-                } else {
-                    const errorMessage = result.message || 'Registration failed';
-                    setErrors([errorMessage]);
-                    toast.error(errorMessage);
-                }
+                onLogin(userTypeId, token, role, false);
+                toast.success('Account created successfully! Redirecting to login...');
+                setTimeout(() => navigate('/login', { replace: true }), 1000);
             }
-        } catch {
-            const errorMessage =
-                'Network error occurred. Please check your connection.';
-            setErrors([errorMessage]);
-            toast.error(errorMessage);
-        } finally {
-            setIsLoading(false);
+            
+            setForm({
+                username: '',
+                password: '',
+                name: '',
+                address: '',
+                dob: '',
+                email: '',
+                userTypeId: 3,
+            });
+        } else {
+            if (result.errors) {
+                const errorMessages: string[] = [];
+                Object.keys(result.errors).forEach((key) => {
+                    result.errors[key].forEach((error: string) =>
+                        errorMessages.push(`${key}: ${error}`)
+                    );
+                });
+                setErrors(errorMessages);
+                if (errorMessages.length > 0) toast.error(errorMessages[0]);
+            } else {
+                const errorMessage = result.message || 'Registration failed';
+                setErrors([errorMessage]);
+                toast.error(errorMessage);
+            }
         }
-    };
+    } catch {
+        const errorMessage = 'Network error occurred. Please check your connection.';
+        setErrors([errorMessage]);
+        toast.error(errorMessage);
+    } finally {
+        setIsLoading(false);
+    }
+};
 
     return (
         <div className="flex items-center justify-center bg-gradient-to-tr from-blue-100 to-white px-4 py-10">
@@ -94,6 +115,7 @@ const RegisterForm = () => {
                         <FiUser className="w-6 h-6" />
                     </div>
                     <h2 className="text-3xl font-semibold text-gray-800">Create Account</h2>
+                    <p className="text-sm text-gray-600 mt-2">Step 1 of 2 - Basic Information</p>
                 </div>
 
                 {errors.length > 0 && (
@@ -202,7 +224,7 @@ const RegisterForm = () => {
                         disabled={isLoading}
                         className="w-full bg-blue-600 text-white py-3 px-4 rounded-xl hover:bg-blue-700 transition duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        {isLoading ? 'Creating Account...' : 'Create Account'}
+                        {isLoading ? 'Creating Account...' : 'Create Account & Continue'}
                     </button>
                 </div>
 

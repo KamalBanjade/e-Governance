@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FiTag, FiLink, FiList, FiPlus, FiEdit, FiTrash2, FiSend } from 'react-icons/fi';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useDialog } from '../Contexts/DialogContext';
 
 interface IPaymentMethod {
   paymentMethodId: number;
@@ -13,6 +14,7 @@ interface IPaymentMethod {
 
 const PaymentMethod = () => {
   const navigate = useNavigate();
+  const { confirm } = useDialog(); // Use the dialog hook
   const [paymentMethods, setPaymentMethods] = useState<IPaymentMethod[]>([]);
   const [formData, setFormData] = useState<IPaymentMethod>({
     paymentMethodId: 0,
@@ -33,6 +35,12 @@ const PaymentMethod = () => {
   const fetchPaymentMethods = async () => {
     setLoading(true);
     try {
+      if (!token) {
+        toast.error('No authentication token. Please log in.');
+        navigate('/login');
+        return;
+      }
+
       const res = await fetch('http://localhost:5008/api/PaymentMethod', {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -41,7 +49,8 @@ const PaymentMethod = () => {
 
       if (res.status === 401) {
         toast.error('Session expired. Please log in again.');
-        return navigate('/login');
+        navigate('/login');
+        return;
       }
 
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
@@ -86,48 +95,68 @@ const PaymentMethod = () => {
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
-    setLoading(true);
-    try {
-      const url = isEditing
-        ? `http://localhost:5008/api/PaymentMethod/${formData.paymentMethodId}`
-        : 'http://localhost:5008/api/PaymentMethod';
-      const method = isEditing ? 'PUT' : 'POST';
+    // Show confirmation dialog
+    confirm(
+      isEditing ? 'Update Payment Method' : 'Add Payment Method',
+      `Are you sure you want to ${isEditing ? 'update' : 'add'} the payment method "${formData.name}"?`,
+      async () => {
+        setLoading(true);
+        try {
+          if (!token) {
+            toast.error('No authentication token. Please log in.');
+            navigate('/login');
+            return;
+          }
 
-      const res = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(formData),
-      });
+          const url = isEditing
+            ? `http://localhost:5008/api/PaymentMethod/${formData.paymentMethodId}`
+            : 'http://localhost:5008/api/PaymentMethod';
+          const method = isEditing ? 'PUT' : 'POST';
 
-      if (res.status === 401) {
-        toast.error('You are not authorized. Please log in.');
-        return navigate('/login');
+          const res = await fetch(url, {
+            method,
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(formData),
+          });
+
+          if (res.status === 401) {
+            toast.error('You are not authorized. Please log in.');
+            navigate('/login');
+            return;
+          }
+
+          const contentType = res.headers.get('content-type');
+          const result = contentType?.includes('application/json')
+            ? await res.json()
+            : { message: await res.text() };
+
+          if (!res.ok) {
+            const errorMessage = result.errors
+              ? Object.values(result.errors).flat().join(', ')
+              : result.message || 'Failed to save payment method';
+            throw new Error(errorMessage);
+          }
+
+          await fetchPaymentMethods();
+          resetForm();
+          toast.success(isEditing ? 'Payment method updated successfully!' : 'Payment method added successfully!');
+        } catch (err: any) {
+          toast.error(err.message || 'Failed to save payment method. Please try again.');
+          console.error('Submit error:', err);
+        } finally {
+          setLoading(false);
+        }
+      },
+      {
+        type: 'success',
+        confirmText: isEditing ? 'Update' : 'Add',
+        cancelText: 'Cancel',
+        showCancel: true,
       }
-
-      const contentType = res.headers.get('content-type');
-      const result = contentType?.includes('application/json')
-        ? await res.json()
-        : { message: await res.text() };
-
-      if (!res.ok) {
-        const errorMessage = result.errors
-          ? Object.values(result.errors).flat().join(', ')
-          : result.message || 'Failed to save payment method';
-        throw new Error(errorMessage);
-      }
-
-      await fetchPaymentMethods();
-      resetForm();
-      toast.success(isEditing ? 'Payment method updated successfully!' : 'Payment method added successfully!');
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to save payment method. Please try again.');
-      console.error('Submit error:', err);
-    } finally {
-      setLoading(false);
-    }
+    );
   };
 
   const handleEdit = (paymentMethod: IPaymentMethod) => {
@@ -136,32 +165,56 @@ const PaymentMethod = () => {
   };
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm('Are you sure you want to delete this payment method?')) return;
-
-    setLoading(true);
-    try {
-      const res = await fetch(`http://localhost:5008/api/PaymentMethod/${id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (res.status === 401) {
-        toast.error('You are not authorized. Please log in.');
-        return navigate('/login');
-      }
-
-      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-
-      toast.success('Payment method deleted successfully!');
-      fetchPaymentMethods();
-    } catch (err) {
-      toast.error('Failed to delete payment method. Please try again.');
-      console.error('Delete error:', err);
-    } finally {
-      setLoading(false);
+    const paymentMethod = paymentMethods.find(pm => pm.paymentMethodId === id);
+    if (!paymentMethod) {
+      toast.error('Payment method not found.');
+      return;
     }
+
+    // Show confirmation dialog for deletion
+    confirm(
+      'Delete Payment Method',
+      `Are you sure you want to delete the payment method "${paymentMethod.name}"?`,
+      async () => {
+        setLoading(true);
+        try {
+          if (!token) {
+            toast.error('No authentication token. Please log in.');
+            navigate('/login');
+            return;
+          }
+
+          const res = await fetch(`http://localhost:5008/api/PaymentMethod/${id}`, {
+            method: 'DELETE',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (res.status === 401) {
+            toast.error('You are not authorized. Please log in.');
+            navigate('/login');
+            return;
+          }
+
+          if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+          toast.success('Payment method deleted successfully!');
+          fetchPaymentMethods();
+        } catch (err) {
+          toast.error('Failed to delete payment method. Please try again.');
+          console.error('Delete error:', err);
+        } finally {
+          setLoading(false);
+        }
+      },
+      {
+        type: 'danger',
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+        showCancel: true,
+      }
+    );
   };
 
   return (
@@ -295,7 +348,15 @@ const PaymentMethod = () => {
                           {pm.logoURL}
                         </a>
                       </td>
-                      <td className="px-4 py-3">{pm.status}</td>
+                      <td className="px-4 py-3">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          pm.status === 'Active'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                        }`}>
+                          {pm.status}
+                        </span>
+                      </td>
                       <td className="px-4 py-3 flex space-x-2">
                         <button
                           onClick={() => handleEdit(pm)}

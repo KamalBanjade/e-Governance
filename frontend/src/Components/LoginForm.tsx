@@ -5,7 +5,7 @@ import { FiEye, FiEyeOff, FiKey } from 'react-icons/fi';
 import 'react-toastify/dist/ReactToastify.css';
 
 interface LoginFormProps {
-  onLogin: (userTypeId: number, token: string, role: string) => void;
+  onLogin: (userTypeId: number, token: string, role: string, requiresCustomerProfile: boolean) => void;
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
@@ -27,15 +27,19 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
       });
 
       const result = await res.json();
-      const { token, role, userTypeId } = result;
+      console.log('Login response:', result); // Debug log to see what you're getting
 
-      if (res.ok && token && role && userTypeId != null) {
+      // Destructure with proper checking
+      const { token, role, userTypeId, requiresCustomerProfile } = result;
+
+      // More robust validation
+      if (res.ok && token && role && userTypeId !== undefined && userTypeId !== null) {
         toast.success(result.message || 'Logged in successfully!');
         localStorage.setItem('authToken', token);
         localStorage.setItem('userRole', role);
-        localStorage.setItem('userTypeId', userTypeId.toString());
+        localStorage.setItem('userTypeId', String(userTypeId)); // Use String() instead of toString()
 
-        onLogin(userTypeId, token, role);
+        onLogin(userTypeId, token, role, requiresCustomerProfile || false);
 
         // Redirect to appropriate dashboard
         if (role === 'Admin') {
@@ -48,7 +52,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
           navigate('/unauthorized');
         }
       } else {
-        toast.error(result.message || 'Login failed');
+        // More detailed error handling
+        const errorMessage = result.message || 'Login failed';
+        if (!token) {
+          console.error('No token received');
+        }
+        if (!role) {
+          console.error('No role received');
+        }
+        if (userTypeId === undefined || userTypeId === null) {
+          console.error('No userTypeId received');
+        }
+        toast.error(errorMessage);
       }
 
     } catch (error) {
@@ -62,9 +77,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') handleSubmit();
   };
+  
   return (
     <div className="h-screen flex items-center justify-center bg-gradient-to-tr from-blue-100 to-white">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
+       <div className="max-w-lg w-full bg-gradient-to-tr from-blue-200 to-white rounded-2xl shadow-lg p-8">
         <div className="text-center mb-10">
           <div className="inline-flex items-center justify-center w-14 h-14 bg-blue-600 text-white rounded-xl mb-5 shadow-md animate-bounce">
             <FiKey className="w-6 h-6" />

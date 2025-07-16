@@ -17,6 +17,13 @@ export interface Branch {
   name: string;
 }
 
+
+export interface DemandType {
+  demandTypeId: number;
+  name: string;
+  description: string;
+  status: string;
+}
 export interface EmployeeDetails {
   empId?: number;
   empType: string;
@@ -26,17 +33,11 @@ export interface EmployeeDetails {
   status: string;
   userId?: string;
 }
-export interface DemandType {
-  demandTypeId: number;
-  name: string;
-  description: string;
-  status: string;
-}
 export interface Bill {
   billNo?: number;
   cusId: number;
   billDate: string;
-  billMonth: string;
+  billMonth: string; // Keep required if it’s always present!
   billYear: number;
   previousReading: number;
   currentReading: number;
@@ -44,8 +45,8 @@ export interface Bill {
   minimumCharge: number;
   rate: number;
   totalBillAmount?: number;
-  // customer?: Customer;
 }
+
 export interface Branch {
   branchId: number;
   name: string;
@@ -54,4 +55,5 @@ export interface Branch {
   inchargeName: string;
   status: string;
 }
+
 

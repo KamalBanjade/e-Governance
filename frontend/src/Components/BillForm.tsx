@@ -1,21 +1,44 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FiSearch, FiUser, FiCalendar, FiZap, FiDollarSign, FiSend, FiFileText } from 'react-icons/fi';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { FiSearch, FiUser, FiCalendar, FiZap, FiDollarSign, FiSend, FiFileText, FiCreditCard, FiAlertCircle } from 'react-icons/fi';
 import { HiOutlineCalculator } from 'react-icons/hi';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import type { Bill, Customer } from '../types/models';
 import { getAuthToken } from '../utility/auth';
-// import { isAdmin } from '../utility/auth';
+import { useDialog } from '../Contexts/DialogContext';
 
 interface Props {
   onSave: () => void;
 }
 
+interface UserInfo {
+  role: string;
+  userTypeId: number;
+  userId: string;
+}
+
+// Updated Bill interface to match backend model
+interface ExtendedBill extends Bill {
+  billNo?: number;
+  consumedUnit?: number;
+  totalBillAmount?: number;
+  createdDate?: string;
+  createdBy?: string;
+  updatedDate?: string;
+  updatedBy?: string;
+}
+
+const EDIT_DATA_KEY = 'editBillData';
+const EDIT_MODE_KEY = 'isEditBillOperation';
+
 const BillForm = ({ onSave }: Props) => {
   const token = getAuthToken();
   const navigate = useNavigate();
-  const [bill, setBill] = useState<Bill>({
+  const location = useLocation();
+  const { confirm } = useDialog();
+
+  const [bill, setBill] = useState<ExtendedBill>({
     cusId: 0,
     billDate: '',
     billMonth: '',
@@ -24,50 +47,202 @@ const BillForm = ({ onSave }: Props) => {
     currentReading: 0,
     minimumCharge: 0,
     rate: 0,
+    consumedUnit: 0,
+    totalBillAmount: 0,
   });
+
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  const [customerBills, setCustomerBills] = useState<ExtendedBill[]>([]);
+  const [selectedBill, setSelectedBill] = useState<ExtendedBill | null>(null);
+  const [initialDataLoaded, setInitialDataLoaded] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
 
   const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December',
   ];
 
-  // useEffect(() => {
-  //   if (!isAdmin()) {
-  //     toast.error('Unauthorized access. Redirecting to login.');
-  //     navigate('/unauthorized');
-  //   }
-  // }, [navigate]);
+  // Decode JWT token to get user info
+  const decodeToken = (token: string) => {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return {
+        role: payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || payload.role,
+        userTypeId: parseInt(payload.userTypeId || '0'),
+        userId: payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || payload.sub
+      };
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return null;
+    }
+  };
 
+  // Check if user is customer
+  const isCustomer = () => {
+    return userInfo && (userInfo.role === 'Customer' || userInfo.userTypeId === 3);
+  };
+
+  // Fetch user info from token and check edit mode
   useEffect(() => {
-    const fetchCustomers = async () => {
-      try {
-        const response = await fetch('http://localhost:5008/api/Customers', {
-          method: 'get',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
+    if (!token) {
+      confirm(
+        'Authentication Required',
+        'You need to login to access this page.',
+        () => navigate('/login'),
+        { type: 'danger', confirmText: 'Login', showCancel: false }
+      );
+      return;
+    }
+
+    const decoded = decodeToken(token);
+    setUserInfo(decoded);
+
+    // Check if in edit mode
+    const params = new URLSearchParams(location.search);
+    const editMode = params.get('edit') === 'true';
+    setIsEditMode(editMode);
+
+    if (editMode) {
+      const editData = localStorage.getItem(EDIT_DATA_KEY);
+      if (editData) {
+        const billData = JSON.parse(editData);
+        setBill({
+          billNo: billData.billNo,
+          cusId: billData.cusId,
+          billDate: billData.billDate ? new Date(billData.billDate).toISOString().split('T')[0] : '',
+          billMonth: billData.billMonth,
+          billYear: billData.billYear,
+          previousReading: billData.previousReading,
+          currentReading: billData.currentReading,
+          minimumCharge: billData.minimumCharge,
+          rate: billData.rate,
+          consumedUnit: billData.consumedUnit,
+          totalBillAmount: billData.totalBillAmount,
         });
-        if (response.status === 401) {
-          toast.error('Session expired. Please log in again.');
-          navigate('/login');
-          return;
+      }
+    }
+  }, [token, location, navigate, confirm]);
+
+  // Fetch customers (for employees) or customer's own data (for customers)
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (isCustomer()) {
+          await fetchCustomerBillsWithDetails();
+        } else {
+          await fetchAllCustomers();
+          // If in edit mode, fetch customer data for the bill's cusId
+          if (isEditMode && bill.cusId) {
+            await fetchCustomerById(bill.cusId);
+          }
         }
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const data = await response.json();
-        setCustomers(data);
-      } catch (err) {
-        toast.error('Failed to load customers. Please try again.');
-        console.error('Failed to load customers:', err);
+        setInitialDataLoaded(true);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setInitialDataLoaded(true);
       }
     };
-    fetchCustomers();
-  }, [navigate]);
+
+    if (userInfo) {
+      fetchData();
+    }
+  }, [userInfo, isEditMode, bill.cusId]);
+
+  const fetchAllCustomers = async () => {
+    try {
+      const response = await fetch('http://localhost:5008/api/Customers', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 401) {
+        toast.error('Session expired. Please log in again.');
+        navigate('/login');
+        return;
+      }
+
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+      const data = await response.json();
+      setCustomers(data);
+    } catch (err) {
+      toast.error('Failed to load customers. Please try again.');
+      console.error('Failed to load customers:', err);
+    }
+  };
+
+  const fetchCustomerById = async (cusId: number) => {
+    try {
+      const response = await fetch(`http://localhost:5008/api/Customers/${cusId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 401) {
+        toast.error('Session expired. Please log in again.');
+        navigate('/login');
+        return;
+      }
+
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+      const data = await response.json();
+      setSelectedCustomer(data);
+    } catch (err) {
+      toast.error('Failed to load customer data. Please try again.');
+      console.error('Failed to load customer:', err);
+    }
+  };
+
+  const fetchCustomerBillsWithDetails = async () => {
+    try {
+      const url = `http://localhost:5008/api/Bills/customer-bills-with-details`;
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 401) {
+        toast.error('Session expired. Please log in again.');
+        navigate('/login');
+        return;
+      }
+
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+      const data = await response.json();
+      setSelectedCustomer(data.customer);
+      setCustomerBills(data.bills);
+
+      if (data.bills.length > 0 && !isEditMode) {
+        const latestBill = data.bills[0];
+        setSelectedBill(latestBill);
+        setBill({
+          ...latestBill,
+          billDate: latestBill.billDate ? new Date(latestBill.billDate).toISOString().split('T')[0] : '',
+        });
+      } else if (!isEditMode) {
+        setBill(prev => ({ ...prev, cusId: data.customer.cusId }));
+      }
+    } catch (err) {
+      toast.error('Failed to load your bills. Please try again.');
+      console.error('Failed to load bills:', err);
+    }
+  };
 
   const filteredCustomers = customers.filter(customer =>
     customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -81,14 +256,31 @@ const BillForm = ({ onSave }: Props) => {
     setIsDropdownOpen(false);
   };
 
+  const handleBillSelect = (selectedBill: ExtendedBill) => {
+    setSelectedBill(selectedBill);
+    setBill({
+      ...selectedBill,
+      billDate: selectedBill.billDate ? new Date(selectedBill.billDate).toISOString().split('T')[0] : '',
+    });
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setBill(prev => ({
-      ...prev,
-      [name]: ['rate', 'previousReading', 'currentReading', 'minimumCharge', 'billYear'].includes(name)
-        ? parseFloat(value) || 0
-        : value,
-    }));
+    setBill(prev => {
+      const updatedBill = {
+        ...prev,
+        [name]: ['rate', 'previousReading', 'currentReading', 'minimumCharge', 'billYear'].includes(name)
+          ? parseFloat(value) || 0
+          : value,
+      };
+
+      if (!isCustomer()) {
+        updatedBill.consumedUnit = updatedBill.currentReading - updatedBill.previousReading;
+        updatedBill.totalBillAmount = updatedBill.minimumCharge + (updatedBill.consumedUnit * updatedBill.rate);
+      }
+
+      return updatedBill;
+    });
   };
 
   const validateForm = () => {
@@ -107,82 +299,148 @@ const BillForm = ({ onSave }: Props) => {
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
-    setLoading(true);
-    try {
-      const billData = {
-        CusId: bill.cusId,
-        billDate: new Date(bill.billDate).toISOString().split('T')[0],
-        billMonth: bill.billMonth,
-        billYear: bill.billYear,
-        previousReading: bill.previousReading,
-        currentReading: bill.currentReading,
-        minimumCharge: bill.minimumCharge,
-        rate: bill.rate,
-      };
+    const finalAmount = bill.totalBillAmount || (bill.minimumCharge + ((bill.currentReading - bill.previousReading) * bill.rate));
 
+    confirm(
+      isEditMode ? 'Confirm Bill Update' : 'Confirm Bill Creation',
+      `Are you sure you want to ${isEditMode ? 'update' : 'create'} a bill for ${selectedCustomer?.name || 'the selected customer'} with total amount $${finalAmount.toFixed(2)}?`,
+      async () => {
+        setLoading(true);
+        try {
+          const billData = {
+            billNo: bill.billNo,
+            cusId: bill.cusId,
+            billDate: new Date(bill.billDate).toISOString().split('T')[0],
+            billMonth: bill.billMonth,
+            billYear: bill.billYear,
+            previousReading: bill.previousReading,
+            currentReading: bill.currentReading,
+            minimumCharge: bill.minimumCharge,
+            rate: bill.rate,
+          };
 
+          if (!token) {
+            toast.error('You are not logged in. Please login again.');
+            navigate('/login');
+            return;
+          }
 
-      if (!token) {
-        toast.error('You are not logged in. Please login again.');
-        navigate('/login');
-        return;
+          const url = isEditMode ? `http://localhost:5008/api/Bills/${bill.billNo}` : 'http://localhost:5008/api/Bills';
+          const method = isEditMode ? 'PUT' : 'POST';
+
+          const response = await fetch(url, {
+            method,
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(billData),
+          });
+
+          if (response.status === 401) {
+            toast.error('You are not authorized. Please log in.');
+            navigate('/login');
+            return;
+          }
+
+          if (!response.ok) {
+            const errorData = await response.text();
+            throw new Error(errorData || `Failed to ${isEditMode ? 'update' : 'create'} bill`);
+          }
+
+          await response.json();
+          toast.success(`Bill ${isEditMode ? 'updated' : 'added'} successfully!`);
+          localStorage.removeItem(EDIT_DATA_KEY);
+          localStorage.removeItem(EDIT_MODE_KEY);
+          localStorage.removeItem('editBillTimestamp');
+          localStorage.removeItem('editBillSessionId');
+          onSave();
+          setBill({
+            cusId: 0,
+            billDate: '',
+            billMonth: '',
+            billYear: new Date().getFullYear(),
+            previousReading: 0,
+            currentReading: 0,
+            minimumCharge: 0,
+            rate: 0,
+            consumedUnit: 0,
+            totalBillAmount: 0,
+          });
+          setSelectedCustomer(null);
+          navigate('/billlist');
+        } catch (err: any) {
+          toast.error(err.message || `Failed to ${isEditMode ? 'update' : 'create'} bill. Please try again.`);
+          console.error(err);
+        } finally {
+          setLoading(false);
+        }
+      },
+      {
+        type: 'success',
+        confirmText: isEditMode ? 'Update Bill' : 'Create Bill',
+        cancelText: 'Cancel',
+        showCancel: true,
       }
-
-      console.log("JWT Token:", localStorage.getItem("authToken"));
-
-      const response = await fetch('http://localhost:5008/api/Bills', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(billData)
-      });
-
-      if (response.status === 401) {
-        toast.error('You are not authorized. Please log in.');
-        navigate('/login');
-        return;
-      }
-
-      if (!response.ok) {
-        const errorData = await response.text();
-        throw new Error(errorData || 'Failed to create bill');
-      }
-
-      await response.json();
-      toast.success('Bill added successfully!');
-      onSave();
-      setBill({
-        cusId: 0,
-        billDate: '',
-        billMonth: '',
-        billYear: new Date().getFullYear(),
-        previousReading: 0,
-        currentReading: 0,
-        minimumCharge: 0,
-        rate: 0,
-      });
-      setSelectedCustomer(null);
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to create bill. Please try again.');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+    );
   };
 
-  const consumedUnits = bill.currentReading - bill.previousReading;
-  const totalAmount = bill.minimumCharge + (consumedUnits * bill.rate);
+  const handleProceedToPayment = () => {
+    if (!selectedBill) {
+      toast.error('Please select a bill to proceed with payment.');
+      return;
+    }
+
+    navigate('/payments', { state: { bill: selectedBill, customer: selectedCustomer } });
+  };
+
+  const consumedUnits = bill.consumedUnit || (bill.currentReading - bill.previousReading);
+  const totalAmount = bill.totalBillAmount || (bill.minimumCharge + (consumedUnits * bill.rate));
+
+  if (!initialDataLoaded) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <>
       <ToastContainer position="top-right" autoClose={3000} />
-      <div className="max-w-2xl mx-auto p-8 bg-gradient-to-tr from-blue-100 to-white rounded-2xl shadow-lg mt-10">
-        <h2 className="text-3xl font-bold text-blue-700 text-center mb-8 flex items-center justify-center">
-          <FiFileText className="mr-2 h-8 w-8" />
-          Create New Bill
+      <div className="max-w-2xl mx-auto p-10 bg-gradient-to-br from-blue-200 via-white to-indigo-200 rounded-3xl shadow-2xl mt-10 border border-blue-200">
+        <h2 className="text-4xl font-extrabold text-blue-800 text-center mb-10 flex items-center justify-center tracking-tight">
+          <FiFileText className="mr-3 h-9 w-9 text-blue-700" />
+          {isEditMode ? 'Edit Bill' : isCustomer() ? 'Your Electric Bills' : 'Create New Bill'}
         </h2>
+
+        {isCustomer() && (
+          <div className="mb-8 p-6 bg-gradient-to-r from-green-50 via-blue-50 to-white rounded-2xl border border-green-200 shadow-inner">
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">Available Bills</h3>
+            {customerBills.length > 0 ? (
+              <select
+                value={selectedBill?.billNo || ''}
+                onChange={(e) => {
+                  const bill = customerBills.find(b => b.billNo === parseInt(e.target.value));
+                  if (bill) handleBillSelect(bill);
+                }}
+                className="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500 focus:outline-none bg-white shadow-sm"
+              >
+                <option value="">Select a bill to view</option>
+                {customerBills.map(bill => (
+                  <option key={bill.billNo} value={bill.billNo}>
+                    {bill.billMonth} {bill.billYear} — ${bill.totalBillAmount?.toFixed(2)}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <div className="text-gray-500 flex items-center justify-center p-4 rounded-md border border-dashed border-gray-300 bg-white shadow-sm">
+                <FiAlertCircle className="mr-2 h-5 w-5 text-gray-400" />
+                No bills found for your account.
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {[
@@ -190,7 +448,7 @@ const BillForm = ({ onSave }: Props) => {
               label: 'Customer',
               name: 'cusId',
               type: 'custom',
-              icon: <FiUser className="h-5 w-5 text-gray-700" />,
+              icon: <FiUser className="h-5 w-5 text-indigo-600" />,
               required: true,
               colSpan: 'lg:col-span-2',
             },
@@ -198,14 +456,14 @@ const BillForm = ({ onSave }: Props) => {
               label: 'Bill Date',
               name: 'billDate',
               type: 'date',
-              icon: <FiCalendar className="h-5 w-5 text-gray-700" />,
+              icon: <FiCalendar className="h-5 w-5 text-indigo-600" />,
               required: true,
             },
             {
               label: 'Bill Month',
               name: 'billMonth',
               type: 'select',
-              icon: <FiCalendar className="h-5 w-5 text-gray-700" />,
+              icon: <FiCalendar className="h-5 w-5 text-indigo-600" />,
               required: true,
               options: months.map(month => ({ value: month, label: month })),
             },
@@ -213,7 +471,7 @@ const BillForm = ({ onSave }: Props) => {
               label: 'Bill Year',
               name: 'billYear',
               type: 'number',
-              icon: <FiCalendar className="h-5 w-5 text-gray-700" />,
+              icon: <FiCalendar className="h-5 w-5 text-indigo-600" />,
               required: false,
               min: '2000',
               max: '2100',
@@ -222,7 +480,7 @@ const BillForm = ({ onSave }: Props) => {
               label: 'Previous Reading',
               name: 'previousReading',
               type: 'number',
-              icon: <FiZap className="h-5 w-5 text-gray-700" />,
+              icon: <FiZap className="h-5 w-5 text-orange-500" />,
               required: false,
               placeholder: '0.00',
               min: '0',
@@ -232,7 +490,7 @@ const BillForm = ({ onSave }: Props) => {
               label: 'Current Reading',
               name: 'currentReading',
               type: 'number',
-              icon: <FiZap className="h-5 w-5 text-gray-700" />,
+              icon: <FiZap className="h-5 w-5 text-orange-500" />,
               required: false,
               placeholder: '0.00',
               min: '0',
@@ -242,7 +500,7 @@ const BillForm = ({ onSave }: Props) => {
               label: 'Minimum Charge',
               name: 'minimumCharge',
               type: 'number',
-              icon: <FiDollarSign className="h-5 w-5 text-gray-700" />,
+              icon: <FiDollarSign className="h-5 w-5 text-green-600" />,
               required: false,
               placeholder: '0.00',
               min: '0',
@@ -252,7 +510,7 @@ const BillForm = ({ onSave }: Props) => {
               label: 'Rate per Unit',
               name: 'rate',
               type: 'number',
-              icon: <FiDollarSign className="h-5 w-5 text-gray-700" />,
+              icon: <FiDollarSign className="h-5 w-5 text-green-600" />,
               required: false,
               placeholder: '0.00',
               min: '0',
@@ -260,7 +518,7 @@ const BillForm = ({ onSave }: Props) => {
             },
           ].map(({ label, name, type, icon, options, required, placeholder, min, max, step, colSpan }) => (
             <div key={name} className={`flex flex-col space-y-2 ${colSpan || ''}`}>
-              <label className="flex items-center text-gray-700 font-medium">
+              <label className="flex items-center text-gray-700 font-semibold">
                 {icon}
                 <span className="ml-2">{label}{required ? ' *' : ''}:</span>
               </label>
@@ -268,25 +526,28 @@ const BillForm = ({ onSave }: Props) => {
                 <div className="relative">
                   <input
                     type="text"
-                    placeholder="Search customers..."
+                    placeholder={isCustomer() ? "Your customer information" : "Search customers..."}
                     value={selectedCustomer ? `${selectedCustomer.cusId} - ${selectedCustomer.name} - ${selectedCustomer.address}` : searchTerm}
                     onChange={(e) => {
-                      setSearchTerm(e.target.value);
-                      setIsDropdownOpen(true);
-                      if (selectedCustomer) setSelectedCustomer(null);
+                      if (!isCustomer()) {
+                        setSearchTerm(e.target.value);
+                        setIsDropdownOpen(true);
+                        if (selectedCustomer) setSelectedCustomer(null);
+                      }
                     }}
-                    onFocus={() => setIsDropdownOpen(true)}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    onFocus={() => !isCustomer() && setIsDropdownOpen(true)}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-gray-50 shadow-sm"
+                    readOnly={!!isCustomer() || userInfo === null}
                   />
                   <FiSearch className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
-                  {isDropdownOpen && (
-                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                  {isDropdownOpen && !isCustomer() && !isEditMode && (
+                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-y-auto">
                       {filteredCustomers.length > 0 ? (
                         filteredCustomers.map(customer => (
                           <div
                             key={customer.cusId}
                             onClick={() => handleCustomerSelect(customer)}
-                            className="px-4 py-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                            className="px-4 py-3 hover:bg-indigo-50 cursor-pointer border-b border-gray-100 last:border-b-0"
                           >
                             <div className="font-medium text-gray-900">{customer.name}</div>
                             <div className="text-sm text-gray-600">{customer.address}</div>
@@ -301,10 +562,11 @@ const BillForm = ({ onSave }: Props) => {
               ) : type === 'select' ? (
                 <select
                   name={name}
-                  value={bill[name as keyof Bill]}
+                  value={bill[name as keyof ExtendedBill] || ''}
                   onChange={handleChange}
-                  className="p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 w-full"
+                  className="p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 w-full bg-white shadow-sm"
                   required={required}
+                  disabled={!!isCustomer() || userInfo === null}
                 >
                   <option value="">Select {label}</option>
                   {options?.map(opt => (
@@ -315,52 +577,67 @@ const BillForm = ({ onSave }: Props) => {
                 <input
                   type={type}
                   name={name}
-                  value={bill[name as keyof Bill]}
+                  value={bill[name as keyof ExtendedBill] || ''}
                   onChange={handleChange}
                   placeholder={placeholder}
-                  className="p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 w-full"
+                  className="p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 w-full bg-white shadow-sm"
                   required={required}
                   min={min}
                   max={max}
                   step={step}
+                  readOnly={!!isCustomer() || userInfo === null}
                 />
               )}
             </div>
           ))}
 
-          {/* Bill Summary */}
-          <div className="lg:col-span-2 mt-8 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-100">
-            <div className="flex items-center mb-4">
-              <HiOutlineCalculator className="h-5 w-5 text-blue-600 mr-2" />
-              <h3 className="text-lg font-semibold text-gray-800">Bill Summary</h3>
+          <div className="lg:col-span-2 mt-10 p-6 bg-gradient-to-r from-blue-400 via-green-400 to-purple-400 rounded-2xl border border-blue-100 shadow-inner">
+            <div className="flex items-center mb-5">
+              <HiOutlineCalculator className="h-6 w-6 text-white mr-2" />
+              <h3 className="text-xl font-bold text-gray-800">Bill Summary</h3>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="text-center p-4 bg-white rounded-lg shadow-sm">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              <div className="text-center p-5 bg-white rounded-xl shadow">
                 <div className="text-2xl font-bold text-blue-600">{consumedUnits.toFixed(2)}</div>
-                <div className="text-sm text-gray-600">Units Consumed</div>
+                <div className="text-sm text-gray-600 mt-1">Units Consumed</div>
               </div>
-              <div className="text-center p-4 bg-white rounded-lg shadow-sm">
-                <div className="text-2xl font-bold text-green-600">${bill.rate.toFixed(2)}</div>
-                <div className="text-sm text-gray-600">Rate per Unit</div>
+              <div className="text-center p-5 bg-white rounded-xl shadow">
+                <div className="text-2xl font-bold text-green-600">${(bill.rate || 0).toFixed(2)}</div>
+                <div className="text-sm text-gray-600 mt-1">Rate per Unit</div>
               </div>
-              <div className="text-center p-4 bg-white rounded-lg shadow-sm">
+              <div className="text-center p-5 bg-white rounded-xl shadow">
                 <div className="text-2xl font-bold text-purple-600">${totalAmount.toFixed(2)}</div>
-                <div className="text-sm text-gray-600">Total Amount</div>
+                <div className="text-sm text-gray-600 mt-1">Total Amount</div>
               </div>
             </div>
           </div>
 
-          {/* Submit Button */}
-          <div className="lg:col-span-2 flex justify-center mt-8">
-            <button
-              onClick={handleSubmit}
-              disabled={loading}
-              className={`px-8 py-3 rounded-lg text-white font-semibold transition duration-300 flex items-center justify-center ${loading ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
-                }`}
-            >
-              <FiSend className="h-5 w-5 mr-2" />
-              {loading ? 'Processing...' : 'Create Bill'}
-            </button>
+          <div className="lg:col-span-2 flex justify-center mt-10">
+            {isCustomer() ? (
+              <button
+                onClick={handleProceedToPayment}
+                disabled={!selectedBill}
+                className={`px-10 py-3 rounded-xl text-white font-semibold transition duration-300 flex items-center justify-center ${!selectedBill
+                    ? 'bg-gray-400 cursor-not-allowed'
+                    : 'bg-green-600 hover:bg-green-700 shadow-md'
+                  }`}
+              >
+                <FiCreditCard className="h-5 w-5 mr-2" />
+                Proceed to Payment
+              </button>
+            ) : (
+              <button
+                onClick={handleSubmit}
+                disabled={loading}
+                className={`px-10 py-3 rounded-xl text-white font-semibold transition duration-300 flex items-center justify-center ${loading
+                    ? 'bg-gray-400 cursor-not-allowed'
+                    : 'bg-green-600 hover:bg-green-700 shadow-md'
+                  }`}
+              >
+                <FiSend className="h-5 w-5 mr-2" />
+                {loading ? 'Processing...' : isEditMode ? 'Update Bill' : 'Create Bill'}
+              </button>
+            )}
           </div>
         </div>
       </div>

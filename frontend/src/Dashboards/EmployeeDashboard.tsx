@@ -1,18 +1,8 @@
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiUserPlus, FiFileText, FiMapPin, FiDollarSign, FiTrendingUp, FiCreditCard, FiActivity, FiUsers, FiClock, FiCalendar } from 'react-icons/fi';
+import { FiUserPlus, FiFileText, FiMapPin, FiDollarSign, FiTrendingUp, FiCreditCard, FiActivity, FiUsers } from 'react-icons/fi';
 
 const EmployeeDashboard = () => {
   const navigate = useNavigate();
-  const [currentTime, setCurrentTime] = useState(new Date());
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
 
   const quickActions = [
     {
@@ -100,22 +90,6 @@ const EmployeeDashboard = () => {
     navigate(path);
   };
 
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    });
-  };
-
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
 
   return (
    <div className="min-h-screen bg-gradient-to-tr from-blue-100 to-white">
@@ -126,18 +100,6 @@ const EmployeeDashboard = () => {
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Employee Dashboard</h1>
               <p className="text-sm text-gray-500">Welcome back! Here's your workspace</p>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="text-right">
-                <div className="flex items-center text-sm text-gray-600">
-                  <FiClock className="w-4 h-4 mr-1" />
-                  {formatTime(currentTime)}
-                </div>
-                <div className="flex items-center text-xs text-gray-500">
-                  <FiCalendar className="w-3 h-3 mr-1" />
-                  {formatDate(currentTime)}
-                </div>
-              </div>
             </div>
           </div>
         </div>

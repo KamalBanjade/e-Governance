@@ -1,12 +1,12 @@
+
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { jwtDecode } from 'jwt-decode';
 import { FiLogOut } from 'react-icons/fi';
-
 import 'react-toastify/dist/ReactToastify.css';
-
 import CustomerForm from './Components/CustomerForm';
+import CustomerList from './Components/CustomerList';
 import EmployeeForm from './Components/EmployeeForm';
 import LoginForm from './Components/LoginForm';
 import RegisterForm from './Components/RegisterForm';
@@ -23,13 +23,19 @@ import AdminDashboard from './Dashboards/AdminDashboard';
 import CustomerDashboard from './Dashboards/CustomerDashboard';
 import EmployeeDashboard from './Dashboards/EmployeeDashboard';
 import GoBackButton from './Components/GoBackButton';
+import { DialogProvider } from './Contexts/DialogContext';
+import CustomerProfileCompletion from './Components/CustomerProfileCompletion';
+import PaymentPage from './Components/PaymentPage';
+import EmployeeList from './Components/EmployeeList';
+import BranchList from './Components/BranchList';
+import BillList from './Components/BillList';
 
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [, setUserRole] = useState('');
-  const [, setUserTypeId] = useState('');
+  const [userTypeId, setUserTypeId] = useState('');
 
   const isTokenValid = (token: string | null): boolean => {
     if (!token) return false;
@@ -45,28 +51,38 @@ function App() {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userRole');
     localStorage.removeItem('userTypeId');
+    localStorage.removeItem('requiresCustomerProfile');
     setIsAuthenticated(false);
     setUserRole('');
     setUserTypeId('');
   };
 
-  const handleLogin = (userTypeId: number, token: string, role: string) => {
-    localStorage.setItem('authToken', token);
-    localStorage.setItem('userRole', role);
-    localStorage.setItem('userTypeId', userTypeId.toString());
-    setIsAuthenticated(true);
-    setUserRole(role);
-    setUserTypeId(userTypeId.toString());
-  };
-
   const getDefaultRoute = () => {
     const storedRole = localStorage.getItem('userRole');
     const storedTypeId = localStorage.getItem('userTypeId');
+    const requiresCustomerProfile = localStorage.getItem('requiresCustomerProfile') === 'true';
 
+    // Check if user is on registration flow and needs to complete profile
+    if (requiresCustomerProfile && storedTypeId === '3' && storedRole === 'Customer') {
+      return '/complete-profile';
+    }
+
+    // Regular dashboard routing
     if (storedRole === 'Admin') return '/admin-dashboard';
     if (storedRole === 'Clerk') return '/employee-dashboard';
-    if (storedTypeId === '3') return '/customer-dashboard';
+    if (storedTypeId === '3' && storedRole === 'Customer') return '/customer-dashboard';
+
     return '/login';
+  };
+
+  const handleLogin = (userTypeId: number, token: string, role: string, requiresCustomerProfile: boolean) => {
+    localStorage.setItem('authToken', token);
+    localStorage.setItem('userRole', role);
+    localStorage.setItem('userTypeId', userTypeId.toString());
+    localStorage.setItem('requiresCustomerProfile', requiresCustomerProfile.toString());
+    setIsAuthenticated(true);
+    setUserRole(role);
+    setUserTypeId(userTypeId.toString());
   };
 
   useEffect(() => {
@@ -89,16 +105,26 @@ function App() {
   }
 
   return (
-    <>
-      <ToastContainer position="top-right" autoClose={3000} />
+    <DialogProvider>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        className="toast-container"
+      />
       <Router>
         <div className="p-4 bg-gray-100 min-h-screen relative">
-
-          {/* ✅ Logout Button Only */}
           {isAuthenticated && (
             <div className="flex justify-between items-center mb-4">
               <div>
-                <GoBackButton />
+                {/* Only show GoBackButton for non-customer users */}
+                {userTypeId !== '3' && <GoBackButton />}
               </div>
               <button
                 onClick={handleLogout}
@@ -110,14 +136,12 @@ function App() {
             </div>
           )}
 
-
           <Routes>
+            <Route path="/register" element={<RegisterForm onLogin={handleLogin} />} />
             <Route
               path="/"
-              element={<Navigate to={isAuthenticated ? getDefaultRoute() : "/login"} replace />}
+              element={<Navigate to={getDefaultRoute()} replace />}
             />
-
-            {/* Dashboards */}
             <Route
               path="/admin-dashboard"
               element={
@@ -142,15 +166,26 @@ function App() {
                 </RequireRole>
               }
             />
-
-            {/* Auth */}
             <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
-            <Route path="/register" element={<RegisterForm />} />
+            <Route
+              path="/complete-profile"
+              element={
+                <RequireRole allowedRoles={['Customer']}>
+                  <CustomerProfileCompletion />
+                </RequireRole>
+              }
+            />
             <Route path="/forgot-password" element={<ForgotPasswordForm />} />
             <Route path="/reset-password" element={<ResetPasswordForm />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
+            <Route path="/complete-profile" element={<CustomerProfileCompletion />} />
+            <Route path="/paymentpage" element={<PaymentPage />} />
+            <Route path='/customerList' element={<CustomerList />} />
+            <Route path='/EmployeeList' element={<EmployeeList />} />
+            <Route path='/BranchList' element={<BranchList />} />
+            <Route path='/BillList' element={<BillList />} />
 
-            {/* Protected Routes */}
+
             <Route
               path="/Customers/create"
               element={
@@ -208,7 +243,6 @@ function App() {
               }
             />
 
-            {/* 404 */}
             <Route
               path="*"
               element={
@@ -220,7 +254,7 @@ function App() {
           </Routes>
         </div>
       </Router>
-    </>
+    </DialogProvider>
   );
 }
 

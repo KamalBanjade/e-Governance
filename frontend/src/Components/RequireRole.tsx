@@ -1,53 +1,59 @@
+import React from 'react';
 import { Navigate } from 'react-router-dom';
-import type { ReactNode } from 'react';
 import { jwtDecode } from 'jwt-decode';
 
 interface RequireRoleProps {
   allowedRoles: string[];
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
-const RequireRole = ({ allowedRoles, children }: RequireRoleProps) => {
+const RequireRole: React.FC<RequireRoleProps> = ({ allowedRoles, children }) => {
   const token = localStorage.getItem('authToken');
   const userRole = localStorage.getItem('userRole');
+  const userTypeId = localStorage.getItem('userTypeId');
 
-  // Add debug logging
-  console.log('RequireRole Debug:');
-  console.log('  Token:', token ? 'exists' : 'missing');
-  console.log('  UserRole:', userRole);
-  console.log('  AllowedRoles:', allowedRoles);
-  console.log('  RoleCheck:', userRole ? allowedRoles.includes(userRole) : false);
-
-  const isTokenExpired = (token: string): boolean => {
+  // Check if token exists and is valid
+  const isTokenValid = (token: string | null): boolean => {
+    if (!token) return false;
     try {
       const decoded: any = jwtDecode(token);
-      const isExpired = decoded.exp * 1000 < Date.now();
-      console.log('Token check - expired:', isExpired);
-      console.log('Token check - exp:', decoded.exp);
-      console.log('Token check - now:', Date.now());
-      return isExpired;
+      return decoded.exp * 1000 > Date.now();
     } catch (error) {
-      console.log('Token decode error:', error);
-      return true;
+      return false;
     }
   };
 
-  if (!token || isTokenExpired(token)) {
-    console.log('Redirecting to login - token invalid or expired');
-    localStorage.clear();
+  // If no valid token, redirect to login
+  if (!isTokenValid(token)) {
     return <Navigate to="/login" replace />;
   }
 
-  if (!userRole || !allowedRoles.includes(userRole)) {
-    console.log('Redirecting to unauthorized - role check failed:');
-    console.log('  UserRole:', userRole);
-    console.log('  AllowedRoles:', allowedRoles);
-    console.log('  HasRole:', !!userRole);
-    console.log('  RoleAllowed:', userRole ? allowedRoles.includes(userRole) : false);
+  // Check role permissions
+  const hasPermission = () => {
+    // Admin role check
+    if (allowedRoles.includes('Admin') && userRole === 'Admin') {
+      return true;
+    }
+    
+    // Clerk role check
+    if (allowedRoles.includes('Clerk') && userRole === 'Clerk') {
+      return true;
+    }
+    
+    // Customer role check (userTypeId = 3)
+    if (allowedRoles.includes('Customer') && userTypeId === '3') {
+      return true;
+    }
+    
+    return false;
+  };
+
+  // If user doesn't have permission, redirect to unauthorized
+  if (!hasPermission()) {
     return <Navigate to="/unauthorized" replace />;
   }
 
-  console.log('Access granted for role:', userRole);
+  // User is authenticated and has permission
   return <>{children}</>;
 };
 
