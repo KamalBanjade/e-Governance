@@ -6,42 +6,6 @@
   },
   "paths": {
     "/api/Bills": {
-      "get": {
-        "tags": [
-          "Bills"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Bill"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Bill"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Bill"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
       "post": {
         "tags": [
           "Bills"
@@ -67,24 +31,41 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Bill"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Bill"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Bill"
-                }
-              }
-            }
+            "description": "OK"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Bills"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Bills/customer-bills": {
+      "get": {
+        "tags": [
+          "Bills"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Bills/customer-bills-with-details": {
+      "get": {
+        "tags": [
+          "Bills"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -107,24 +88,80 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Bill"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Bill"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Bill"
-                }
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Bills"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Bill"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Bill"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Bill"
               }
             }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Bills"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Bills/mark-overdue": {
+      "post": {
+        "tags": [
+          "Bills"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -338,6 +375,87 @@
         }
       }
     },
+    "/api/Customers/by-user": {
+      "get": {
+        "tags": [
+          "Customers"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Customers/profile-status": {
+      "get": {
+        "tags": [
+          "Customers"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Customers/complete-profile": {
+      "post": {
+        "tags": [
+          "Customers"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "SCNo": {
+                    "type": "string"
+                  },
+                  "MobileNo": {
+                    "type": "string"
+                  },
+                  "CitizenshipNo": {
+                    "type": "string"
+                  },
+                  "DemandTypeId": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "RegisteredBranchId": {
+                    "type": "integer",
+                    "format": "int32"
+                  }
+                }
+              },
+              "encoding": {
+                "SCNo": {
+                  "style": "form"
+                },
+                "MobileNo": {
+                  "style": "form"
+                },
+                "CitizenshipNo": {
+                  "style": "form"
+                },
+                "DemandTypeId": {
+                  "style": "form"
+                },
+                "RegisteredBranchId": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Customers/create": {
       "post": {
         "tags": [
@@ -347,15 +465,6 @@
           "content": {
             "multipart/form-data": {
               "schema": {
-                "required": [
-                  "Address",
-                  "CitizenshipNo",
-                  "DOB",
-                  "MobileNo",
-                  "Name",
-                  "RegisteredBranchId",
-                  "SCNo"
-                ],
                 "type": "object",
                 "properties": {
                   "CusId": {
@@ -440,13 +549,22 @@
                   },
                   "User.UserType.UserTypeId": {
                     "type": "integer",
-                    "format": "int32"
+                    "format": "int64"
                   },
                   "User.UserType.Name": {
                     "type": "string"
                   },
                   "User.UserType.Status": {
                     "type": "string"
+                  },
+                  "User.UserType.Users": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ApplicationUser"
+                    }
+                  },
+                  "User.IsPasswordPending": {
+                    "type": "boolean"
                   },
                   "User.Id": {
                     "type": "string"
@@ -500,6 +618,13 @@
                   },
                   "HouseDetailsPath": {
                     "type": "string"
+                  },
+                  "RegistrationMonth": {
+                    "type": "string"
+                  },
+                  "RegistrationYear": {
+                    "type": "integer",
+                    "format": "int32"
                   }
                 }
               },
@@ -585,6 +710,12 @@
                 "User.UserType.Status": {
                   "style": "form"
                 },
+                "User.UserType.Users": {
+                  "style": "form"
+                },
+                "User.IsPasswordPending": {
+                  "style": "form"
+                },
                 "User.Id": {
                   "style": "form"
                 },
@@ -635,6 +766,12 @@
                 },
                 "HouseDetailsPath": {
                   "style": "form"
+                },
+                "RegistrationMonth": {
+                  "style": "form"
+                },
+                "RegistrationYear": {
+                  "style": "form"
                 }
               }
             }
@@ -648,6 +785,102 @@
       }
     },
     "/api/Customers": {
+      "get": {
+        "tags": [
+          "Customers"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Customers/{id}": {
+      "put": {
+        "tags": [
+          "Customers"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Customer"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Customer"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Customer"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Customers"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Customers"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Customers/registrations-by-month": {
       "get": {
         "tags": [
           "Customers"
@@ -854,6 +1087,35 @@
             "description": "OK"
           }
         }
+      },
+      "post": {
+        "tags": [
+          "EmployeeDetails"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Employee"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Employee"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Employee"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
       }
     },
     "/api/EmployeeDetails/branches": {
@@ -880,30 +1142,62 @@
         }
       }
     },
-    "/api/EmployeeDetails/create": {
-      "post": {
+    "/api/EmployeeDetails/{id}": {
+      "put": {
         "tags": [
           "EmployeeDetails"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/EmployeeDetails"
+                "$ref": "#/components/schemas/Employee"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/EmployeeDetails"
+                "$ref": "#/components/schemas/Employee"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/EmployeeDetails"
+                "$ref": "#/components/schemas/Employee"
               }
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "EmployeeDetails"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -1089,6 +1383,49 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Payment/mark-overdue": {
+      "post": {
+        "tags": [
+          "Payment"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Payment/calculate": {
+      "post": {
+        "tags": [
+          "Payment"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentCalculationRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentCalculationRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentCalculationRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -1321,17 +1658,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RegisterViewModel"
+                "$ref": "#/components/schemas/RegisterEmployeeViewModel"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/RegisterViewModel"
+                "$ref": "#/components/schemas/RegisterEmployeeViewModel"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/RegisterViewModel"
+                "$ref": "#/components/schemas/RegisterEmployeeViewModel"
               }
             }
           }
@@ -1519,6 +1856,9 @@
           },
           "userType": {
             "$ref": "#/components/schemas/UserType"
+          },
+          "isPasswordPending": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -1572,6 +1912,27 @@
           "totalBillAmount": {
             "type": "number",
             "format": "double"
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "updatedDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "updatedBy": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1607,15 +1968,6 @@
         "additionalProperties": false
       },
       "Customer": {
-        "required": [
-          "address",
-          "citizenshipNo",
-          "dob",
-          "mobileNo",
-          "name",
-          "registeredBranchId",
-          "scNo"
-        ],
         "type": "object",
         "properties": {
           "cusId": {
@@ -1623,28 +1975,28 @@
             "format": "int32"
           },
           "scNo": {
-            "minLength": 1,
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "name": {
-            "minLength": 1,
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "address": {
-            "minLength": 1,
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "dob": {
             "type": "string",
             "format": "date-time"
           },
           "mobileNo": {
-            "minLength": 1,
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "citizenshipNo": {
-            "minLength": 1,
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "demandTypeId": {
             "type": "integer",
@@ -1674,6 +2026,15 @@
           "houseDetailsPath": {
             "type": "string",
             "nullable": true
+          },
+          "registrationMonth": {
+            "type": "string",
+            "nullable": true
+          },
+          "registrationYear": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1700,17 +2061,47 @@
         },
         "additionalProperties": false
       },
-      "EmployeeDetails": {
+      "Employee": {
         "required": [
+          "address",
           "branchId",
           "contactNo",
-          "employeeName",
+          "dob",
+          "email",
           "employeeTypeId",
-          "status"
+          "name",
+          "status",
+          "username",
+          "userTypeId"
         ],
         "type": "object",
         "properties": {
           "empId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "username": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "email": {
+            "minLength": 1,
+            "type": "string",
+            "format": "email"
+          },
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "address": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "dob": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "userTypeId": {
             "type": "integer",
             "format": "int32"
           },
@@ -1727,10 +2118,6 @@
           },
           "branch": {
             "$ref": "#/components/schemas/Branch"
-          },
-          "employeeName": {
-            "minLength": 1,
-            "type": "string"
           },
           "contactNo": {
             "minLength": 1,
@@ -1836,6 +2223,20 @@
         },
         "additionalProperties": false
       },
+      "PaymentCalculationRequest": {
+        "type": "object",
+        "properties": {
+          "billNo": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "paymentDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
       "PaymentMethod": {
         "type": "object",
         "properties": {
@@ -1854,6 +2255,36 @@
           "status": {
             "type": "string",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RegisterEmployeeViewModel": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "dob": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "userTypeId": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -1917,7 +2348,7 @@
         "properties": {
           "userTypeId": {
             "type": "integer",
-            "format": "int32"
+            "format": "int64"
           },
           "name": {
             "type": "string",
@@ -1925,6 +2356,13 @@
           },
           "status": {
             "type": "string",
+            "nullable": true
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApplicationUser"
+            },
             "nullable": true
           }
         },

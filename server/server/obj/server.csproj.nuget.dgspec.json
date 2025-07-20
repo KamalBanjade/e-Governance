@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\kamal\\source\\repos\\server\\server\\server.csproj": {}
+    "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\server.csproj": {}
   },
   "projects": {
-    "C:\\Users\\kamal\\source\\repos\\server\\server\\server.csproj": {
+    "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\kamal\\source\\repos\\server\\server\\server.csproj",
+        "projectUniqueName": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\server.csproj",
         "projectName": "server",
-        "projectPath": "C:\\Users\\kamal\\source\\repos\\server\\server\\server.csproj",
+        "projectPath": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\server.csproj",
         "packagesPath": "C:\\Users\\kamal\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\kamal\\source\\repos\\server\\server\\obj\\",
+        "outputPath": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -54,6 +54,14 @@
               "target": "Package",
               "version": "[1.1.0, )"
             },
+            "DateConverterNepali": {
+              "target": "Package",
+              "version": "[1.0.2, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.8, )"
+            },
             "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
               "target": "Package",
               "version": "[8.0.8, )"
@@ -67,6 +75,14 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[8.0.8, )"
+            },
+            "NepaliCalendar": {
+              "target": "Package",
+              "version": "[2.0.15, )"
+            },
+            "NepaliDateConverter": {
+              "target": "Package",
+              "version": "[1.0.6, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
@@ -92,7 +108,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

@@ -2,12 +2,12 @@
 using e_Governance.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace e_Governance.Controllers
 {
     [Route("api/[controller]")]
+    //[Authorize(Roles = "Admin,Clerk")]
     [ApiController]
     public class BranchController : ControllerBase
     {

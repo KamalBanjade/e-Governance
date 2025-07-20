@@ -1,13 +1,16 @@
 ﻿using e_Governance.Data;
 using e_Governance.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using server.Models.DTOs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace e_Governance.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin,Clerk,Customer")]
     [ApiController]
     public class PaymentController : ControllerBase
     {
@@ -18,7 +21,6 @@ namespace e_Governance.Controllers
             _context = context;
         }
 
-        // GET: api/Payment
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Payment>>> GetPayments()
         {
@@ -28,7 +30,6 @@ namespace e_Governance.Controllers
                 .ToListAsync();
         }
 
-        // GET: api/Payment/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Payment>> GetPayment(int id)
         {
@@ -45,7 +46,6 @@ namespace e_Governance.Controllers
             return payment;
         }
 
-        // POST: api/Payment
         [HttpPost]
         public async Task<ActionResult<Payment>> CreatePayment([FromBody] Payment payment)
         {
@@ -55,9 +55,8 @@ namespace e_Governance.Controllers
                 return BadRequest(new { Errors = errors });
             }
 
-            // Validate foreign keys
-            var billExists = await _context.Bills.AnyAsync(b => b.BillNo == payment.BillNo);
-            if (!billExists)
+            var bill = await _context.Bills.FirstOrDefaultAsync(b => b.BillNo == payment.BillNo);
+            if (bill == null)
             {
                 return BadRequest("Invalid BillNo: Bill does not exist.");
             }
@@ -68,14 +67,44 @@ namespace e_Governance.Controllers
                 return BadRequest("Invalid PaymentMethodId: Payment method does not exist.");
             }
 
-            // Ensure navigation properties are not included
+            var days = (payment.PaymentDate - bill.BillDate).Days;
+
+            decimal rebate = 0;
+            decimal penalty = 0;
+
+            if (days <= 7)
+            {
+                rebate = bill.TotalBillAmount * 0.02m; // 2% discount
+            }
+            else if (days >= 16 && days <= 30)
+            {
+                penalty = bill.TotalBillAmount * 0.05m; // 5% fine
+            }
+            else if (days >= 31 && days <= 40)
+            {
+                penalty = bill.TotalBillAmount * 0.10m; // 10% fine
+            }
+            else if (days >= 41 && days <= 60)
+            {
+                penalty = bill.TotalBillAmount * 0.25m; // 25% fine
+            }
+
+            var finalAmount = bill.TotalBillAmount - rebate + penalty;
+
+            payment.RebateAmount = rebate;
+            payment.PenaltyAmount = penalty;
+            payment.TotalAmountPaid = finalAmount;
+
             payment.Bill = null;
             payment.PaymentMethod = null;
+
+            // Update bill status to Paid
+            bill.Status = "Paid";
+            _context.Bills.Update(bill);
 
             _context.Payments.Add(payment);
             await _context.SaveChangesAsync();
 
-            // Reload payment with navigation properties for response
             var createdPayment = await _context.Payments
                 .Include(p => p.Bill)
                 .Include(p => p.PaymentMethod)
@@ -84,14 +113,11 @@ namespace e_Governance.Controllers
             return CreatedAtAction(nameof(GetPayment), new { id = payment.PaymentId }, createdPayment ?? payment);
         }
 
-        // PUT: api/Payment/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePayment(int id, [FromBody] Payment payment)
         {
             if (id != payment.PaymentId)
-            {
                 return BadRequest("Payment ID mismatch.");
-            }
 
             if (!ModelState.IsValid)
             {
@@ -99,9 +125,8 @@ namespace e_Governance.Controllers
                 return BadRequest(new { Errors = errors });
             }
 
-            // Validate foreign keys
-            var billExists = await _context.Bills.AnyAsync(b => b.BillNo == payment.BillNo);
-            if (!billExists)
+            var bill = await _context.Bills.FirstOrDefaultAsync(b => b.BillNo == payment.BillNo);
+            if (bill == null)
             {
                 return BadRequest("Invalid BillNo: Bill does not exist.");
             }
@@ -112,9 +137,30 @@ namespace e_Governance.Controllers
                 return BadRequest("Invalid PaymentMethodId: Payment method does not exist.");
             }
 
-            // Ensure navigation properties are not included
+            var days = (payment.PaymentDate - bill.BillDate).Days;
+
+            decimal rebate = 0;
+            decimal penalty = 0;
+
+            if (days <= 7)
+                rebate = bill.TotalBillAmount * 0.02m;
+            else if (days >= 16 && days <= 30)
+                penalty = bill.TotalBillAmount * 0.05m;
+            else if (days >= 31 && days <= 40)
+                penalty = bill.TotalBillAmount * 0.10m;
+            else if (days >= 41 && days <= 60)
+                penalty = bill.TotalBillAmount * 0.25m;
+
+            payment.RebateAmount = rebate;
+            payment.PenaltyAmount = penalty;
+            payment.TotalAmountPaid = bill.TotalBillAmount - rebate + penalty;
+
             payment.Bill = null;
             payment.PaymentMethod = null;
+
+            // Update bill status to Paid
+            bill.Status = "Paid";
+            _context.Bills.Update(bill);
 
             _context.Entry(payment).State = EntityState.Modified;
 
@@ -134,7 +180,6 @@ namespace e_Governance.Controllers
             return NoContent();
         }
 
-        // DELETE: api/Payment/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePayment(int id)
         {
@@ -144,15 +189,79 @@ namespace e_Governance.Controllers
                 return NotFound();
             }
 
+            // Revert bill status to Pending
+            var bill = await _context.Bills.FirstOrDefaultAsync(b => b.BillNo == payment.BillNo);
+            if (bill != null)
+            {
+                bill.Status = "Pending";
+                _context.Bills.Update(bill);
+            }
+
             _context.Payments.Remove(payment);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
+        [HttpPost("mark-overdue")]
+        public async Task<IActionResult> MarkOverdueBills()
+        {
+            var overdueBills = await _context.Bills
+                .Where(b => b.Status == "Pending" && b.BillDate.AddDays(30) < DateTime.UtcNow)
+                .ToListAsync();
+
+            foreach (var bill in overdueBills)
+            {
+                bill.Status = "Overdue";
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok(new { message = $"{overdueBills.Count} bills marked as overdue." });
+        }
+
         private bool PaymentExists(int id)
         {
             return _context.Payments.Any(e => e.PaymentId == id);
+        }
+
+        [HttpPost("calculate")]
+        public async Task<ActionResult<object>> CalculatePayment([FromBody] PaymentCalculationRequest request)
+        {
+            if (request == null || request.BillNo <= 0 || request.PaymentDate == default)
+            {
+                return BadRequest("BillNo and PaymentDate are required for calculation.");
+            }
+
+            var bill = await _context.Bills.FirstOrDefaultAsync(b => b.BillNo == request.BillNo);
+            if (bill == null)
+            {
+                return BadRequest("Invalid BillNo: Bill does not exist.");
+            }
+
+            var days = (request.PaymentDate - bill.BillDate).Days;
+
+            decimal rebate = 0;
+            decimal penalty = 0;
+
+            if (days <= 7)
+                rebate = bill.TotalBillAmount * 0.02m;
+            else if (days >= 16 && days <= 30)
+                penalty = bill.TotalBillAmount * 0.05m;
+            else if (days >= 31 && days <= 40)
+                penalty = bill.TotalBillAmount * 0.10m;
+            else if (days >= 41 && days <= 60)
+                penalty = bill.TotalBillAmount * 0.25m;
+            else if (days >= 61)
+                penalty = bill.TotalBillAmount * 0.5m;
+
+            var finalAmount = bill.TotalBillAmount - rebate + penalty;
+
+            return Ok(new
+            {
+                RebateAmount = rebate,
+                PenaltyAmount = penalty,
+                TotalAmountPaid = finalAmount
+            });
         }
     }
 }

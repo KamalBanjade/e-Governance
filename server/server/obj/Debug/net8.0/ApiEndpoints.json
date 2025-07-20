@@ -1,26 +1,6 @@
 [
   {
     "ContainingType": "e_Governance.Controllers.BillsController",
-    "Method": "GetBills",
-    "RelativePath": "api/Bills",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": [
-      {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[e_Governance.Models.Bill, server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "e_Governance.Controllers.BillsController",
     "Method": "CreateBill",
     "RelativePath": "api/Bills",
     "HttpMethod": "POST",
@@ -33,17 +13,17 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": [
-      {
-        "Type": "e_Governance.Models.Bill",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.BillsController",
+    "Method": "GetAllBills",
+    "RelativePath": "api/Bills",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
   },
   {
     "ContainingType": "e_Governance.Controllers.BillsController",
@@ -59,17 +39,74 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": [
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.BillsController",
+    "Method": "UpdateBill",
+    "RelativePath": "api/Bills/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
       {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "bill",
         "Type": "e_Governance.Models.Bill",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
+        "IsRequired": true
       }
-    ]
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.BillsController",
+    "Method": "DeleteBill",
+    "RelativePath": "api/Bills/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.BillsController",
+    "Method": "GetCustomerBills",
+    "RelativePath": "api/Bills/customer-bills",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.BillsController",
+    "Method": "GetCustomerBillsWithDetails",
+    "RelativePath": "api/Bills/customer-bills-with-details",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.BillsController",
+    "Method": "MarkOverdueBills",
+    "RelativePath": "api/Bills/mark-overdue",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
   },
   {
     "ContainingType": "e_Governance.Controllers.BranchController",
@@ -192,12 +229,111 @@
   },
   {
     "ContainingType": "e_Governance.Controllers.CustomersController",
+    "Method": "Update",
+    "RelativePath": "api/Customers/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "updatedCustomer",
+        "Type": "e_Governance.Models.Customer",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.CustomersController",
+    "Method": "Delete",
+    "RelativePath": "api/Customers/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.CustomersController",
+    "Method": "GetCustomerById",
+    "RelativePath": "api/Customers/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.CustomersController",
     "Method": "GetBranches",
     "RelativePath": "api/Customers/branches",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.CustomersController",
+    "Method": "GetCustomerByUser",
+    "RelativePath": "api/Customers/by-user",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.CustomersController",
+    "Method": "CompleteProfile",
+    "RelativePath": "api/Customers/complete-profile",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "SCNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "MobileNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "CitizenshipNo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "DemandTypeId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "RegisteredBranchId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
     "ReturnTypes": []
   },
   {
@@ -330,7 +466,7 @@
       },
       {
         "Name": "User.UserType.UserTypeId",
-        "Type": "System.Int32",
+        "Type": "System.Int64",
         "IsRequired": false
       },
       {
@@ -341,6 +477,16 @@
       {
         "Name": "User.UserType.Status",
         "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "User.UserType.Users",
+        "Type": "System.Collections.Generic.ICollection\u00601[[e_Governance.Models.ApplicationUser, server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "User.IsPasswordPending",
+        "Type": "System.Boolean",
         "IsRequired": false
       },
       {
@@ -427,6 +573,16 @@
         "Name": "HouseDetailsPath",
         "Type": "System.String",
         "IsRequired": false
+      },
+      {
+        "Name": "RegistrationMonth",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "RegistrationYear",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []
@@ -435,6 +591,26 @@
     "ContainingType": "e_Governance.Controllers.CustomersController",
     "Method": "GetDemandTypes",
     "RelativePath": "api/Customers/demandtypes",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.CustomersController",
+    "Method": "GetProfileStatus",
+    "RelativePath": "api/Customers/profile-status",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.CustomersController",
+    "Method": "GetRegistrationsByMonth",
+    "RelativePath": "api/Customers/registrations-by-month",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -562,28 +738,65 @@
   },
   {
     "ContainingType": "e_Governance.Controllers.EmployeeDetailsController",
+    "Method": "Create",
+    "RelativePath": "api/EmployeeDetails",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "employee",
+        "Type": "e_Governance.Models.Employee",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.EmployeeDetailsController",
+    "Method": "Update",
+    "RelativePath": "api/EmployeeDetails/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "employee",
+        "Type": "e_Governance.Models.Employee",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.EmployeeDetailsController",
+    "Method": "Delete",
+    "RelativePath": "api/EmployeeDetails/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.EmployeeDetailsController",
     "Method": "GetBranches",
     "RelativePath": "api/EmployeeDetails/branches",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "e_Governance.Controllers.EmployeeDetailsController",
-    "Method": "Create",
-    "RelativePath": "api/EmployeeDetails/create",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "employeeDetails",
-        "Type": "e_Governance.Models.EmployeeDetails",
-        "IsRequired": true
-      }
-    ],
     "ReturnTypes": []
   },
   {
@@ -706,6 +919,32 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "e_Governance.Controllers.PaymentController",
+    "Method": "CalculatePayment",
+    "RelativePath": "api/Payment/calculate",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "server.Models.DTOs.PaymentCalculationRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "e_Governance.Controllers.PaymentController",
+    "Method": "MarkOverdueBills",
+    "RelativePath": "api/Payment/mark-overdue",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "e_Governance.Controllers.PaymentMethodController",
     "Method": "GetPaymentMethods",
     "RelativePath": "api/PaymentMethod",
@@ -824,7 +1063,7 @@
     "Parameters": [
       {
         "Name": "model",
-        "Type": "server.Models.RegisterViewModel",
+        "Type": "server.Models.DTOs.RegisterEmployeeViewModel",
         "IsRequired": true
       }
     ],

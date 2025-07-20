@@ -10,34 +10,20 @@ namespace e_Governance.Models
         [Key]
         public int CusId { get; set; }
 
-        [Required]
+        // Existing fields
         public string SCNo { get; set; }
-
-        [Required]
         public string Name { get; set; }
-
-        [Required]
         public string Address { get; set; }
-
-        [Required]
         public DateTime DOB { get; set; }
-
-        [Required]
         public string MobileNo { get; set; }
-
-        [Required]
         public string CitizenshipNo { get; set; }
 
-        [ForeignKey("DemandType")]
         public int DemandTypeId { get; set; }
         public DemandType? DemandType { get; set; }
 
-        [Required]
-        [ForeignKey("RegisteredBranch")]
         public int RegisteredBranchId { get; set; }
         public Branch? RegisteredBranch { get; set; }
 
-        [BindNever]
         [ForeignKey("User")]
         public string? UserId { get; set; }
         public ApplicationUser? User { get; set; }
@@ -45,5 +31,8 @@ namespace e_Governance.Models
         public string? CitizenshipPath { get; set; }
         public string? HouseDetailsPath { get; set; }
 
+        // New fields
+        public string? RegistrationMonth { get; set; }  // e.g., "Baisakh"
+        public int? RegistrationYear { get; set; }     // e.g., 2080
     }
 }

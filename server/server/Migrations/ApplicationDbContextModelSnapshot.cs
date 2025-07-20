@@ -171,13 +171,16 @@ namespace server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("DOB")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPasswordPending")
                         .HasColumnType("bit");
 
                     b.Property<bool>("LockoutEnabled")
@@ -219,8 +222,8 @@ namespace server.Migrations
                     b.Property<long?>("UserTypeId")
                         .HasColumnType("bigint");
 
-                    b.Property<int?>("UserTypeId1")
-                        .HasColumnType("int");
+                    b.Property<long?>("UserTypeId1")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -231,6 +234,8 @@ namespace server.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("UserTypeId");
 
                     b.HasIndex("UserTypeId1");
 
@@ -258,6 +263,12 @@ namespace server.Migrations
                     b.Property<decimal>("ConsumedUnit")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<decimal>("CurrentReading")
                         .HasColumnType("decimal(18,2)");
 
@@ -273,8 +284,18 @@ namespace server.Migrations
                     b.Property<decimal>("Rate")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal>("TotalBillAmount")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("BillNo");
 
@@ -355,6 +376,12 @@ namespace server.Migrations
                     b.Property<int>("RegisteredBranchId")
                         .HasColumnType("int");
 
+                    b.Property<string>("RegistrationMonth")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("RegistrationYear")
+                        .HasColumnType("int");
+
                     b.Property<string>("SCNo")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -398,13 +425,17 @@ namespace server.Migrations
                     b.ToTable("DemandTypes");
                 });
 
-            modelBuilder.Entity("e_Governance.Models.EmployeeDetails", b =>
+            modelBuilder.Entity("e_Governance.Models.Employee", b =>
                 {
                     b.Property<int>("EmpId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmpId"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("BranchId")
                         .HasColumnType("int");
@@ -413,20 +444,33 @@ namespace server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("EmployeeName")
+                    b.Property<DateTime>("DOB")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("EmployeeTypeId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("UserTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("EmpId");
 
@@ -526,11 +570,11 @@ namespace server.Migrations
 
             modelBuilder.Entity("e_Governance.Models.UserType", b =>
                 {
-                    b.Property<int>("UserTypeId")
+                    b.Property<long>("UserTypeId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserTypeId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("UserTypeId"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -600,6 +644,11 @@ namespace server.Migrations
                 {
                     b.HasOne("e_Governance.Models.UserType", "UserType")
                         .WithMany()
+                        .HasForeignKey("UserTypeId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("e_Governance.Models.UserType", null)
+                        .WithMany("Users")
                         .HasForeignKey("UserTypeId1");
 
                     b.Navigation("UserType");
@@ -641,7 +690,7 @@ namespace server.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("e_Governance.Models.EmployeeDetails", b =>
+            modelBuilder.Entity("e_Governance.Models.Employee", b =>
                 {
                     b.HasOne("e_Governance.Models.Branch", "Branch")
                         .WithMany()
@@ -657,9 +706,7 @@ namespace server.Migrations
 
                     b.HasOne("e_Governance.Models.ApplicationUser", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Branch");
 
@@ -685,6 +732,11 @@ namespace server.Migrations
                     b.Navigation("Bill");
 
                     b.Navigation("PaymentMethod");
+                });
+
+            modelBuilder.Entity("e_Governance.Models.UserType", b =>
+                {
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

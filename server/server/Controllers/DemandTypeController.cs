@@ -1,5 +1,6 @@
 ﻿using e_Governance.Data;
 using e_Governance.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 namespace e_Governance.Controllers
 {
     [Route("api/[controller]")]
+    //[Authorize(Roles = "Admin,Clerk")]
     [ApiController]
     public class DemandTypeController : ControllerBase
     {

@@ -17,9 +17,27 @@ namespace e_Governance.Data
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Branch> Branches { get; set; }
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
-        public DbSet<EmployeeDetails> Employees { get; set; }
+        public DbSet<Employee> Employees { get; set; }
         public DbSet<UserType> UserTypes { get; set; }
         public DbSet<DemandType> DemandTypes { get; set; }
         public DbSet<EmployeeType> EmployeeTypes { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            // Explicitly define the FK between ApplicationUser and UserType
+            builder.Entity<ApplicationUser>()
+                .HasOne(u => u.UserType)
+                .WithMany() // or .WithMany(u => u.Users) if you define a collection in UserType
+                .HasForeignKey(u => u.UserTypeId)
+                .OnDelete(DeleteBehavior.SetNull); // Or .Restrict / .Cascade as needed
+
+            // Optional: map DOB to proper SQL type if needed
+            builder.Entity<ApplicationUser>()
+                .Property(u => u.DOB)
+                .HasColumnType("date"); // Avoid time if not needed
+        }
     }
-}
+
+    }

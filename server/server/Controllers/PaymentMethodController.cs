@@ -1,5 +1,6 @@
 ﻿using e_Governance.Data;
 using e_Governance.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 namespace e_Governance.Controllers
 {
     [Route("api/[controller]")]
+    //[Authorize(Roles = "Admin,Clerk")]
     [ApiController]
     public class PaymentMethodController : ControllerBase
     {
@@ -43,9 +45,9 @@ namespace e_Governance.Controllers
         [HttpPost]
         public async Task<ActionResult<PaymentMethod>> CreatePaymentMethod([FromBody] PaymentMethod paymentMethod)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid || string.IsNullOrEmpty(paymentMethod.Name) || string.IsNullOrEmpty(paymentMethod.Status) || string.IsNullOrEmpty(paymentMethod.LogoURL))
             {
-                return BadRequest(ModelState);
+                return BadRequest("Name, status, and logoURL are required.");
             }
 
             _context.PaymentMethods.Add(paymentMethod);
@@ -63,9 +65,9 @@ namespace e_Governance.Controllers
                 return BadRequest("PaymentMethod ID mismatch.");
             }
 
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid || string.IsNullOrEmpty(paymentMethod.Name) || string.IsNullOrEmpty(paymentMethod.Status) || string.IsNullOrEmpty(paymentMethod.LogoURL))
             {
-                return BadRequest(ModelState);
+                return BadRequest("Name, status, and logoURL are required.");
             }
 
             _context.Entry(paymentMethod).State = EntityState.Modified;

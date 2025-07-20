@@ -11,5 +11,7 @@ namespace e_Governance.Models
         public long? UserTypeId { get; set; }
 
         public virtual UserType? UserType { get; set; }
+        public bool IsPasswordPending { get; set; } = false;
+
     }
 }
