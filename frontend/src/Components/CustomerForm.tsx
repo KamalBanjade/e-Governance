@@ -491,9 +491,6 @@ const CustomerForm = () => {
               <p className="text-sm text-blue-700">
                 You are editing: <strong>{customer.name}</strong> (SC No: {customer.scNo})
               </p>
-              <p className="text-xs text-blue-600 mt-1">
-                Your changes are being saved automatically. You can safely refresh the page.
-              </p>
             </div>
           )}
 

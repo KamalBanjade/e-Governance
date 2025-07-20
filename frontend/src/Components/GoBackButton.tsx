@@ -1,59 +1,52 @@
-import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { FiArrowLeft } from 'react-icons/fi';
+// import React from 'react';
+// import { useNavigate, useLocation } from 'react-router-dom';
+// import { FiArrowLeft } from 'react-icons/fi';
 
-const GoBackButton: React.FC = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+// const GoBackButton: React.FC = () => {
+//   const navigate = useNavigate();
+//   const location = useLocation();
 
-  // Define dashboard routes - don't show back button on these
-  const dashboardRoutes = ['/admin-dashboard', '/employee-dashboard', '/customer-dashboard'];
+//   // Get user info from localStorage
+//   const userTypeId = localStorage.getItem('userTypeId');
+//   const userRole = localStorage.getItem('userRole');
 
-  // Don't show back button on dashboard pages
-  if (dashboardRoutes.includes(location.pathname)) {
-    return null;
-  }
+//   // Define dashboard routes and auth pages - don't show back button on these
+//   const dashboardRoutes = ['/admin-dashboard', '/employee-dashboard', '/customer-dashboard'];
+//   const authRoutes = ['/login', '/register', '/forgot-password', '/reset-password'];
+//   const excludedRoutes = [...dashboardRoutes, ...authRoutes, '/unauthorized'];
 
-  // Get the appropriate dashboard based on user role
-  const getDefaultDashboard = () => {
-    const userRole = localStorage.getItem('userRole');
-    // const userTypeId = localStorage.getItem('userTypeId');
+//   // Don't show back button on excluded pages
+//   if (excludedRoutes.includes(location.pathname)) {
+//     return null;
+//   }
 
-    if (userRole === 'Admin') return '/admin-dashboard';
-    if (userRole === 'Clerk') return '/employee-dashboard';
-    // Remove customer dashboard option - customers don't get back to dashboard
-    // if (userTypeId === '3') return '/customer-dashboard';
-    return '/login';
-  };
+//   // Hide back button ONLY on /billform for customers (but show it on /Payments)
+//   if (location.pathname === '/billform' && userTypeId === '3' && userRole === 'Customer') {
+//     return null;
+//   }
 
-  const handleGoBack = () => {
-    const userTypeId = localStorage.getItem('userTypeId');
-    
-    // For customers (userTypeId === '3'), don't navigate back to dashboard
-    // Instead, use browser back or go to login
-    if (userTypeId === '3') {
-      // Option 1: Use browser back
-      navigate(-1);
-      // Option 2: Go to login (uncomment if preferred)
-      // navigate('/login', { replace: true });
-      return;
-    }
+//   const handleGoBack = () => {
+//     navigate(-1);
+//   };
 
-    // For admin and clerk, navigate to appropriate dashboard
-    const dashboardPath = getDefaultDashboard();
-    navigate(dashboardPath, { replace: true });
-  };
+//   return (
+//     <button
+//       onClick={handleGoBack}
+//       className="
+//         mb-4 flex items-center gap-2 px-5 py-2.5
+//         text-blue-600 hover:text-white
+//         bg-blue-50 hover:bg-blue-600
+//         border border-blue-200 hover:border-blue-600
+//         rounded-full shadow-sm hover:shadow-lg
+//         transition-all duration-300 ease-in-out
+//         font-medium
+//       "
+//       title="Go Back"
+//     >
+//       <FiArrowLeft className="h-5 w-5" />
+//       Back
+//     </button>
+//   );
+// };
 
-  return (
-    <button
-      onClick={handleGoBack}
-      className="flex items-center space-x-2 text-blue-600 hover:text-blue-800 transition-colors bg-white px-3 py-2 rounded-lg shadow-sm border border-gray-200 hover:shadow-md"
-      title="Back to Dashboard"
-    >
-      <FiArrowLeft className="w-4 h-4" />
-      <span className="text-sm font-medium">Back to Dashboard</span>
-    </button>
-  );
-};
-
-export default GoBackButton;
+// export default GoBackButton;

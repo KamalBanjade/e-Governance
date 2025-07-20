@@ -11,7 +11,7 @@ const EmployeeDashboard = () => {
       icon: FiUserPlus,
       color: 'bg-blue-500',
       hoverColor: 'hover:bg-blue-600',
-      path: '/Customers/create'
+      path: '/Customers/create?new=true'
     },
     {
       title: 'New Bill',
@@ -19,7 +19,7 @@ const EmployeeDashboard = () => {
       icon: FiFileText,
       color: 'bg-green-500',
       hoverColor: 'hover:bg-green-600',
-      path: '/billform'
+      path: '/billform?new=true'
     },
     {
       title: 'Add Branch',
@@ -27,7 +27,7 @@ const EmployeeDashboard = () => {
       icon: FiMapPin,
       color: 'bg-purple-500',
       hoverColor: 'hover:bg-purple-600',
-      path: '/branch'
+      path: '/branch?new=true'
     },
     {
       title: 'Payments',
@@ -92,19 +92,7 @@ const EmployeeDashboard = () => {
 
 
   return (
-   <div className="min-h-screen bg-gradient-to-tr from-blue-100 to-white">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Employee Dashboard</h1>
-              <p className="text-sm text-gray-500">Welcome back! Here's your workspace</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
+   <div className="min-h-screen bg-white rounded-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

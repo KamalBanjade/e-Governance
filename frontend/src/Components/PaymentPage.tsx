@@ -18,6 +18,8 @@ interface BillsResponse {
 interface PaymentMethod {
     paymentMethodId: number;
     name: string;
+    logoURL: string;
+    status: string;
 }
 
 const PaymentPage = () => {
@@ -31,6 +33,7 @@ const PaymentPage = () => {
     const [loading, setLoading] = useState(false);
     const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<number | null>(null);
+    const [paymentMethodsLoading, setPaymentMethodsLoading] = useState(true);
 
     const passedBill = location.state?.bill;
     const passedCustomer = location.state?.customer;
@@ -47,11 +50,44 @@ const PaymentPage = () => {
     }, []);
 
     useEffect(() => {
-        fetch('http://localhost:5008/api/PaymentMethod')
-            .then(res => res.json())
-            .then(data => setPaymentMethods(data))
-            .catch(err => console.error('Failed to fetch payment methods:', err));
+        fetchPaymentMethods();
     }, []);
+
+    const fetchPaymentMethods = async () => {
+        setPaymentMethodsLoading(true);
+        try {
+            console.log('Fetching payment methods...');
+
+            const response = await fetch('http://localhost:5008/api/PaymentMethod', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            console.log('Payment methods response status:', response.status);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log('Payment methods data:', data);
+
+            // Filter only active payment methods
+            const activePaymentMethods = data.filter((pm: PaymentMethod) => pm.status === 'Active');
+            console.log('Active payment methods:', activePaymentMethods);
+
+            setPaymentMethods(activePaymentMethods);
+        } catch (error) {
+            console.error('Failed to fetch payment methods:', error);
+            toast.error('Failed to load payment methods. Please try again.', {
+                position: 'top-center'
+            });
+        } finally {
+            setPaymentMethodsLoading(false);
+        }
+    };
 
     const fetchCustomerBills = async () => {
         if (!token) {
@@ -87,11 +123,6 @@ const PaymentPage = () => {
         if (bill) setSelectedBill(bill);
     };
 
-    // const handlePaymentMethodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    //     const paymentMethodId = parseInt(e.target.value);
-    //     setSelectedPaymentMethod(paymentMethodId);
-    // };
-
     const handlePayment = async () => {
         if (!selectedBill || !selectedPaymentMethod) {
             toast.error('Please select a bill and payment method.', { position: 'top-center' });
@@ -122,7 +153,6 @@ const PaymentPage = () => {
                 `Payment of $${selectedBill.totalBillAmount?.toFixed(2)} successful!`,
                 { position: 'top-center', icon: <FiCheckCircle className="text-green-500" /> }
             );
-            navigate('/paymentgateway');
 
         } catch (error) {
             toast.error('Payment failed.', { position: 'top-center' });
@@ -244,43 +274,57 @@ const PaymentPage = () => {
                             </div>
                         )}
 
-                        {/* Payment Method */}
-                        <div className="space-y-2">
-                            <label className="block text-gray-700 font-medium">Payment Method</label>
-                            <div className="grid grid-cols-2 gap-3">
-                                {paymentMethods.map(pm => (
-                                    <button
-                                        key={pm.paymentMethodId}
-                                        onClick={() => setSelectedPaymentMethod(pm.paymentMethodId)}
-                                        className={`p-3 rounded-lg border-2 transition-all relative overflow-hidden ${selectedPaymentMethod === pm.paymentMethodId
-                                            ? 'border-blue-500 bg-blue-50'
-                                            : 'border-gray-200 hover:border-blue-300'
-                                            }`}
-                                    >
-                                        <div className="flex items-center space-x-2">
-                                            <FiCreditCard className={
-                                                selectedPaymentMethod === pm.paymentMethodId
-                                                    ? 'text-blue-600'
-                                                    : 'text-gray-500'
-                                            } />
-                                            <span className={
-                                                selectedPaymentMethod === pm.paymentMethodId
-                                                    ? 'font-medium text-blue-700'
-                                                    : 'text-gray-700'
-                                            }>
-                                                {pm.name}
-                                            </span>
-                                        </div>
-                                        {selectedPaymentMethod === pm.paymentMethodId && (
-                                            <div className="absolute top-1 right-1 bg-blue-500 rounded-full p-1">
-                                                <FiCheckCircle className="text-white text-xs" />
-                                            </div>
-                                        )}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
+                        <div className="space-y-6">
+                            <label className="block text-gray-800 font-semibold text-xl">Select Payment Method</label>
 
+                            {paymentMethodsLoading ? (
+                                <div className="flex items-center justify-center py-10">
+                                    <div className="relative">
+                                        <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-200 border-t-blue-500"></div>
+                                        <span className="ml-4 text-gray-600 font-medium">Loading...</span>
+                                    </div>
+                                </div>
+                            ) : paymentMethods.length === 0 ? (
+                                <div className="text-center py-10 bg-gray-50 rounded-lg border border-gray-200">
+                                    <FiCreditCard className="mx-auto h-12 w-12 text-gray-400 mb-3" />
+                                    <p className="text-gray-600 font-medium">No payment methods available</p>
+                                    <p className="text-sm text-gray-500 mt-1">Please contact support</p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-2 sm:grid-cols-2 gap-4">
+                                    {paymentMethods.map(pm => (
+                                        <button
+                                            key={pm.paymentMethodId}
+                                            onClick={() => setSelectedPaymentMethod(pm.paymentMethodId)}
+                                            className={`relative p-2 rounded-lg border-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400 ${selectedPaymentMethod === pm.paymentMethodId
+                                                ? 'border-blue-500 bg-blue-50 shadow-md'
+                                                : 'border-gray-200 bg-white hover:border-blue-200 hover:bg-blue-50/50'
+                                                }`}
+                                            aria-label={`Select ${pm.name} as payment method`}
+                                        >
+                                            <div className="flex flex-col items-center justify-center space-y-2">
+                                                {pm.logoURL && (
+                                                    <img
+                                                        src={pm.logoURL}
+                                                        alt={`${pm.name} logo`}
+                                                        className="h-12 w-auto max-w-20 object-contain"
+                                                        onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                                                            const target = e.target as HTMLImageElement;
+                                                            target.style.display = 'none';
+                                                        }}
+                                                    />
+                                                )}
+                                            </div>
+                                            {selectedPaymentMethod === pm.paymentMethodId && (
+                                                <div className="absolute top-2 right-2">
+                                                    <FiCheckCircle className="text-blue-500 text-lg" />
+                                                </div>
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                         {/* Payment Button */}
                         <button
                             disabled={!selectedBill || !selectedPaymentMethod || loading}
@@ -305,7 +349,6 @@ const PaymentPage = () => {
                                 </>
                             )}
                         </button>
-
                     </div>
                 </div>
             </div>

@@ -110,52 +110,52 @@ const EmployeeForm = () => {
   };
 
 
-useEffect(() => {
-  const mode = determineFormMode();
+  useEffect(() => {
+    const mode = determineFormMode();
 
-  if (mode === 'create') {
-    setEmployee(defaultFormState);
-    setEditMode(false);
-    setEditSessionId(null);
-    cleanupEditData();
-  } else if (mode === 'edit') {
-    const editData = localStorage.getItem(EDIT_DATA_KEY);
-    const sessionId = localStorage.getItem(EDIT_SESSION_KEY);
+    if (mode === 'create') {
+      setEmployee(defaultFormState);
+      setEditMode(false);
+      setEditSessionId(null);
+      cleanupEditData();
+    } else if (mode === 'edit') {
+      const editData = localStorage.getItem(EDIT_DATA_KEY);
+      const sessionId = localStorage.getItem(EDIT_SESSION_KEY);
 
-    if (editData && sessionId) {
-      try {
-        const parsed = JSON.parse(editData);
-        setEditMode(true);
-        setEditSessionId(sessionId);
-        
-        // Ensure employeeTypeId is a number and exists in the options
-        const employeeTypeId = parsed.employeeTypeId ? Number(parsed.employeeTypeId) : 0;
-        const branchId = parsed.branchId ? Number(parsed.branchId) : 0;
-        
-        setEmployee({
-          empId: parsed.empId,
-          username: parsed.username || '',
-          email: parsed.email || '',
-          name: parsed.name || '',
-          address: parsed.address || '',
-          dob: formatDateForInput(parsed.dob),
-          userTypeId: parsed.userTypeId || 2,
-          employeeTypeId: employeeTypeId,
-          branchId: branchId,
-          contactNo: parsed.contactNo || '',
-          status: parsed.status || '',
-        });
-      } catch (error) {
-        console.error('Error parsing edit data:', error);
-        cleanupEditData();
-        setEditMode(false);
-        setEmployee(defaultFormState);
+      if (editData && sessionId) {
+        try {
+          const parsed = JSON.parse(editData);
+          setEditMode(true);
+          setEditSessionId(sessionId);
+
+          // Ensure employeeTypeId is a number and exists in the options
+          const employeeTypeId = parsed.employeeTypeId ? Number(parsed.employeeTypeId) : 0;
+          const branchId = parsed.branchId ? Number(parsed.branchId) : 0;
+
+          setEmployee({
+            empId: parsed.empId,
+            username: parsed.username || '',
+            email: parsed.email || '',
+            name: parsed.name || '',
+            address: parsed.address || '',
+            dob: formatDateForInput(parsed.dob),
+            userTypeId: parsed.userTypeId || 2,
+            employeeTypeId: employeeTypeId,
+            branchId: branchId,
+            contactNo: parsed.contactNo || '',
+            status: parsed.status || '',
+          });
+        } catch (error) {
+          console.error('Error parsing edit data:', error);
+          cleanupEditData();
+          setEditMode(false);
+          setEmployee(defaultFormState);
+        }
       }
     }
-  }
 
-  isInitialMount.current = false;
-}, [location.search]);
+    isInitialMount.current = false;
+  }, [location.search]);
 
   useEffect(() => {
     const fetchDropdowns = async () => {
@@ -302,21 +302,19 @@ useEffect(() => {
             );
             return;
           }
-
           const dataToSend = {
             empId: employee.empId,
             username: employee.username,
             email: employee.email,
             name: employee.name,
             address: employee.address,
-            dob: employee.dob,
+            dob: employee.dob, // This should be in ISO format (YYYY-MM-DD)
             userTypeId: employee.userTypeId || 2,
             employeeTypeId: employee.employeeTypeId,
             branchId: employee.branchId,
             contactNo: employee.contactNo,
             status: employee.status,
           };
-
           const url = editMode
             ? `http://localhost:5008/api/employeedetails/${employee.empId}`
             : 'http://localhost:5008/api/employeedetails';
@@ -379,10 +377,7 @@ useEffect(() => {
   return (
     <>
       <ToastContainer position="top-right" autoClose={3000} />
-      <div className="flex items-center justify-center bg-gradient-to-tr from-blue Dept. of Electrical and Computer Engineering
-1000 Chastain Road
-Kennesaw, GA 30144
-Phone: (470) 578-3400 -100 to-white px-4 py-10">
+      <div className="flex items-center justify-center bg-gradient-to-tr from-blue-to-white px-4 py-10">
         <div className="max-w-2xl w-full bg-gradient-to-tr from-blue-200 to-white rounded-2xl shadow-lg p-8">
           <div className="text-center mb-10">
             <div className="inline-flex items-center justify-center w-14 h-14 bg-blue-600 text-white rounded-xl mb-5 shadow-md animate-bounce">
@@ -401,9 +396,6 @@ Phone: (470) 578-3400 -100 to-white px-4 py-10">
               </h4>
               <p className="text-sm text-blue-700">
                 You are editing: <strong>{employee.name}</strong> (Username: {employee.username})
-              </p>
-              <p className="text-xs text-blue-600 mt-1">
-                Your changes are being saved automatically. You can safely refresh the page.
               </p>
             </div>
           )}

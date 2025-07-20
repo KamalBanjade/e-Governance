@@ -56,4 +56,14 @@ export interface Branch {
   status: string;
 }
 
-
+// export interface ExtendedBill extends Bill {
+//   billNo?: number;
+//   consumedUnit?: number;
+//   totalBillAmount?: number;
+//   createdDate?: string;
+//   createdBy?: string;
+//   updatedDate?: string;
+//   updatedBy?: string;
+//   customerName?: string;
+//   customerAddress?: string;
+// }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FiSearch, FiUser, FiCalendar, FiZap, FiDollarSign, FiSend, FiFileText, FiCreditCard, FiAlertCircle } from 'react-icons/fi';
 import { HiOutlineCalculator } from 'react-icons/hi';
@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import type { Bill, Customer } from '../types/models';
 import { getAuthToken } from '../utility/auth';
 import { useDialog } from '../Contexts/DialogContext';
+import { useClickOutside, useEscapeKey } from '../utility/useCustomHooks';
 
 interface Props {
   onSave: () => void;
@@ -18,7 +19,6 @@ interface UserInfo {
   userId: string;
 }
 
-// Updated Bill interface to match backend model
 interface ExtendedBill extends Bill {
   billNo?: number;
   consumedUnit?: number;
@@ -61,10 +61,25 @@ const BillForm = ({ onSave }: Props) => {
   const [selectedBill, setSelectedBill] = useState<ExtendedBill | null>(null);
   const [initialDataLoaded, setInitialDataLoaded] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const months = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
+  // Move hooks to top level
+  useClickOutside(dropdownRef, () => setIsDropdownOpen(false));
+  useEscapeKey(() => setIsDropdownOpen(false));
+
+  const nepaliMonths = [
+    'Baisakh (बैशाख)',
+    'Jestha (जेठ)',
+    'Ashadh (असार)',
+    'Shrawan (साउन)',
+    'Bhadra (भदौ)',
+    'Ashwin (असोज)',
+    'Kartik (कार्तिक)',
+    'Mangsir (मंसिर)',
+    'Poush (पुष)',
+    'Magh (माघ)',
+    'Falgun (फागुन)',
+    'Chaitra (चैत)',
   ];
 
   // Decode JWT token to get user info
@@ -74,7 +89,7 @@ const BillForm = ({ onSave }: Props) => {
       return {
         role: payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || payload.role,
         userTypeId: parseInt(payload.userTypeId || '0'),
-        userId: payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || payload.sub
+        userId: payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || payload.sub,
       };
     } catch (error) {
       console.error('Error decoding token:', error);
@@ -391,7 +406,9 @@ const BillForm = ({ onSave }: Props) => {
       return;
     }
 
-    navigate('/payments', { state: { bill: selectedBill, customer: selectedCustomer } });
+    toast.info(`Proceeding to payment for bill ${selectedBill.billNo}...`, { autoClose: 2000 });
+    navigate('/PaymentForm', { state: { bill: selectedBill, customer: selectedCustomer } });
+    setSelectedBill(null); // Reset selected bill after navigation
   };
 
   const consumedUnits = bill.consumedUnit || (bill.currentReading - bill.previousReading);
@@ -429,7 +446,7 @@ const BillForm = ({ onSave }: Props) => {
                 <option value="">Select a bill to view</option>
                 {customerBills.map(bill => (
                   <option key={bill.billNo} value={bill.billNo}>
-                    {bill.billMonth} {bill.billYear} — ${bill.totalBillAmount?.toFixed(2)}
+                    {bill.billMonth} {bill.billYear} —  रु. {bill.totalBillAmount?.toFixed(2)}
                   </option>
                 ))}
               </select>
@@ -465,7 +482,7 @@ const BillForm = ({ onSave }: Props) => {
               type: 'select',
               icon: <FiCalendar className="h-5 w-5 text-indigo-600" />,
               required: true,
-              options: months.map(month => ({ value: month, label: month })),
+              options: nepaliMonths.map(month => ({ value: month, label: month })),
             },
             {
               label: 'Bill Year',
@@ -523,7 +540,7 @@ const BillForm = ({ onSave }: Props) => {
                 <span className="ml-2">{label}{required ? ' *' : ''}:</span>
               </label>
               {type === 'custom' && name === 'cusId' ? (
-                <div className="relative">
+                <div className="relative" ref={dropdownRef}>
                   <input
                     type="text"
                     placeholder={isCustomer() ? "Your customer information" : "Search customers..."}
@@ -602,11 +619,11 @@ const BillForm = ({ onSave }: Props) => {
                 <div className="text-sm text-gray-600 mt-1">Units Consumed</div>
               </div>
               <div className="text-center p-5 bg-white rounded-xl shadow">
-                <div className="text-2xl font-bold text-green-600">${(bill.rate || 0).toFixed(2)}</div>
+                <div className="text-2xl font-bold text-green-600">रु. {(bill.rate || 0).toFixed(2)}</div>
                 <div className="text-sm text-gray-600 mt-1">Rate per Unit</div>
               </div>
               <div className="text-center p-5 bg-white rounded-xl shadow">
-                <div className="text-2xl font-bold text-purple-600">${totalAmount.toFixed(2)}</div>
+                <div className="text-2xl font-bold text-purple-600">रु. {totalAmount.toFixed(2)}</div>
                 <div className="text-sm text-gray-600 mt-1">Total Amount</div>
               </div>
             </div>
@@ -618,8 +635,8 @@ const BillForm = ({ onSave }: Props) => {
                 onClick={handleProceedToPayment}
                 disabled={!selectedBill}
                 className={`px-10 py-3 rounded-xl text-white font-semibold transition duration-300 flex items-center justify-center ${!selectedBill
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-green-600 hover:bg-green-700 shadow-md'
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-green-600 hover:bg-green-700 shadow-md'
                   }`}
               >
                 <FiCreditCard className="h-5 w-5 mr-2" />
@@ -630,8 +647,8 @@ const BillForm = ({ onSave }: Props) => {
                 onClick={handleSubmit}
                 disabled={loading}
                 className={`px-10 py-3 rounded-xl text-white font-semibold transition duration-300 flex items-center justify-center ${loading
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-green-600 hover:bg-green-700 shadow-md'
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-green-600 hover:bg-green-700 shadow-md'
                   }`}
               >
                 <FiSend className="h-5 w-5 mr-2" />

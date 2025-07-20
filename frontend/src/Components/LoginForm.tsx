@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { jwtDecode } from 'jwt-decode';
 import { FiEye, FiEyeOff, FiKey } from 'react-icons/fi';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -14,7 +15,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
-
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
@@ -27,45 +27,73 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
       });
 
       const result = await res.json();
-      console.log('Login response:', result); // Debug log to see what you're getting
+      console.log('Login response:', result);
 
-      // Destructure with proper checking
       const { token, role, userTypeId, requiresCustomerProfile } = result;
 
-      // More robust validation
       if (res.ok && token && role && userTypeId !== undefined && userTypeId !== null) {
-        toast.success(result.message || 'Logged in successfully!');
         localStorage.setItem('authToken', token);
         localStorage.setItem('userRole', role);
-        localStorage.setItem('userTypeId', String(userTypeId)); // Use String() instead of toString()
+        localStorage.setItem('userTypeId', String(userTypeId));
+        localStorage.setItem('requiresCustomerProfile', String(requiresCustomerProfile || false));
+
+        // Extract name from JWT token
+        let userName = username;
+        try {
+          const decoded: any = jwtDecode(token);
+          userName = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || username || 'User';
+        } catch {
+          console.error('Failed to decode JWT token');
+        }
+        localStorage.setItem('userName', userName);
+
+        // Display role-specific toast notification
+        switch (role) {
+          case 'Admin':
+            toast.success(`Welcome, ${userName}!\nBelow is your control panel.`, {
+              autoClose: 3000,
+              style: { whiteSpace: 'pre-line' },
+            });
+            break;
+          case 'Clerk':
+            toast.success(`Hello, ${userName}!\nBelow is your dashboard.`, {
+              autoClose: 3000,
+              style: { whiteSpace: 'pre-line' },
+            });
+            break;
+          case 'Customer':
+            toast.success(
+              requiresCustomerProfile
+                ? `Welcome, ${userName}!\nPlease complete your profile to continue.`
+                : `Welcome, ${userName}!\nPlease proceed with your Bills.`,
+              {
+                autoClose: 3000,
+                style: { whiteSpace: 'pre-line' },
+              }
+            );
+            break;
+          default:
+            toast.success(`Welcome, ${userName}!`, { autoClose: 3000 });
+        }
 
         onLogin(userTypeId, token, role, requiresCustomerProfile || false);
 
-        // Redirect to appropriate dashboard
         if (role === 'Admin') {
           navigate('/admin-dashboard');
         } else if (role === 'Clerk') {
           navigate('/employee-dashboard');
         } else if (userTypeId === 3) {
-          navigate('/customer-dashboard');
+          navigate(requiresCustomerProfile ? '/complete-profile' : '/customer-dashboard');
         } else {
           navigate('/unauthorized');
         }
       } else {
-        // More detailed error handling
         const errorMessage = result.message || 'Login failed';
-        if (!token) {
-          console.error('No token received');
-        }
-        if (!role) {
-          console.error('No role received');
-        }
-        if (userTypeId === undefined || userTypeId === null) {
-          console.error('No userTypeId received');
-        }
+        if (!token) console.error('No token received');
+        if (!role) console.error('No role received');
+        if (userTypeId === undefined || userTypeId === null) console.error('No userTypeId received');
         toast.error(errorMessage);
       }
-
     } catch (error) {
       console.error('Login error:', error);
       toast.error('Network error occurred. Please try again.');
@@ -77,10 +105,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') handleSubmit();
   };
-  
+
   return (
     <div className="h-screen flex items-center justify-center bg-gradient-to-tr from-blue-100 to-white">
-       <div className="max-w-lg w-full bg-gradient-to-tr from-blue-200 to-white rounded-2xl shadow-lg p-8">
+      <div className="max-w-lg w-full bg-gradient-to-tr from-blue-200 to-white rounded-2xl shadow-lg p-8">
         <div className="text-center mb-10">
           <div className="inline-flex items-center justify-center w-14 h-14 bg-blue-600 text-white rounded-xl mb-5 shadow-md animate-bounce">
             <FiKey className="w-6 h-6" />
@@ -89,7 +117,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
           <p className="text-sm text-gray-500">Sign in to continue</p>
         </div>
 
-        {/* Form Fields */}
         <div className="space-y-6">
           <div className="relative">
             <input
@@ -97,7 +124,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
               type="text"
               placeholder="Username"
               value={username}
-              onChange={e => setUsername(e.target.value)}
+              onChange={(e) => setUsername(e.target.value)}
               onKeyDown={handleKeyPress}
               onFocus={() => setFocusedField('username')}
               onBlur={() => setFocusedField(null)}
@@ -112,7 +139,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
               type={showPassword ? 'text' : 'password'}
               placeholder="Password"
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               onKeyDown={handleKeyPress}
               onFocus={() => setFocusedField('password')}
               onBlur={() => setFocusedField(null)}
@@ -121,15 +148,15 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
             />
             <button
               type="button"
-              onClick={() => setShowPassword(prev => !prev)}
+              onClick={() => setShowPassword((prev) => !prev)}
               className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
               tabIndex={-1}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
               {showPassword ? <FiEyeOff className="w-5 h-5" /> : <FiEye className="w-5 h-5" />}
             </button>
           </div>
 
-          {/* Extras */}
           <div className="flex items-center justify-between pt-1">
             <label className="flex items-center text-sm text-gray-600">
               <input type="checkbox" className="mr-2 rounded border-gray-300" />
@@ -140,7 +167,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
             </Link>
           </div>
 
-          {/* Submit */}
           <button
             onClick={handleSubmit}
             disabled={isLoading || !username || !password}
@@ -157,7 +183,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
           </button>
         </div>
 
-        {/* Footer */}
         <div className="text-center mt-10 pt-6 border-t border-gray-200">
           <p className="text-sm text-gray-500">
             Don't have an account?{' '}
