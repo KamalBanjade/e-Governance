@@ -12,6 +12,15 @@ const RequireRole: React.FC<RequireRoleProps> = ({ allowedRoles, children }) => 
   const userRole = localStorage.getItem('userRole');
   const userTypeId = localStorage.getItem('userTypeId');
 
+  // Debug logging - remove in production
+  console.log('RequireRole Debug:', {
+    token: token ? 'exists' : 'missing',
+    userRole,
+    userTypeId,
+    allowedRoles,
+    pathname: window.location.pathname
+  });
+
   // Check if token exists and is valid
   const isTokenValid = (token: string | null): boolean => {
     if (!token) return false;
@@ -19,37 +28,44 @@ const RequireRole: React.FC<RequireRoleProps> = ({ allowedRoles, children }) => 
       const decoded: any = jwtDecode(token);
       return decoded.exp * 1000 > Date.now();
     } catch (error) {
+      console.error('Token decode error:', error);
       return false;
     }
   };
 
   // If no valid token, redirect to login
   if (!isTokenValid(token)) {
+    console.log('Invalid token, redirecting to login');
     return <Navigate to="/login" replace />;
   }
 
   // Check role permissions
-  const hasPermission = () => {
-    // Admin role check
-    if (allowedRoles.includes('Admin') && userRole === 'Admin') {
+  const hasPermission = (): boolean => {
+    // Simple role-based check - if userRole matches any allowed role
+    if (userRole && allowedRoles.includes(userRole)) {
       return true;
     }
-    
-    // Clerk role check
-    if (allowedRoles.includes('Clerk') && userRole === 'Clerk') {
-      return true;
-    }
-    
-    // Customer role check (userTypeId = 3)
-    if (allowedRoles.includes('Customer') && userTypeId === '3') {
+
+    // Legacy Customer check using userTypeId (if you need this specific logic)
+    if (allowedRoles.includes('Customer') && userTypeId === '3' && userRole === 'Customer') {
       return true;
     }
     
     return false;
   };
 
+  const permitted = hasPermission();
+  
+  // Debug logging
+  console.log('Permission check:', {
+    userRole,
+    allowedRoles,
+    permitted,
+    redirectingToUnauthorized: !permitted
+  });
+
   // If user doesn't have permission, redirect to unauthorized
-  if (!hasPermission()) {
+  if (!permitted) {
     return <Navigate to="/unauthorized" replace />;
   }
 

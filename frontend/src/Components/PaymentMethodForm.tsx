@@ -60,7 +60,7 @@ const PaymentMethodForm = () => {
     const { name, logoURL, status } = formData;
     if (!name || !logoURL || !status) {
       toast.error('Please fill in all required fields.', {
-        position: 'top-right',
+        position: 'bottom-right',
         autoClose: 2000,
       });
       return false;
@@ -90,7 +90,7 @@ const PaymentMethodForm = () => {
         try {
           if (!token) {
             toast.error('No authentication token. Please log in.', {
-              position: 'top-right',
+              position: 'bottom-right',
               autoClose: 2000,
             });
             navigate('/login');
@@ -115,7 +115,7 @@ const PaymentMethodForm = () => {
 
           if (res.status === 401) {
             toast.error('You are not authorized. Please log in.', {
-              position: 'top-right',
+              position: 'bottom-right',
               autoClose: 2000,
             });
             navigate('/login');
@@ -135,14 +135,14 @@ const PaymentMethodForm = () => {
           }
 
           toast.success(isEditing ? 'Payment method updated successfully!' : 'Payment method added successfully!', {
-            position: 'top-right',
+            position: 'bottom-right',
             autoClose: 2000,
           });
           resetForm();
           navigate('/paymentmethodlist');
         } catch (err: any) {
           toast.error(err.message || 'Failed to save payment method. Please try again.', {
-            position: 'top-right',
+            position: 'bottom-right',
             autoClose: 2000,
           });
           console.error('Submit error:', err);
@@ -161,7 +161,7 @@ const PaymentMethodForm = () => {
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="bottom-right" autoClose={3000} />
       <div className="max-w-2xl mx-auto p-8 bg-gradient-to-tr from-blue-100 to-white rounded-2xl shadow-lg mt-10">
         <h2 className="text-3xl font-bold text-blue-700 text-center mb-8 flex items-center justify-center">
           <FiPlus className="mr-2 h-8 w-8" />

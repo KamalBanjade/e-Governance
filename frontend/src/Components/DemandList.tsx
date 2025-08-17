@@ -26,7 +26,7 @@ const DemandList = () => {
     try {
       if (!token) {
         toast.error('No authentication token. Please log in.', {
-          position: 'top-right',
+          position: 'bottom-right',
           autoClose: 2000,
         });
         navigate('/login');
@@ -41,7 +41,7 @@ const DemandList = () => {
 
       if (res.status === 401) {
         toast.error('Session expired. Please log in again.', {
-          position: 'top-right',
+          position: 'bottom-right',
           autoClose: 2000,
         });
         navigate('/login');
@@ -55,7 +55,7 @@ const DemandList = () => {
       setFilteredDemandTypes(data);
     } catch (err) {
       toast.error('Failed to fetch demand types. Please try again.', {
-        position: 'top-right',
+        position: 'bottom-right',
         autoClose: 2000,
       });
       console.error('Fetch error:', err);
@@ -99,7 +99,7 @@ const DemandList = () => {
     const demandType = demandTypes.find(dt => dt.demandTypeId === id);
     if (!demandType) {
       toast.error('Demand type not found.', {
-        position: 'top-right',
+        position: 'bottom-right',
         autoClose: 2000,
       });
       return;
@@ -113,7 +113,7 @@ const DemandList = () => {
         try {
           if (!token) {
             toast.error('No authentication token. Please log in.', {
-              position: 'top-right',
+              position: 'bottom-right',
               autoClose: 2000,
             });
             navigate('/login');
@@ -129,7 +129,7 @@ const DemandList = () => {
 
           if (res.status === 401) {
             toast.error('You are not authorized. Please log in.', {
-              position: 'top-right',
+              position: 'bottom-right',
               autoClose: 2000,
             });
             navigate('/login');
@@ -139,13 +139,13 @@ const DemandList = () => {
           if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
 
           toast.success('Demand type deleted successfully!', {
-            position: 'top-right',
+            position: 'bottom-right',
             autoClose: 2000,
           });
           fetchDemandTypes();
         } catch (err) {
           toast.error('Failed to delete demand type. Please try again.', {
-            position: 'top-right',
+            position: 'bottom-right',
             autoClose: 2000,
           });
           console.error('Delete error:', err);
@@ -169,7 +169,7 @@ const DemandList = () => {
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={3000} theme="colored" />
+      <ToastContainer position="bottom-right" autoClose={3000} theme="colored" />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl p-8 animate-fade-in">
           <div className="mb-8 flex flex-col sm:flex-row justify-between items-center gap-4">

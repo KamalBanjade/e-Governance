@@ -68,7 +68,7 @@ const BranchList: React.FC = () => {
       setFilteredBranches(data);
     } catch (err) {
       toast.error('Failed to fetch branches. Please try again.', {
-        position: 'top-right',
+        position: 'bottom-right',
         autoClose: 2000,
       });
       console.error('Fetch branches error:', err);
@@ -155,7 +155,7 @@ const BranchList: React.FC = () => {
   const handleDelete = async (branchId: number) => {
     const branch = branches.find((b) => b.branchId === branchId);
     if (!branch) {
-      toast.error('Branch not found.', { position: 'top-right', autoClose: 2000 });
+      toast.error('Branch not found.', { position: 'bottom-right', autoClose: 2000 });
       return;
     }
 
@@ -174,9 +174,9 @@ const BranchList: React.FC = () => {
 
           setBranches(branches.filter((b) => b.branchId !== branchId));
           setFilteredBranches(filteredBranches.filter((b) => b.branchId !== branchId));
-          toast.success('Branch deleted successfully!', { position: 'top-right', autoClose: 2000 });
+          toast.success('Branch deleted successfully!', { position: 'bottom-right', autoClose: 2000 });
         } catch (err) {
-          toast.error('Failed to delete branch. Please try again.', { position: 'top-right', autoClose: 2000 });
+          toast.error('Failed to delete branch. Please try again.', { position: 'bottom-right', autoClose: 2000 });
           console.error('Delete error:', err);
         } finally {
           setLoading(false);
@@ -196,7 +196,7 @@ const BranchList: React.FC = () => {
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={3000} theme="colored" />
+      <ToastContainer position="bottom-right" autoClose={3000} theme="colored" />
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-2xl p-8 animate-fade-in">
           <div className="mb-8 flex flex-col sm:flex-row justify-between items-center gap-4">

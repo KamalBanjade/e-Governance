@@ -374,7 +374,7 @@ const CustomerForm = () => {
             }
 
             toast.success('Customer updated successfully!', {
-              position: "top-right",
+              position: "bottom-right",
               autoClose: 3000,
               onClose: () => {
                 cleanupEditData();
@@ -424,7 +424,7 @@ const CustomerForm = () => {
             console.log('Success response:', result);
 
             toast.success('Customer created successfully!', {
-              position: "top-right",
+              position: "bottom-right",
               autoClose: 3000,
               onClose: () => {
                 resetForm();
@@ -468,7 +468,7 @@ const CustomerForm = () => {
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="bottom-right" autoClose={3000} />
       <div className="flex items-center justify-center bg-gradient-to-tr from-blue-100 to-white px-4 py-10">
         <div className="max-w-2xl w-full bg-gradient-to-tr from-blue-200 to-white rounded-2xl shadow-lg p-8">
           <div className="text-center mb-10">

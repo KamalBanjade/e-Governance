@@ -82,7 +82,7 @@ const PaymentPage = () => {
         } catch (error) {
             console.error('Failed to fetch payment methods:', error);
             toast.error('Failed to load payment methods. Please try again.', {
-                position: 'top-center'
+                position: 'bottom-right'
             });
         } finally {
             setPaymentMethodsLoading(false);
@@ -91,7 +91,7 @@ const PaymentPage = () => {
 
     const fetchCustomerBills = async () => {
         if (!token) {
-            toast.error('Session expired. Please login.', { position: 'top-center' });
+            toast.error('Session expired. Please login.', { position: 'bottom-right' });
             navigate('/login');
             return;
         }
@@ -112,7 +112,7 @@ const PaymentPage = () => {
                 setSelectedBill(data.bills[0]);
             }
         } catch (error) {
-            toast.error('Could not load bills.', { position: 'top-center' });
+            toast.error('Could not load bills.', { position: 'bottom-right' });
             console.error(error);
         }
     };
@@ -125,7 +125,7 @@ const PaymentPage = () => {
 
     const handlePayment = async () => {
         if (!selectedBill || !selectedPaymentMethod) {
-            toast.error('Please select a bill and payment method.', { position: 'top-center' });
+            toast.error('Please select a bill and payment method.', { position: 'bottom-right' });
             return;
         }
 
@@ -150,12 +150,14 @@ const PaymentPage = () => {
             if (!response.ok) throw new Error('Payment failed. Please try again.');
 
             toast.success(
-                `Payment of $${selectedBill.totalBillAmount?.toFixed(2)} successful!`,
-                { position: 'top-center', icon: <FiCheckCircle className="text-green-500" /> }
+                `Payment of रु. ${selectedBill.totalBillAmount?.toFixed(2)} successful!`,
+                { position: 'bottom-right', icon: <FiCheckCircle className="text-green-500" /> }
             );
 
+            // Navigate to customer dashboard after successful payment
+            setTimeout(() => navigate('/customer-dashboard'), 1500);
         } catch (error) {
-            toast.error('Payment failed.', { position: 'top-center' });
+            toast.error('Payment failed.', { position: 'bottom-right' });
             console.error(error);
         } finally {
             setLoading(false);
@@ -164,18 +166,18 @@ const PaymentPage = () => {
 
     return (
         <>
-            <ToastContainer />
-            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 flex items-center justify-center p-4">
-                <div className="max-w-xl w-full bg-gradient-to-tr from-blue-300 to-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-500 hover:shadow-3xl">
-                    {/* Header - Now with gradient background */}
-                    <div className="bg-gradient-to-tr from-blue-200 to-white p-6">
+            <ToastContainer position="bottom-right" />
+            <div className="min-h-screen bg-gradient-to-br from-blue-50 via-green-50 to-gray-100 flex items-center justify-center p-4">
+                <div className="max-w-xl w-full bg-gradient-to-tr from-blue-200 to-green-100 rounded-2xl shadow-2xl overflow-hidden transition-all duration-500 hover:shadow-3xl">
+                    {/* Header - Blue gradient */}
+                    <div className="bg-gradient-to-tr from-green-100 to-blue-100 p-6">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-3">
-                                <FiCreditCard className="text-3xl text-blue-600" />
+                                <FiCreditCard className="text-3xl text-green-600 animate-pulse" />
                                 <h2 className="text-2xl font-bold text-gray-800">Payment Portal</h2>
                             </div>
                             {passedCustomer && (
-                                <div className="bg-white/80 backdrop-blur-sm text-blue-800 rounded-full px-4 py-1 text-sm font-medium shadow-sm">
+                                <div className="bg-white/80 backdrop-blur-sm text-blue-800 rounded-full px-4 py-1 text-sm font-medium shadow-sm hover:bg-blue-50 transition-colors duration-200">
                                     {passedCustomer.name}
                                 </div>
                             )}
@@ -191,28 +193,28 @@ const PaymentPage = () => {
                                 <select
                                     value={selectedBill?.billNo || ''}
                                     onChange={handleBillChange}
-                                    className="w-full px-4 py-3 pr-10 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none bg-white shadow-sm"
+                                    className="w-full px-4 py-3 pr-10 rounded-lg border border-green-300 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all appearance-none bg-white shadow-sm hover:bg-green-50"
                                 >
                                     <option value="">-- Choose a bill --</option>
                                     {bills.map(bill => (
                                         <option key={bill.billNo} value={bill.billNo}>
-                                            {bill.billMonth} {bill.billYear} - ${bill.totalBillAmount?.toFixed(2)}
+                                            {bill.billMonth} {bill.billYear} - रु. {bill.totalBillAmount?.toFixed(2)}
                                         </option>
                                     ))}
                                 </select>
-                                <FiChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+                                <FiChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-500" />
                             </div>
                         </div>
 
                         {/* Bill Details */}
                         {selectedBill && passedPayment && (
-                            <div className="bg-gradient-to-tr from-blue-200 to-white rounded-xl p-5 border border-blue-100 shadow-xl">
+                            <div className="bg-gradient-to-tr from-green-150 to-green-100 rounded-xl p-5 border border-green-100 shadow-xl hover:shadow-2xl transition-shadow duration-300">
                                 <div className="flex items-center justify-between mb-3">
                                     <h3 className="font-bold text-lg text-gray-800 flex items-center">
                                         <FiFileText className="mr-2 text-blue-600" />
                                         Invoice Summary
                                     </h3>
-                                    <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                                    <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
                                         #{selectedBill.billNo}
                                     </span>
                                 </div>
@@ -226,23 +228,23 @@ const PaymentPage = () => {
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-gray-600">Original Amount:</span>
-                                        <span className="font-medium">
-                                            ${selectedBill.totalBillAmount?.toFixed(2)}
+                                        <span className="font-medium text-blue-600">
+                                            रु. {selectedBill.totalBillAmount?.toFixed(2)}
                                         </span>
                                     </div>
                                     <div className="flex justify-between text-green-600">
                                         <span>Rebate:</span>
-                                        <span>-${passedPayment.rebateAmount.toFixed(2)}</span>
+                                        <span>-रु. {passedPayment.rebateAmount.toFixed(2)}</span>
                                     </div>
                                     <div className="flex justify-between text-red-600">
                                         <span>Penalty:</span>
-                                        <span>+${passedPayment.penaltyAmount.toFixed(2)}</span>
+                                        <span>+रु. {passedPayment.penaltyAmount.toFixed(2)}</span>
                                     </div>
-                                    <div className="border-t border-gray-200 pt-2 mt-2">
+                                    <div className="border-t border-green-200 pt-2 mt-2">
                                         <div className="flex justify-between font-bold text-lg">
                                             <span>Total Due:</span>
                                             <span className="text-blue-600">
-                                                ${passedPayment.totalAmountPaid.toFixed(2)}
+                                                रु. {passedPayment.totalAmountPaid.toFixed(2)}
                                             </span>
                                         </div>
                                     </div>
@@ -251,7 +253,7 @@ const PaymentPage = () => {
                                     {passedPayment.paymentDate && (
                                         <div className="flex justify-between text-sm text-gray-500 mt-3">
                                             <span className="flex items-center">
-                                                <FiCalendar className="mr-1" />
+                                                <FiCalendar className="mr-1 text-blue-600" />
                                                 Payment Date:
                                             </span>
                                             <span>
@@ -262,7 +264,7 @@ const PaymentPage = () => {
                                     {passedPayment.transactionId && (
                                         <div className="flex justify-between text-sm text-gray-500">
                                             <span className="flex items-center">
-                                                <FiHash className="mr-1" />
+                                                <FiHash className="mr-1 text-blue-600" />
                                                 Transaction ID:
                                             </span>
                                             <span className="font-mono">
@@ -285,8 +287,8 @@ const PaymentPage = () => {
                                     </div>
                                 </div>
                             ) : paymentMethods.length === 0 ? (
-                                <div className="text-center py-10 bg-gray-50 rounded-lg border border-gray-200">
-                                    <FiCreditCard className="mx-auto h-12 w-12 text-gray-400 mb-3" />
+                                <div className="text-center py-10 bg-blue-50 rounded-lg border border-blue-200">
+                                    <FiCreditCard className="mx-auto h-12 w-12 text-blue-400 mb-3" />
                                     <p className="text-gray-600 font-medium">No payment methods available</p>
                                     <p className="text-sm text-gray-500 mt-1">Please contact support</p>
                                 </div>
@@ -296,9 +298,9 @@ const PaymentPage = () => {
                                         <button
                                             key={pm.paymentMethodId}
                                             onClick={() => setSelectedPaymentMethod(pm.paymentMethodId)}
-                                            className={`relative p-2 rounded-lg border-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400 ${selectedPaymentMethod === pm.paymentMethodId
+                                            className={`relative p-4 rounded-lg border-2 transition-all duration-200 ease-in-out transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400 ${selectedPaymentMethod === pm.paymentMethodId
                                                 ? 'border-blue-500 bg-blue-50 shadow-md'
-                                                : 'border-gray-200 bg-white hover:border-blue-200 hover:bg-blue-50/50'
+                                                : 'border-blue-200 bg-white hover:border-blue-300 hover:bg-blue-50/50'
                                                 }`}
                                             aria-label={`Select ${pm.name} as payment method`}
                                         >
@@ -307,7 +309,7 @@ const PaymentPage = () => {
                                                     <img
                                                         src={pm.logoURL}
                                                         alt={`${pm.name} logo`}
-                                                        className="h-12 w-auto max-w-20 object-contain"
+                                                        className="h-10 w-auto max-w-24 object-contain"
                                                         onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                                                             const target = e.target as HTMLImageElement;
                                                             target.style.display = 'none';
@@ -317,7 +319,7 @@ const PaymentPage = () => {
                                             </div>
                                             {selectedPaymentMethod === pm.paymentMethodId && (
                                                 <div className="absolute top-2 right-2">
-                                                    <FiCheckCircle className="text-blue-500 text-lg" />
+                                                    <FiCheckCircle className="text-green-500 text-lg animate-pulse" />
                                                 </div>
                                             )}
                                         </button>
@@ -344,7 +346,7 @@ const PaymentPage = () => {
                                 </>
                             ) : (
                                 <>
-                                    <FiDollarSign />
+                                    <FiDollarSign className="text-green-200" />
                                     <span>Pay Now</span>
                                 </>
                             )}

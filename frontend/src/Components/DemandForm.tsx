@@ -68,7 +68,7 @@ const DemandForm = () => {
   const handleSubmit = async () => {
     if (!validateForm()) {
       toast.error('Please fill in all required fields.', {
-        position: 'top-right',
+        position: 'bottom-right',
         autoClose: 2000,
       });
       return;
@@ -82,7 +82,7 @@ const DemandForm = () => {
         try {
           if (!token) {
             toast.error('No authentication token. Please log in.', {
-              position: 'top-right',
+              position: 'bottom-right',
               autoClose: 2000,
             });
             navigate('/login');
@@ -105,7 +105,7 @@ const DemandForm = () => {
 
           if (res.status === 401) {
             toast.error('You are not authorized. Please log in.', {
-              position: 'top-right',
+              position: 'bottom-right',
               autoClose: 2000,
             });
             navigate('/login');
@@ -119,13 +119,13 @@ const DemandForm = () => {
 
           if (!res.ok) {
             toast.error(result.message || 'Failed to save demand type.', {
-              position: 'top-right',
+              position: 'bottom-right',
               autoClose: 2000,
             });
             console.error('Error:', result);
           } else {
             toast.success(isEditing ? 'Demand type updated successfully!' : 'Demand type added successfully!', {
-              position: 'top-right',
+              position: 'bottom-right',
               autoClose: 2000,
             });
             resetForm();
@@ -133,7 +133,7 @@ const DemandForm = () => {
           }
         } catch (err) {
           toast.error('Failed to save demand type. Please try again.', {
-            position: 'top-right',
+            position: 'bottom-right',
             autoClose: 2000,
           });
           console.error('Submit error:', err);
@@ -152,7 +152,7 @@ const DemandForm = () => {
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="bottom-right" autoClose={3000} />
       <div className="max-w-2xl mx-auto p-8 bg-gradient-to-tr from-blue-100 to-white rounded-2xl shadow-lg mt-10">
         <h2 className="text-3xl font-bold text-blue-700 text-center mb-8 flex items-center justify-center">
           <FiPlus className="mr-2 h-8 w-8" />

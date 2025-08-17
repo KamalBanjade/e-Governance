@@ -5,8 +5,17 @@ import { jwtDecode } from 'jwt-decode';
 import { FiEye, FiEyeOff, FiKey } from 'react-icons/fi';
 import 'react-toastify/dist/ReactToastify.css';
 
+interface LoginResponse {
+  message: string;
+  requiresCustomerProfile: boolean;
+  role: string;
+  token: string;
+  userTypeId: number;
+  branchId?: number;
+}
+
 interface LoginFormProps {
-  onLogin: (userTypeId: number, token: string, role: string, requiresCustomerProfile: boolean) => void;
+  onLogin: (loginResponse: LoginResponse) => void;
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
@@ -26,10 +35,19 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
         body: JSON.stringify({ username, password }),
       });
 
-      const result = await res.json();
-      console.log('Login response:', result);
+      const contentType = res.headers.get('Content-Type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await res.text();
+        console.error('Non-JSON response:', text);
+        throw new Error('Server returned an invalid response. Please try again later.');
+      }
 
-      const { token, role, userTypeId, requiresCustomerProfile } = result;
+      const result: LoginResponse = await res.json();
+      console.log('Login response:', result);
+      console.log('BranchId from response:', result.branchId);
+      console.log('User role:', result.role);
+
+      const { token, role, userTypeId, requiresCustomerProfile, branchId } = result;
 
       if (res.ok && token && role && userTypeId !== undefined && userTypeId !== null) {
         localStorage.setItem('authToken', token);
@@ -37,7 +55,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
         localStorage.setItem('userTypeId', String(userTypeId));
         localStorage.setItem('requiresCustomerProfile', String(requiresCustomerProfile || false));
 
-        // Extract name from JWT token
+        console.log('Full login response:', result);
+        console.log('Role:', role, 'BranchId:', branchId, 'Type of branchId:', typeof branchId);
+
+        if ((role === 'BranchAdmin' || role === 'Clerk') && branchId) {
+          localStorage.setItem('userBranchId', String(branchId));
+        }
         let userName = username;
         try {
           const decoded: any = jwtDecode(token);
@@ -47,10 +70,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
         }
         localStorage.setItem('userName', userName);
 
-        // Display role-specific toast notification
         switch (role) {
           case 'Admin':
-            toast.success(`Welcome, ${userName}!\nBelow is your control panel.`, {
+          case 'BranchAdmin':
+            toast.success(`Welcome, ${userName}!\nBelow is your ${role === 'Admin' ? 'control panel' : 'branch dashboard'}.`, {
               autoClose: 3000,
               style: { whiteSpace: 'pre-line' },
             });
@@ -76,12 +99,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
             toast.success(`Welcome, ${userName}!`, { autoClose: 3000 });
         }
 
-        onLogin(userTypeId, token, role, requiresCustomerProfile || false);
+        onLogin(result);
 
-        if (role === 'Admin') {
-          navigate('/admin-dashboard');
+        // Navigate based on role
+        if (role === 'Admin' || role === 'BranchAdmin') {
+          navigate('/dashboard');
         } else if (role === 'Clerk') {
-          navigate('/employee-dashboard');
+          navigate('/clerk-dashboard');
         } else if (userTypeId === 3) {
           navigate(requiresCustomerProfile ? '/complete-profile' : '/customer-dashboard');
         } else {
@@ -94,9 +118,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
         if (userTypeId === undefined || userTypeId === null) console.error('No userTypeId received');
         toast.error(errorMessage);
       }
-    } catch (error) {
-      console.error('Login error:', error);
-      toast.error('Network error occurred. Please try again.');
+    } catch (error: any) {
+      console.error('Login error:', error.message);
+      toast.error(error.message || 'Network error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }

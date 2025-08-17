@@ -8,14 +8,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { getAuthToken } from '../utility/auth';
 import { formatDateForInput, formatDateForApi } from '../utility/dateFormatter';
 
-
 interface Branch {
   branchId: number;
-  name: string;
-}
-
-interface EmployeeType {
-  employeeTypeId: number;
   name: string;
 }
 
@@ -46,12 +40,9 @@ const EmployeeForm = () => {
   const { confirm } = useDialog();
   const [loading, setLoading] = useState(false);
   const [branches, setBranches] = useState<Branch[]>([]);
-  const [employeeTypes, setEmployeeTypes] = useState<EmployeeType[]>([]);
   const [editMode, setEditMode] = useState(false);
   const [editSessionId, setEditSessionId] = useState<string | null>(null);
   const isInitialMount = useRef(true);
-  // const urlParams = new URLSearchParams(location.search);
-  // const isNewEmployee = urlParams.get('new') === 'true';
 
   const defaultFormState: EmployeeFormData = {
     username: '',
@@ -60,7 +51,7 @@ const EmployeeForm = () => {
     address: '',
     dob: '',
     userTypeId: 2,
-    employeeTypeId: 0,
+    employeeTypeId: 1, // Set to Meter Reader (assuming ID 1 corresponds to Meter Reader)
     branchId: 0,
     contactNo: '',
     status: '',
@@ -97,7 +88,7 @@ const EmployeeForm = () => {
     const isNewEmployee = urlParams.get('new') === 'true';
 
     if (isNewEmployee) {
-      cleanupEditData();   // force remove localStorage if user is creating new
+      cleanupEditData();
       return 'create';
     }
 
@@ -108,7 +99,6 @@ const EmployeeForm = () => {
     cleanupEditData();
     return 'create';
   };
-
 
   useEffect(() => {
     const mode = determineFormMode();
@@ -128,8 +118,6 @@ const EmployeeForm = () => {
           setEditMode(true);
           setEditSessionId(sessionId);
 
-          // Ensure employeeTypeId is a number and exists in the options
-          const employeeTypeId = parsed.employeeTypeId ? Number(parsed.employeeTypeId) : 0;
           const branchId = parsed.branchId ? Number(parsed.branchId) : 0;
 
           setEmployee({
@@ -140,7 +128,7 @@ const EmployeeForm = () => {
             address: parsed.address || '',
             dob: formatDateForInput(parsed.dob),
             userTypeId: parsed.userTypeId || 2,
-            employeeTypeId: employeeTypeId,
+            employeeTypeId: 1, // Set to Meter Reader
             branchId: branchId,
             contactNo: parsed.contactNo || '',
             status: parsed.status || '',
@@ -170,26 +158,16 @@ const EmployeeForm = () => {
       }
 
       try {
-        const [branchRes, employeeTypeRes] = await Promise.all([
-          fetch('http://localhost:5008/api/employeedetails/branches', {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch('http://localhost:5008/api/employeedetails/employee-types', {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
+        const branchRes = await fetch('http://localhost:5008/api/employeedetails/branches', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-        if (!branchRes.ok || !employeeTypeRes.ok) {
+        if (!branchRes.ok) {
           throw new Error('Dropdown fetch failed');
         }
 
-        const [branchesData, employeeTypesData] = await Promise.all([
-          branchRes.json(),
-          employeeTypeRes.json(),
-        ]);
-
+        const branchesData = await branchRes.json();
         setBranches(branchesData);
-        setEmployeeTypes(employeeTypesData);
       } catch (error) {
         console.error('Error fetching dropdowns:', error);
         confirm(
@@ -203,6 +181,7 @@ const EmployeeForm = () => {
 
     fetchDropdowns();
   }, [navigate, confirm, token]);
+
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -335,7 +314,7 @@ const EmployeeForm = () => {
           }
 
           toast.success(editMode ? 'Employee updated successfully!' : 'Employee created successfully!', {
-            position: 'top-right',
+            position: 'bottom-right',
             autoClose: 3000,
             onClose: () => {
               resetForm();
@@ -376,7 +355,7 @@ const EmployeeForm = () => {
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="bottom-right" autoClose={3000} />
       <div className="flex items-center justify-center bg-gradient-to-tr from-blue-to-white px-4 py-10">
         <div className="max-w-2xl w-full bg-gradient-to-tr from-blue-200 to-white rounded-2xl shadow-lg p-8">
           <div className="text-center mb-10">
@@ -463,18 +442,9 @@ const EmployeeForm = () => {
               </div>
             </div>
 
-            <div className="space-y-5">
+             <div className="space-y-5">
               <h3 className="text-lg font-medium text-gray-800 border-b pb-2">Employment Details</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <SelectField
-                  label="Employee Type *"
-                  name="employeeTypeId"
-                  value={employee.employeeTypeId}
-                  onChange={handleChange}
-                  options={employeeTypes.map(et => ({ id: et.employeeTypeId, name: et.name }))}
-                  placeholder="Select Employee Type"
-                />
-
                 <SelectField
                   label="Branch *"
                   name="branchId"
@@ -495,7 +465,6 @@ const EmployeeForm = () => {
                   ]}
                   placeholder="Select Status"
                 />
-
               </div>
             </div>
           </div>

@@ -17,6 +17,7 @@ interface UserInfo {
   role: string;
   userTypeId: number;
   userId: string;
+  branchId: number;
 }
 
 interface ExtendedBill extends Bill {
@@ -27,6 +28,14 @@ interface ExtendedBill extends Bill {
   createdBy?: string;
   updatedDate?: string;
   updatedBy?: string;
+  status?: string;
+}
+
+interface NepaliDate {
+  year: number;
+  month: string;
+  day: number;
+  formatted: string;
 }
 
 const EDIT_DATA_KEY = 'editBillData';
@@ -37,35 +46,6 @@ const BillForm = ({ onSave }: Props) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { confirm } = useDialog();
-
-  const [bill, setBill] = useState<ExtendedBill>({
-    cusId: 0,
-    billDate: '',
-    billMonth: '',
-    billYear: new Date().getFullYear(),
-    previousReading: 0,
-    currentReading: 0,
-    minimumCharge: 0,
-    rate: 0,
-    consumedUnit: 0,
-    totalBillAmount: 0,
-  });
-
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
-  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
-  const [customerBills, setCustomerBills] = useState<ExtendedBill[]>([]);
-  const [selectedBill, setSelectedBill] = useState<ExtendedBill | null>(null);
-  const [initialDataLoaded, setInitialDataLoaded] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Move hooks to top level
-  useClickOutside(dropdownRef, () => setIsDropdownOpen(false));
-  useEscapeKey(() => setIsDropdownOpen(false));
 
   const nepaliMonths = [
     'Baisakh (बैशाख)',
@@ -82,7 +62,42 @@ const BillForm = ({ onSave }: Props) => {
     'Chaitra (चैत)',
   ];
 
-  // Decode JWT token to get user info
+  // Get current Nepali date from backend
+  const [nepaliDate, setNepaliDate] = useState<NepaliDate>({
+    year: new Date().getFullYear() + 57, // Fallback
+    month: 'Baisakh',
+    day: 1,
+    formatted: ''
+  });
+
+  const [bill, setBill] = useState<ExtendedBill>(() => ({
+    cusId: 0,
+    billDate: new Date().toISOString().split('T')[0],
+    billMonth: nepaliDate.month,
+    billYear: nepaliDate.year,
+    previousReading: 0,
+    currentReading: 0,
+    minimumCharge: 0,
+    rate: 0,
+    consumedUnit: 0,
+    totalBillAmount: 0,
+  }));
+
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  const [customerBills, setCustomerBills] = useState<ExtendedBill[]>([]);
+  const [selectedBill, setSelectedBill] = useState<ExtendedBill | null>(null);
+  const [initialDataLoaded, setInitialDataLoaded] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useClickOutside(dropdownRef, () => setIsDropdownOpen(false));
+  useEscapeKey(() => setIsDropdownOpen(false));
+
   const decodeToken = (token: string) => {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
@@ -90,6 +105,7 @@ const BillForm = ({ onSave }: Props) => {
         role: payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || payload.role,
         userTypeId: parseInt(payload.userTypeId || '0'),
         userId: payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || payload.sub,
+        branchId: parseInt(payload.branchId || '0'), // Extract branchId from JWT
       };
     } catch (error) {
       console.error('Error decoding token:', error);
@@ -97,12 +113,61 @@ const BillForm = ({ onSave }: Props) => {
     }
   };
 
-  // Check if user is customer
   const isCustomer = () => {
     return userInfo && (userInfo.role === 'Customer' || userInfo.userTypeId === 3);
   };
 
-  // Fetch user info from token and check edit mode
+  useEffect(() => {
+    const fetchNepaliDate = async () => {
+      try {
+        const response = await fetch('http://localhost:5008/api/Bills/current-nepali-date', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 401) {
+          toast.error('Session expired. Please log in again.');
+          navigate('/login');
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch Nepali date: ${response.status}`);
+        }
+
+        const data: NepaliDate = await response.json();
+        setNepaliDate(data);
+        setBill(prev => ({
+          ...prev,
+          billDate: new Date().toISOString().split('T')[0], // Keep Gregorian date for billDate
+          billMonth: data.month,
+          billYear: data.year,
+        }));
+      } catch (error) {
+        console.error('Failed to fetch Nepali date:', error);
+        toast.error('Failed to load Nepali date. Using approximate date.');
+        // Fallback to approximate date
+        const now = new Date();
+        const fallbackYear = now.getFullYear() + 57;
+        const monthIndex = now.getMonth();
+        const fallbackMonth = nepaliMonths[monthIndex] || 'Baisakh';
+        setNepaliDate({
+          year: fallbackYear,
+          month: fallbackMonth,
+          day: now.getDate(),
+          formatted: `${fallbackYear}/${monthIndex + 1}/${now.getDate()} (${fallbackMonth})`
+        });
+      }
+    };
+
+    if (token) {
+      fetchNepaliDate();
+    }
+  }, [token, navigate]);
+
   useEffect(() => {
     if (!token) {
       confirm(
@@ -117,7 +182,6 @@ const BillForm = ({ onSave }: Props) => {
     const decoded = decodeToken(token);
     setUserInfo(decoded);
 
-    // Check if in edit mode
     const params = new URLSearchParams(location.search);
     const editMode = params.get('edit') === 'true';
     setIsEditMode(editMode);
@@ -143,15 +207,15 @@ const BillForm = ({ onSave }: Props) => {
     }
   }, [token, location, navigate, confirm]);
 
-  // Fetch customers (for employees) or customer's own data (for customers)
   useEffect(() => {
     const fetchData = async () => {
       try {
         if (isCustomer()) {
           await fetchCustomerBillsWithDetails();
         } else {
+          // BranchId is already available in userInfo from JWT token
           await fetchAllCustomers();
-          // If in edit mode, fetch customer data for the bill's cusId
+
           if (isEditMode && bill.cusId) {
             await fetchCustomerById(bill.cusId);
           }
@@ -170,7 +234,27 @@ const BillForm = ({ onSave }: Props) => {
 
   const fetchAllCustomers = async () => {
     try {
-      const response = await fetch('http://localhost:5008/api/Customers', {
+      // Get user info from decoded JWT token
+      const role = userInfo?.role;
+      const userId = userInfo?.userId;
+      const branchId = userInfo?.branchId;
+
+      let url;
+
+      // Admin (userId === '1' OR role === 'Admin') gets all customers
+      if (userId === '1' || role === 'Admin') {
+        url = 'http://localhost:5008/api/Customers';
+      }
+      // Other roles (Clerk, BranchAdmin) get only customers from their branch
+      else if (branchId && branchId > 0) {
+        url = `http://localhost:5008/api/Customers/by-branch?branchId=${branchId}`;
+      }
+      // Fallback to all customers if no branch info
+      else {
+        url = 'http://localhost:5008/api/Customers';
+      }
+
+      const response = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -193,6 +277,7 @@ const BillForm = ({ onSave }: Props) => {
       console.error('Failed to load customers:', err);
     }
   };
+
 
   const fetchCustomerById = async (cusId: number) => {
     try {
@@ -241,10 +326,13 @@ const BillForm = ({ onSave }: Props) => {
 
       const data = await response.json();
       setSelectedCustomer(data.customer);
-      setCustomerBills(data.bills);
+      const unpaidBills = data.bills.filter(
+        (bill: ExtendedBill) => bill.status?.toLowerCase() === 'unpaid' || bill.status?.toLowerCase() === 'pending'
+      );
+      setCustomerBills(unpaidBills);
 
-      if (data.bills.length > 0 && !isEditMode) {
-        const latestBill = data.bills[0];
+      if (unpaidBills.length > 0 && !isEditMode) {
+        const latestBill = unpaidBills[0];
         setSelectedBill(latestBill);
         setBill({
           ...latestBill,
@@ -269,6 +357,12 @@ const BillForm = ({ onSave }: Props) => {
     setBill(prev => ({ ...prev, cusId: customer.cusId }));
     setSearchTerm('');
     setIsDropdownOpen(false);
+  };
+  const handleCustomerSearch = () => {
+    if (!isCustomer()) {
+      // Customers are already filtered by branch when fetched
+      setIsDropdownOpen(true);
+    }
   };
 
   const handleBillSelect = (selectedBill: ExtendedBill) => {
@@ -318,7 +412,7 @@ const BillForm = ({ onSave }: Props) => {
 
     confirm(
       isEditMode ? 'Confirm Bill Update' : 'Confirm Bill Creation',
-      `Are you sure you want to ${isEditMode ? 'update' : 'create'} a bill for ${selectedCustomer?.name || 'the selected customer'} with total amount $${finalAmount.toFixed(2)}?`,
+      `Are you sure you want to ${isEditMode ? 'update' : 'create'} a bill for ${selectedCustomer?.name || 'the selected customer'} with total amount रु. ${finalAmount.toFixed(2)}?`,
       async () => {
         setLoading(true);
         try {
@@ -370,11 +464,13 @@ const BillForm = ({ onSave }: Props) => {
           localStorage.removeItem('editBillTimestamp');
           localStorage.removeItem('editBillSessionId');
           onSave();
+
+          // Reset form with current Nepali date
           setBill({
             cusId: 0,
-            billDate: '',
-            billMonth: '',
-            billYear: new Date().getFullYear(),
+            billDate: new Date().toISOString().split('T')[0],
+            billMonth: nepaliDate.month,
+            billYear: nepaliDate.year,
             previousReading: 0,
             currentReading: 0,
             minimumCharge: 0,
@@ -408,7 +504,7 @@ const BillForm = ({ onSave }: Props) => {
 
     toast.info(`Proceeding to payment for bill ${selectedBill.billNo}...`, { autoClose: 2000 });
     navigate('/PaymentForm', { state: { bill: selectedBill, customer: selectedCustomer } });
-    setSelectedBill(null); // Reset selected bill after navigation
+    setSelectedBill(null);
   };
 
   const consumedUnits = bill.consumedUnit || (bill.currentReading - bill.previousReading);
@@ -424,11 +520,11 @@ const BillForm = ({ onSave }: Props) => {
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="bottom-right" autoClose={3000} />
       <div className="max-w-2xl mx-auto p-10 bg-gradient-to-br from-blue-200 via-white to-indigo-200 rounded-3xl shadow-2xl mt-10 border border-blue-200">
-        <h2 className="text-4xl font-extrabold text-blue-800 text-center mb-10 flex items-center justify-center tracking-tight">
-          <FiFileText className="mr-3 h-9 w-9 text-blue-700" />
-          {isEditMode ? 'Edit Bill' : isCustomer() ? 'Your Electric Bills' : 'Create New Bill'}
+        <h2 className="text-4xl font-extrabold text-green-400 text-center mb-10 flex items-center justify-center tracking-tight">
+          <FiFileText className="mr-3 h-9 w-9 text-green-700" />
+          {isEditMode ? 'Edit Bill' : isCustomer() ? 'Your Electric Bill' : 'Create New Bill'}
         </h2>
 
         {isCustomer() && (
@@ -446,14 +542,14 @@ const BillForm = ({ onSave }: Props) => {
                 <option value="">Select a bill to view</option>
                 {customerBills.map(bill => (
                   <option key={bill.billNo} value={bill.billNo}>
-                    {bill.billMonth} {bill.billYear} —  रु. {bill.totalBillAmount?.toFixed(2)}
+                    {bill.billMonth} {bill.billYear} — रु. {bill.totalBillAmount?.toFixed(2)}
                   </option>
                 ))}
               </select>
             ) : (
               <div className="text-gray-500 flex items-center justify-center p-4 rounded-md border border-dashed border-gray-300 bg-white shadow-sm">
                 <FiAlertCircle className="mr-2 h-5 w-5 text-gray-400" />
-                No bills found for your account.
+                No unpaid bills found for your account.
               </div>
             )}
           </div>
@@ -475,6 +571,7 @@ const BillForm = ({ onSave }: Props) => {
               type: 'date',
               icon: <FiCalendar className="h-5 w-5 text-indigo-600" />,
               required: true,
+              disabled: !isEditMode,
             },
             {
               label: 'Bill Month',
@@ -482,7 +579,8 @@ const BillForm = ({ onSave }: Props) => {
               type: 'select',
               icon: <FiCalendar className="h-5 w-5 text-indigo-600" />,
               required: true,
-              options: nepaliMonths.map(month => ({ value: month, label: month })),
+              options: nepaliMonths.map(month => ({ value: month, label: `${month}` })),
+              // disabled: !isEditMode,
             },
             {
               label: 'Bill Year',
@@ -492,6 +590,7 @@ const BillForm = ({ onSave }: Props) => {
               required: false,
               min: '2000',
               max: '2100',
+              disabled: !isEditMode,
             },
             {
               label: 'Previous Reading',
@@ -533,11 +632,14 @@ const BillForm = ({ onSave }: Props) => {
               min: '0',
               step: '0.01',
             },
-          ].map(({ label, name, type, icon, options, required, placeholder, min, max, step, colSpan }) => (
+          ].map(({ label, name, type, icon, options, required, placeholder, min, max, step, colSpan, disabled }) => (
             <div key={name} className={`flex flex-col space-y-2 ${colSpan || ''}`}>
               <label className="flex items-center text-gray-700 font-semibold">
                 {icon}
                 <span className="ml-2">{label}{required ? ' *' : ''}:</span>
+                {disabled && !isEditMode && (
+                  <span className="ml-2 text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded">Auto-filled</span>
+                )}
               </label>
               {type === 'custom' && name === 'cusId' ? (
                 <div className="relative" ref={dropdownRef}>
@@ -552,7 +654,7 @@ const BillForm = ({ onSave }: Props) => {
                         if (selectedCustomer) setSelectedCustomer(null);
                       }
                     }}
-                    onFocus={() => !isCustomer() && setIsDropdownOpen(true)}
+                    onFocus={() => handleCustomerSearch()}
                     className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-gray-50 shadow-sm"
                     readOnly={!!isCustomer() || userInfo === null}
                   />
@@ -581,9 +683,10 @@ const BillForm = ({ onSave }: Props) => {
                   name={name}
                   value={bill[name as keyof ExtendedBill] || ''}
                   onChange={handleChange}
-                  className="p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 w-full bg-white shadow-sm"
+                  className={`p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 w-full shadow-sm ${disabled ? 'bg-blue-50 cursor-not-allowed' : 'bg-white'
+                    }`}
                   required={required}
-                  disabled={!!isCustomer() || userInfo === null}
+                  disabled={disabled || !!isCustomer() || userInfo === null}
                 >
                   <option value="">Select {label}</option>
                   {options?.map(opt => (
@@ -597,11 +700,13 @@ const BillForm = ({ onSave }: Props) => {
                   value={bill[name as keyof ExtendedBill] || ''}
                   onChange={handleChange}
                   placeholder={placeholder}
-                  className="p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 w-full bg-white shadow-sm"
+                  className={`p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 w-full shadow-sm ${disabled ? 'bg-blue-50 cursor-not-allowed' : 'bg-white'
+                    }`}
                   required={required}
                   min={min}
                   max={max}
                   step={step}
+                  disabled={disabled || !!isCustomer() || userInfo === null}
                   readOnly={!!isCustomer() || userInfo === null}
                 />
               )}

@@ -4,8 +4,16 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FiEye, FiEyeOff, FiUser } from 'react-icons/fi';
 
+interface LoginResponse {
+  message: string;
+  requiresCustomerProfile: boolean;
+  role: string;
+  token: string;
+  userTypeId: number;
+}
+
 interface RegisterFormProps {
-  onLogin: (userTypeId: number, token: string, role: string, requiresCustomerProfile: boolean) => void;
+  onLogin: (loginResponse: LoginResponse) => void;
 }
 
 const RegisterForm: React.FC<RegisterFormProps> = ({ onLogin }) => {
@@ -73,7 +81,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLogin }) => {
           );
           navigate('/complete-profile', { replace: true });
           setTimeout(() => {
-            onLogin(userTypeId, token, role, requiresCustomerProfile);
+            onLogin(result);
           }, 100);
         } else {
           localStorage.setItem('userName', form.name.trim());
@@ -81,7 +89,13 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLogin }) => {
             autoClose: 3000,
             style: { whiteSpace: 'pre-line' },
           });
-          onLogin(userTypeId, token, role, false);
+          onLogin({
+            message: result.message || 'Registration successful',
+            requiresCustomerProfile: false,
+            role: result.role,
+            token: result.token,
+            userTypeId: result.userTypeId
+          });
           setTimeout(() => navigate('/login', { replace: true }), 1000);
         }
 

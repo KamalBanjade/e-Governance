@@ -80,7 +80,7 @@ const PaymentForm = () => {
     try {
       if (!token) {
         toast.error('No authentication token. Please log in.', {
-          position: 'top-right',
+          position: 'bottom-right',
           autoClose: 2000,
         });
         navigate('/login');
@@ -95,7 +95,7 @@ const PaymentForm = () => {
 
       if (res.status === 401) {
         toast.error('Session expired. Please log in again.', {
-          position: 'top-right',
+          position: 'bottom-right',
           autoClose: 2000,
         });
         navigate('/login');
@@ -108,7 +108,7 @@ const PaymentForm = () => {
       setBills(data);
     } catch (err) {
       toast.error('Failed to fetch bills. Please try again.', {
-        position: 'top-right',
+        position: 'bottom-right',
         autoClose: 2000,
       });
       console.error(err);
@@ -124,7 +124,7 @@ const PaymentForm = () => {
     try {
       if (!token) {
         toast.error('No authentication token. Please log in.', {
-          position: 'top-right',
+          position: 'bottom-right',
           autoClose: 2000,
         });
         navigate('/login');
@@ -147,7 +147,7 @@ const PaymentForm = () => {
 
       if (res.status === 401) {
         toast.error('Session expired. Please log in again.', {
-          position: 'top-right',
+          position: 'bottom-right',
           autoClose: 2000,
         });
         navigate('/login');
@@ -171,7 +171,7 @@ const PaymentForm = () => {
       const errorMessage = err instanceof Error ? err.message : 'Failed to calculate payment amounts';
       setCalculationError(errorMessage);
       toast.error(errorMessage, {
-        position: 'top-right',
+        position: 'bottom-right',
         autoClose: 2000,
       });
       console.error('Payment calculation error:', err);
@@ -214,17 +214,17 @@ const PaymentForm = () => {
     if (!validateForm()) {
       if (calculationError) {
         toast.error('Please fix calculation errors before proceeding.', {
-          position: 'top-right',
+          position: 'bottom-right',
           autoClose: 2000,
         });
       } else if (calculatingPayment) {
         toast.error('Please wait for payment calculation to complete.', {
-          position: 'top-right',
+          position: 'bottom-right',
           autoClose: 2000,
         });
       } else {
         toast.error('Please select a bill.', {
-          position: 'top-right',
+          position: 'bottom-right',
           autoClose: 2000,
         });
       }
@@ -233,7 +233,7 @@ const PaymentForm = () => {
 
     if (!selectedBill) {
       toast.error('Selected bill not found.', {
-        position: 'top-right',
+        position: 'bottom-right',
         autoClose: 2000,
       });
       return;
@@ -285,9 +285,9 @@ const PaymentForm = () => {
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="bottom-right" autoClose={3000} />
       <div className="max-w-2xl mx-auto p-8 bg-gradient-to-tr from-blue-100 to-white rounded-2xl shadow-lg mt-10">
-        <h2 className="text-3xl font-bold text-blue-700 text-center mb-8 flex items-center justify-center">
+        <h2 className="text-3xl font-bold text-green-700 text-center mb-8 flex items-center justify-center">
           <FiPlus className="mr-2 h-8 w-8" />
           Create New Payment
         </h2>
@@ -411,8 +411,8 @@ const PaymentForm = () => {
               disabled={!validateForm()}
               className={`px-8 py-3 rounded-lg text-white font-semibold transition duration-300 flex items-center justify-center ${
                 !validateForm()
-                  ? 'bg-blue-300 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700'
+                  ? 'bg-green-300 cursor-not-allowed'
+                  : 'bg-green-400 hover:bg-green-700'
               }`}
             >
               <FiSend className="h-5 w-5 mr-2" />

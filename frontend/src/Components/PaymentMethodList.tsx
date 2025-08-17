@@ -35,7 +35,7 @@ const PaymentMethodList = () => {
     try {
       if (!token) {
         toast.error('No authentication token. Please log in.', {
-          position: 'top-right',
+          position: 'bottom-right',
           autoClose: 2000,
         });
         navigate('/login');
@@ -50,7 +50,7 @@ const PaymentMethodList = () => {
 
       if (res.status === 401) {
         toast.error('Session expired. Please log in again.', {
-          position: 'top-right',
+          position: 'bottom-right',
           autoClose: 2000,
         });
         navigate('/login');
@@ -64,7 +64,7 @@ const PaymentMethodList = () => {
       setFilteredPaymentMethods(data);
     } catch (err) {
       toast.error('Failed to fetch payment methods. Please try again.', {
-        position: 'top-right',
+        position: 'bottom-right',
         autoClose: 2000,
       });
       console.error('Fetch error:', err);
@@ -108,7 +108,7 @@ const PaymentMethodList = () => {
     const paymentMethod = paymentMethods.find(pm => pm.paymentMethodId === id);
     if (!paymentMethod) {
       toast.error('Payment method not found.', {
-        position: 'top-right',
+        position: 'bottom-right',
         autoClose: 2000,
       });
       return;
@@ -122,7 +122,7 @@ const PaymentMethodList = () => {
         try {
           if (!token) {
             toast.error('No authentication token. Please log in.', {
-              position: 'top-right',
+              position: 'bottom-right',
               autoClose: 2000,
             });
             navigate('/login');
@@ -138,7 +138,7 @@ const PaymentMethodList = () => {
 
           if (res.status === 401) {
             toast.error('You are not authorized. Please log in.', {
-              position: 'top-right',
+              position: 'bottom-right',
               autoClose: 2000,
             });
             navigate('/login');
@@ -148,13 +148,13 @@ const PaymentMethodList = () => {
           if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
           toast.success('Payment method deleted successfully!', {
-            position: 'top-right',
+            position: 'bottom-right',
             autoClose: 2000,
           });
           fetchPaymentMethods();
         } catch (err) {
           toast.error('Failed to delete payment method. Please try again.', {
-            position: 'top-right',
+            position: 'bottom-right',
             autoClose: 2000,
           });
           console.error('Delete error:', err);
@@ -178,7 +178,7 @@ const PaymentMethodList = () => {
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={3000} theme="colored" />
+      <ToastContainer position="bottom-right" autoClose={3000} theme="colored" />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl p-8 animate-fade-in">
           <div className="mb-8 flex flex-col sm:flex-row justify-between items-center gap-4">
