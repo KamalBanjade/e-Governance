@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -20,10 +20,9 @@ import DemandForm from './Components/DemandForm';
 import PaymentMethodForm from './Components/PaymentMethodForm';
 import PaymentMethodList from './Components/PaymentMethodList';
 import PaymentForm from './Components/PaymentForm';
-import AdminDashboard from './Dashboards/AdminDashboard';
+import Dashboard from './Dashboards/DashBoard';
 import CustomerDashboard from './Dashboards/CustomerDashboard';
-import EmployeeDashboard from './Dashboards/EmployeeDashboard';
-// import GoBackButton from './Components/GoBackButton';
+import EmployeeDashboard from './Dashboards/ClerkDashboard';
 import CustomerProfileCompletion from './Components/CustomerProfileCompletion';
 import PaymentPage from './Components/PaymentPage';
 import EmployeeList from './Components/EmployeeList';
@@ -32,36 +31,49 @@ import BillList from './Components/BillList';
 import GlobalNavbar from './Components/GlobalNavbar';
 import PaymentList from './Components/PaymentList';
 import Sidebar from './Components/SideBar';
+import MyBills from './Components/MyBills';
+import Profile from './Components/Profile';
+import MainContentLayout from './Components/MainContentLayout';
+import SupportCenter from './Components/SupportCenter';
+import { motion } from 'framer-motion';
+import BranchAdminList from './Components/BranchAdminList';
+import BranchAdminForm from './Components/BranchAdminForm';
+import ErrorBoundary from './Components/ErrorBoundary';
 
 const AppContent = () => {
-  const { isAuthenticated, userTypeId, requiresCustomerProfile, handleLogin } = useAuth();
+  const { isAuthenticated, requiresCustomerProfile, handleLogin, handleLogout, userTypeId } = useAuth();
   const location = useLocation();
-  const [sidebarPinned, setSidebarPinned] = useState(true);
+  const [sidebarPinned, setSidebarPinned] = useState(() => {
+    const saved = localStorage.getItem('sidebarPinned');
+    return saved !== null ? JSON.parse(saved) : false;
+  });
 
-  // Routes where the sidebar should not appear
+  useEffect(() => {
+    localStorage.setItem('sidebarPinned', JSON.stringify(sidebarPinned));
+  }, [sidebarPinned]);
+
   const noSidebarRoutes = [
     '/login',
     '/register',
     '/forgot-password',
     '/reset-password',
     '/complete-profile',
-    '/unauthorized'
+    '/unauthorized',
   ];
-  const storedRole = localStorage.getItem('userRole');
 
-  // Determine if the sidebar should be shown
+  const storedRole = localStorage.getItem('userRole');
+  const storedTypeId = localStorage.getItem('userTypeId');
+
   const showSidebar = isAuthenticated && !noSidebarRoutes.includes(location.pathname);
 
   const getDefaultRoute = () => {
-    const storedRole = localStorage.getItem('userRole');
-    const storedTypeId = localStorage.getItem('userTypeId');
     const storedRequiresCustomerProfile = localStorage.getItem('requiresCustomerProfile') === 'true';
 
     if (storedRequiresCustomerProfile && storedTypeId === '3' && storedRole === 'Customer') {
       return '/complete-profile';
     }
-    if (storedRole === 'Admin') return '/admin-dashboard';
-    if (storedRole === 'Clerk') return '/employee-dashboard';
+    if (storedRole === 'Admin' || storedRole === 'BranchAdmin') return '/dashboard';
+    if (storedRole === 'Clerk') return '/clerk-dashboard';
     if (storedTypeId === '3' && storedRole === 'Customer') return '/customer-dashboard';
     return '/login';
   };
@@ -70,33 +82,52 @@ const AppContent = () => {
     <div className="min-h-screen bg-gradient-to-tr from-blue-50 to-white">
       {isAuthenticated && !(location.pathname === '/complete-profile' && requiresCustomerProfile) && (
         <GlobalNavbar
-          onLogout={() => {
-            localStorage.clear();
-            window.location.href = '/login';
-          }}
-          onToggleDark={() => { }} // Provide a dummy or actual handler
-          dark={false} // Provide a boolean value or state
+          userRole={storedRole}
+          onLogout={handleLogout}
+          onToggleDark={() => {}}
+          dark={false}
         />
       )}
       {showSidebar && <Sidebar userRole={storedRole || undefined} onPinChange={setSidebarPinned} />}
-    <div className={`flex-1 p-4 relative z-10 transition-all duration-300 ${showSidebar && storedRole === 'Admin' ? (sidebarPinned ? 'pl-64' : 'pl-12') : ''}`}>
-        {isAuthenticated && userTypeId !== '3'}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className={`transition-all duration-300 relative z-10 p-4`}
+        style={{
+          marginLeft: sidebarPinned ? 0 : 30,
+        }}
+      >
         <Routes>
           <Route path="/register" element={<RegisterForm onLogin={handleLogin} />} />
           <Route path="/" element={<Navigate to={getDefaultRoute()} replace />} />
           <Route
-            path="/admin-dashboard"
+            path="/dashboard"
             element={
-              <RequireRole allowedRoles={['Admin']}>
-                <AdminDashboard isPinned={sidebarPinned} />
+              <RequireRole allowedRoles={['Admin', 'BranchAdmin']}>
+                <MainContentLayout isPinned={sidebarPinned}>
+                  <ErrorBoundary>
+                    {userTypeId ? (
+                      <Dashboard userTypeId={parseInt(userTypeId)} />
+                    ) : (
+                      <div className="flex items-center justify-center h-64">
+                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                      </div>
+                    )}
+                  </ErrorBoundary>
+                </MainContentLayout>
               </RequireRole>
             }
           />
           <Route
-            path="/employee-dashboard"
+            path="/clerk-dashboard"
             element={
               <RequireRole allowedRoles={['Clerk']}>
-                <EmployeeDashboard />
+                <MainContentLayout isPinned={sidebarPinned}>
+                  <ErrorBoundary>
+                    <EmployeeDashboard />
+                  </ErrorBoundary>
+                </MainContentLayout>
               </RequireRole>
             }
           />
@@ -104,7 +135,11 @@ const AppContent = () => {
             path="/customer-dashboard"
             element={
               <RequireRole allowedRoles={['Customer']}>
-                <CustomerDashboard />
+                <MainContentLayout isPinned={sidebarPinned}>
+                  <ErrorBoundary>
+                    <CustomerDashboard />
+                  </ErrorBoundary>
+                </MainContentLayout>
               </RequireRole>
             }
           />
@@ -113,108 +148,260 @@ const AppContent = () => {
             path="/complete-profile"
             element={
               <RequireRole allowedRoles={['Customer']}>
-                <CustomerProfileCompletion />
+                <MainContentLayout isPinned={sidebarPinned}>
+                  <ErrorBoundary>
+                    <CustomerProfileCompletion />
+                  </ErrorBoundary>
+                </MainContentLayout>
               </RequireRole>
             }
           />
           <Route path="/forgot-password" element={<ForgotPasswordForm />} />
           <Route path="/reset-password" element={<ResetPasswordForm />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
-          <Route path="/paymentpage" element={<PaymentPage />} />
-          <Route path="/customerList" element={<CustomerList />} />
-          <Route path="/EmployeeList" element={<EmployeeList />} />
-          <Route path="/BranchList" element={<BranchList />} />
-          <Route path="/BillList" element={<BillList />} />
+          <Route
+            path="/paymentpage"
+            element={
+              <MainContentLayout isPinned={sidebarPinned}>
+                <ErrorBoundary>
+                  <PaymentPage />
+                </ErrorBoundary>
+              </MainContentLayout>
+            }
+          />
+          <Route
+            path="/customerList"
+            element={
+              <MainContentLayout isPinned={sidebarPinned}>
+                <ErrorBoundary>
+                  <CustomerList />
+                </ErrorBoundary>
+              </MainContentLayout>
+            }
+          />
+          <Route
+            path="/EmployeeList"
+            element={
+              <MainContentLayout isPinned={sidebarPinned}>
+                <ErrorBoundary>
+                  <EmployeeList />
+                </ErrorBoundary>
+              </MainContentLayout>
+            }
+          />
+          <Route
+            path="/BranchList"
+            element={
+              <MainContentLayout isPinned={sidebarPinned}>
+                <ErrorBoundary>
+                  <BranchList />
+                </ErrorBoundary>
+              </MainContentLayout>
+            }
+          />
+          <Route
+            path="/BranchAdminList"
+            element={
+              <RequireRole allowedRoles={['Admin']}>
+                <MainContentLayout isPinned={sidebarPinned}>
+                  <ErrorBoundary>
+                    <BranchAdminList />
+                  </ErrorBoundary>
+                </MainContentLayout>
+              </RequireRole>
+            }
+          />
+          <Route
+            path="/BillList"
+            element={
+              <MainContentLayout isPinned={sidebarPinned}>
+                <ErrorBoundary>
+                  <BillList />
+                </ErrorBoundary>
+              </MainContentLayout>
+            }
+          />
+          <Route
+            path="/Profile"
+            element={
+              <MainContentLayout isPinned={sidebarPinned}>
+                <ErrorBoundary>
+                  <Profile />
+                </ErrorBoundary>
+              </MainContentLayout>
+            }
+          />
           <Route
             path="/Customers/create"
             element={
-              <RequireRole allowedRoles={['Admin', 'Clerk', 'Customer']}>
-                <CustomerForm />
+              <RequireRole allowedRoles={['Admin', 'Clerk', 'Customer','BranchAdmin']}>
+                <MainContentLayout isPinned={sidebarPinned}>
+                  <ErrorBoundary>
+                    <CustomerForm />
+                  </ErrorBoundary>
+                </MainContentLayout>
               </RequireRole>
             }
           />
           <Route
             path="/employees/create"
             element={
+              <RequireRole allowedRoles={['Admin', 'Clerk', 'BranchAdmin']}>
+                <MainContentLayout isPinned={sidebarPinned}>
+                  <ErrorBoundary>
+                    <EmployeeForm />
+                  </ErrorBoundary>
+                </MainContentLayout>
+              </RequireRole>
+            }
+          />
+          <Route
+            path="/branch-admins/create"
+            element={
               <RequireRole allowedRoles={['Admin']}>
-                <EmployeeForm />
+                <MainContentLayout isPinned={sidebarPinned}>
+                  <ErrorBoundary>
+                    <BranchAdminForm />
+                  </ErrorBoundary>
+                </MainContentLayout>
               </RequireRole>
             }
           />
           <Route
             path="/billform"
             element={
-              <RequireRole allowedRoles={['Admin', 'Clerk', 'Customer']}>
-                <BillForm onSave={() => { }} />
+              <RequireRole allowedRoles={['Admin', 'Clerk', 'Customer','BranchAdmin']}>
+                <MainContentLayout isPinned={sidebarPinned}>
+                  <ErrorBoundary>
+                    <BillForm onSave={() => {}} />
+                  </ErrorBoundary>
+                </MainContentLayout>
               </RequireRole>
             }
           />
           <Route
             path="/branch"
             element={
-              <RequireRole allowedRoles={['Admin', 'Clerk']}>
-                <BranchForm />
+              <RequireRole allowedRoles={['Admin', 'Clerk', 'BranchAdmin']}>
+                <MainContentLayout isPinned={sidebarPinned}>
+                  <ErrorBoundary>
+                    <BranchForm />
+                  </ErrorBoundary>
+                </MainContentLayout>
+              </RequireRole>
+            }
+          />
+          <Route
+            path="/my-bills"
+            element={
+              <RequireRole allowedRoles={['Customer']}>
+                <MainContentLayout isPinned={sidebarPinned}>
+                  <ErrorBoundary>
+                    <MyBills />
+                  </ErrorBoundary>
+                </MainContentLayout>
               </RequireRole>
             }
           />
           <Route
             path="/demandForm"
             element={
-              <RequireRole allowedRoles={['Admin', 'Clerk']}>
-                <DemandForm />
+              <RequireRole allowedRoles={['Admin', 'Clerk', 'BranchAdmin']}>
+                <MainContentLayout isPinned={sidebarPinned}>
+                  <ErrorBoundary>
+                    <DemandForm />
+                  </ErrorBoundary>
+                </MainContentLayout>
               </RequireRole>
             }
           />
           <Route
             path="/demand-list"
             element={
-              <RequireRole allowedRoles={['Admin', 'Clerk']}>
-                <DemandList />
+              <RequireRole allowedRoles={['Admin', 'Clerk', 'BranchAdmin']}>
+                <MainContentLayout isPinned={sidebarPinned}>
+                  <ErrorBoundary>
+                    <DemandList />
+                  </ErrorBoundary>
+                </MainContentLayout>
               </RequireRole>
             }
           />
           <Route
             path="/paymentmethodform"
             element={
-              <RequireRole allowedRoles={['Admin', 'Clerk']}>
-                <PaymentMethodForm />
+              <RequireRole allowedRoles={['Admin', 'Clerk', 'BranchAdmin']}>
+                <MainContentLayout isPinned={sidebarPinned}>
+                  <ErrorBoundary>
+                    <PaymentMethodForm />
+                  </ErrorBoundary>
+                </MainContentLayout>
               </RequireRole>
             }
           />
           <Route
             path="/paymentmethodlist"
             element={
-              <RequireRole allowedRoles={['Admin', 'Clerk']}>
-                <PaymentMethodList />
+              <RequireRole allowedRoles={['Admin', 'Clerk', 'BranchAdmin']}>
+                <MainContentLayout isPinned={sidebarPinned}>
+                  <ErrorBoundary>
+                    <PaymentMethodList />
+                  </ErrorBoundary>
+                </MainContentLayout>
               </RequireRole>
             }
           />
           <Route
             path="/PaymentForm"
             element={
-              <RequireRole allowedRoles={['Admin', 'Clerk', 'Customer']}>
-                <PaymentForm />
+              <RequireRole allowedRoles={['Admin', 'Clerk', 'Customer', 'BranchAdmin']}>
+                <MainContentLayout isPinned={sidebarPinned}>
+                  <ErrorBoundary>
+                    <PaymentForm />
+                  </ErrorBoundary>
+                </MainContentLayout>
               </RequireRole>
             }
           />
           <Route
             path="/payment-list"
             element={
-              <RequireRole allowedRoles={['Admin', 'Clerk', 'Customer']}>
-                <PaymentList />
+              <RequireRole allowedRoles={['Admin', 'Clerk', 'Customer', 'BranchAdmin']}>
+                <MainContentLayout isPinned={sidebarPinned}>
+                  <ErrorBoundary>
+                    <PaymentList />
+                  </ErrorBoundary>
+                </MainContentLayout>
+              </RequireRole>
+            }
+          />
+          <Route
+            path="/customer-support"
+            element={
+              <RequireRole allowedRoles={['Customer', 'Admin', 'Clerk', 'BranchAdmin']}>
+                <MainContentLayout isPinned={sidebarPinned}>
+                  <ErrorBoundary>
+                    <SupportCenter />
+                  </ErrorBoundary>
+                </MainContentLayout>
               </RequireRole>
             }
           />
           <Route
             path="*"
             element={
-              <div className="text-center mt-20 text-red-500 text-2xl">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="text-center mt-20 text-red-500 text-2xl"
+              >
                 404 - Page Not Found
-              </div>
+              </motion.div>
             }
           />
         </Routes>
-      </div>
+      </motion.div>
     </div>
   );
 };
