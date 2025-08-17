@@ -14,7 +14,7 @@ using DateConverterNepali;
 
 namespace e_Governance.Controllers
 {
-    [Authorize(Roles = "Admin,Clerk,Customer")]
+    [Authorize(Roles = "Admin,Clerk,Customer,BranchAdmin")]
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
@@ -63,6 +63,30 @@ namespace e_Governance.Controllers
                 return StatusCode(500, new { message = "Server error", error = ex.Message });
             }
         }
+
+        [HttpGet("by-branch")]
+        public async Task<IActionResult> GetCustomersByBranch([FromQuery] int? branchId)
+        {
+            try
+            {
+                _logger.LogInformation("Fetching customers for branch ID: {BranchId}", branchId);
+
+                var customers = await _context.Customers
+                    .Include(c => c.RegisteredBranch)
+                    .Include(c => c.DemandType)
+                    .Where(c => c.RegisteredBranchId == branchId)
+                    .ToListAsync();
+
+                _logger.LogInformation("Successfully fetched {Count} customers for branch ID: {BranchId}", customers.Count, branchId);
+                return Ok(customers);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching customers for branch ID: {BranchId}", branchId);
+                return StatusCode(500, new { message = "Server error", error = ex.Message });
+            }
+        }
+
 
         [HttpGet("demandtypes")]
         public async Task<IActionResult> GetDemandTypes()
@@ -489,6 +513,51 @@ namespace e_Governance.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error fetching registrations by month");
+                return StatusCode(500, new { message = "Server error", error = ex.Message });
+            }
+        }
+
+
+        [HttpGet("acquisitions-by-month")]
+        public async Task<IActionResult> GetAcquisitionsByMonth([FromQuery] int? branchId)
+        {
+            try
+            {
+                _logger.LogInformation("Fetching registrations by month for branch ID: {BranchId}", branchId);
+
+                // Start with base query
+                var query = _context.Customers
+                    .Where(c => !string.IsNullOrEmpty(c.RegistrationMonth));
+
+                // Add branch filter if branchId is provided
+                if (branchId.HasValue && branchId > 0)
+                {
+                    query = query.Where(c => c.RegisteredBranchId == branchId);
+                }
+
+                var registrations = await query
+                    .GroupBy(c => new { c.RegistrationMonth, c.RegistrationYear })
+                    .Select(g => new
+                    {
+                        Month = g.Key.RegistrationMonth,
+                        Year = g.Key.RegistrationYear,
+                        NewCustomers = g.Count()
+                    })
+                    .ToListAsync();
+
+                // Sort the results properly
+                var sortedRegistrations = registrations
+                    .OrderBy(x => x.Year)
+                    .ThenBy(x => NEPALI_MONTHS.IndexOf(x.Month))
+                    .ToList();
+
+                _logger.LogInformation("Successfully fetched {Count} registration records for branch ID: {BranchId}",
+                    sortedRegistrations.Count, branchId);
+                return Ok(sortedRegistrations);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching registrations by month for branch ID: {BranchId}", branchId);
                 return StatusCode(500, new { message = "Server error", error = ex.Message });
             }
         }

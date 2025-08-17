@@ -1015,22 +1015,13 @@
           "lib/netstandard2.0/Mono.TextTemplating.dll": {}
         }
       },
-      "NepaliCalendar/2.0.15": {
+      "NepaliDateConverterNetCore/1.0.0": {
         "type": "package",
         "compile": {
-          "lib/4.5/NepaliCalendar.dll": {}
+          "lib/netcoreapp3.1/NepaliDateConverter.dll": {}
         },
         "runtime": {
-          "lib/4.5/NepaliCalendar.dll": {}
-        }
-      },
-      "NepaliDateConverter/1.0.6": {
-        "type": "package",
-        "compile": {
-          "lib/NepaliDateConverter.dll": {}
-        },
-        "runtime": {
-          "lib/NepaliDateConverter.dll": {}
+          "lib/netcoreapp3.1/NepaliDateConverter.dll": {}
         }
       },
       "Newtonsoft.Json/12.0.3": {
@@ -3410,28 +3401,16 @@
         "mono.texttemplating.nuspec"
       ]
     },
-    "NepaliCalendar/2.0.15": {
-      "sha512": "Jf+4CipwwlcqMtvTt2Hh8FNfaCPeqrwJrdJEaELHfpqMpEuX9O8VxynPDcYd/Kp74KnT0aLiTW28Fjcleh9N0g==",
+    "NepaliDateConverterNetCore/1.0.0": {
+      "sha512": "HoiQeliu/mH/ECPTqFMEE1FczT/l7rV3m/ChCRIkcEaYn92I+cXX7UCn7VfOY6niMYqUw5oV0dI1SJXiEps3Fg==",
       "type": "package",
-      "path": "nepalicalendar/2.0.15",
+      "path": "nepalidateconverternetcore/1.0.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "lib/4.5/NepaliCalendar.dll",
-        "nepalicalendar.2.0.15.nupkg.sha512",
-        "nepalicalendar.nuspec"
-      ]
-    },
-    "NepaliDateConverter/1.0.6": {
-      "sha512": "DXxb+hWxruQMkbcM2AppcHNCWKx+xvs6bDqX8a6oi2RNeA4M09XTyyJ4qWUH2YocFnwoRNBLhqc7mNx49nsaUQ==",
-      "type": "package",
-      "path": "nepalidateconverter/1.0.6",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "lib/NepaliDateConverter.dll",
-        "nepalidateconverter.1.0.6.nupkg.sha512",
-        "nepalidateconverter.nuspec"
+        "lib/netcoreapp3.1/NepaliDateConverter.dll",
+        "nepalidateconverternetcore.1.0.0.nupkg.sha512",
+        "nepalidateconverternetcore.nuspec"
       ]
     },
     "Newtonsoft.Json/12.0.3": {
@@ -4589,8 +4568,7 @@
       "Microsoft.AspNetCore.Identity.EntityFrameworkCore >= 8.0.8",
       "Microsoft.EntityFrameworkCore.SqlServer >= 8.0.8",
       "Microsoft.EntityFrameworkCore.Tools >= 8.0.8",
-      "NepaliCalendar >= 2.0.15",
-      "NepaliDateConverter >= 1.0.6",
+      "NepaliDateConverterNetCore >= 1.0.0",
       "Swashbuckle.AspNetCore >= 6.6.2"
     ]
   },
@@ -4670,13 +4648,9 @@
             "target": "Package",
             "version": "[8.0.8, )"
           },
-          "NepaliCalendar": {
+          "NepaliDateConverterNetCore": {
             "target": "Package",
-            "version": "[2.0.15, )"
-          },
-          "NepaliDateConverter": {
-            "target": "Package",
-            "version": "[1.0.6, )"
+            "version": "[1.0.0, )"
           },
           "Swashbuckle.AspNetCore": {
             "target": "Package",
@@ -4702,30 +4676,8 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
       }
     }
-  },
-  "logs": [
-    {
-      "code": "NU1701",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Package 'NepaliCalendar 2.0.15' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net8.0'. This package may not be fully compatible with your project.",
-      "libraryId": "NepaliCalendar",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    },
-    {
-      "code": "NU1701",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Package 'NepaliDateConverter 1.0.6' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net8.0'. This package may not be fully compatible with your project.",
-      "libraryId": "NepaliDateConverter",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    }
-  ]
+  }
 }

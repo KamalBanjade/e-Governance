@@ -106,5 +106,26 @@ namespace e_Governance.Controllers
         {
             return _context.Branches.Any(e => e.BranchId == id);
         }
+
+        // Add this method to your BranchController
+        [HttpGet("user-branch")]
+        public async Task<ActionResult<Branch>> GetUserBranch()
+        {
+            // Get the current user's branch ID from the JWT token
+            var branchIdClaim = User.FindFirst("branchId")?.Value;
+
+            if (string.IsNullOrEmpty(branchIdClaim) || !int.TryParse(branchIdClaim, out int branchId))
+            {
+                return BadRequest("Branch ID not found in token");
+            }
+
+            var branch = await _context.Branches.FindAsync(branchId);
+            if (branch == null)
+            {
+                return NotFound("Branch not found");
+            }
+
+            return branch;
+        }
     }
 }

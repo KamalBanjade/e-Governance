@@ -299,5 +299,4 @@ C:\Users\kamal\OneDrive\Desktop\sixth Sem\e-Governace\MyFullStackApp\server\serv
 C:\Users\kamal\OneDrive\Desktop\sixth Sem\e-Governace\MyFullStackApp\server\server\obj\Debug\net8.0\staticwebassets.build.endpoints.json
 C:\Users\kamal\OneDrive\Desktop\sixth Sem\e-Governace\MyFullStackApp\server\server\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Users\kamal\OneDrive\Desktop\sixth Sem\e-Governace\MyFullStackApp\server\server\bin\Debug\net8.0\DateConverterNepali.dll
-C:\Users\kamal\OneDrive\Desktop\sixth Sem\e-Governace\MyFullStackApp\server\server\bin\Debug\net8.0\NepaliCalendar.dll
 C:\Users\kamal\OneDrive\Desktop\sixth Sem\e-Governace\MyFullStackApp\server\server\bin\Debug\net8.0\NepaliDateConverter.dll

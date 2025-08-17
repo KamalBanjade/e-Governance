@@ -88,6 +88,23 @@ namespace e_Governance.Controllers
             return NoContent();
         }
 
+        [HttpGet("by-branch")]
+        public async Task<ActionResult<IEnumerable<DemandType>>> GetDemandTypesByBranch([FromQuery] int? branchId)
+        {
+            try
+            {
+                var demandTypes = await _context.DemandTypes
+                    .Where(dt => _context.Customers.Any(c => c.DemandTypeId == dt.DemandTypeId && c.RegisteredBranchId == branchId))
+                    .ToListAsync();
+
+                return Ok(demandTypes);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Server error", error = ex.Message });
+            }
+        }
+
         // DELETE: api/DemandType/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDemandType(int id)

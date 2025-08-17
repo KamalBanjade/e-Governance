@@ -21,6 +21,7 @@ namespace e_Governance.Data
         public DbSet<UserType> UserTypes { get; set; }
         public DbSet<DemandType> DemandTypes { get; set; }
         public DbSet<EmployeeType> EmployeeTypes { get; set; }
+        public DbSet<BranchAdmin> BranchAdmins { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -38,6 +39,7 @@ namespace e_Governance.Data
                 .Property(u => u.DOB)
                 .HasColumnType("date"); // Avoid time if not needed
         }
+
     }
 
     }

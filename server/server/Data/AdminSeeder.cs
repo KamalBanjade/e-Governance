@@ -8,11 +8,10 @@ public static class AdminSeeder
         string adminEmail = "admin@gmail.com";
         string adminUsername = "admin";
         string adminPassword = "Admin@123";
-
         Console.WriteLine("=== Starting Admin Seeding ===");
 
-        // Ensure roles exist
-        string[] roles = { "Admin", "Clerk", "Customer" };
+        // Ensure roles exist - ADDED "BranchAdmin" to the array
+        string[] roles = { "Admin", "Clerk", "Customer", "BranchAdmin" };
         foreach (var role in roles)
         {
             if (!await roleManager.RoleExistsAsync(role))
@@ -35,7 +34,6 @@ public static class AdminSeeder
                 Name = "System Administrator",
                 UserTypeId = 1 // EXPLICITLY set to 1 for Admin
             };
-
             var result = await userManager.CreateAsync(adminUser, adminPassword);
             if (result.Succeeded)
             {
@@ -63,7 +61,6 @@ public static class AdminSeeder
                 await userManager.UpdateAsync(existingAdmin);
                 Console.WriteLine("✓ Updated admin UserTypeId to 1");
             }
-
             var existingRoles = await userManager.GetRolesAsync(existingAdmin);
             if (!existingRoles.Contains("Admin"))
             {
@@ -71,7 +68,6 @@ public static class AdminSeeder
                 Console.WriteLine("✓ Added Admin role to existing user");
             }
         }
-
         Console.WriteLine("=== Admin Seeding Completed ===");
     }
 }

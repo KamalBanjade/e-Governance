@@ -269,6 +269,18 @@ namespace server.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("CreatedDateNepali")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("CreatedDayNepali")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedMonthNepali")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("CreatedYearNepali")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("CurrentReading")
                         .HasColumnType("decimal(18,2)");
 
@@ -296,6 +308,18 @@ namespace server.Migrations
 
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedDateNepali")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UpdatedDayNepali")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UpdatedMonthNepali")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UpdatedYearNepali")
+                        .HasColumnType("int");
 
                     b.HasKey("BillNo");
 
@@ -337,6 +361,59 @@ namespace server.Migrations
                     b.ToTable("Branches");
                 });
 
+            modelBuilder.Entity("e_Governance.Models.BranchAdmin", b =>
+                {
+                    b.Property<int>("AdminId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AdminId"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ContactNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DOB")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("UserTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("AdminId");
+
+                    b.HasIndex("BranchId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("BranchAdmins");
+                });
+
             modelBuilder.Entity("e_Governance.Models.Customer", b =>
                 {
                     b.Property<int>("CusId")
@@ -355,6 +432,9 @@ namespace server.Migrations
 
                     b.Property<string>("CitizenshipPath")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DOB")
                         .HasColumnType("datetime2");
@@ -385,6 +465,9 @@ namespace server.Migrations
                     b.Property<string>("SCNo")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
@@ -515,10 +598,28 @@ namespace server.Migrations
                     b.Property<int>("BillNo")
                         .HasColumnType("int");
 
+                    b.Property<int?>("CusId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("PaymentDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("PaymentDateNepali")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentDateNepaliFormatted")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PaymentDayNepali")
+                        .HasColumnType("int");
+
                     b.Property<int>("PaymentMethodId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PaymentMonthNepali")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PaymentYearNepali")
                         .HasColumnType("int");
 
                     b.Property<decimal>("PenaltyAmount")
@@ -537,6 +638,8 @@ namespace server.Migrations
                     b.HasKey("PaymentId");
 
                     b.HasIndex("BillNo");
+
+                    b.HasIndex("CusId");
 
                     b.HasIndex("PaymentMethodId");
 
@@ -665,6 +768,23 @@ namespace server.Migrations
                     b.Navigation("Customer");
                 });
 
+            modelBuilder.Entity("e_Governance.Models.BranchAdmin", b =>
+                {
+                    b.HasOne("e_Governance.Models.Branch", "Branch")
+                        .WithMany()
+                        .HasForeignKey("BranchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("e_Governance.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Branch");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("e_Governance.Models.Customer", b =>
                 {
                     b.HasOne("e_Governance.Models.DemandType", "DemandType")
@@ -723,6 +843,10 @@ namespace server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("e_Governance.Models.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CusId");
+
                     b.HasOne("e_Governance.Models.PaymentMethod", "PaymentMethod")
                         .WithMany()
                         .HasForeignKey("PaymentMethodId")
@@ -730,6 +854,8 @@ namespace server.Migrations
                         .IsRequired();
 
                     b.Navigation("Bill");
+
+                    b.Navigation("Customer");
 
                     b.Navigation("PaymentMethod");
                 });

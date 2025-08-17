@@ -10,7 +10,7 @@ using server.Services; // Add for IEmailService
 
 namespace e_Governance.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin,BranchAdmin")]
     [Route("api/[controller]")]
     [ApiController]
     public class EmployeeDetailsController : ControllerBase
@@ -209,6 +209,7 @@ namespace e_Governance.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] Employee employee)
         {
+            using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 if (id != employee.EmpId)
@@ -246,6 +247,28 @@ namespace e_Governance.Controllers
                     return BadRequest(new { message = "Invalid BranchId." });
                 }
 
+                // Check if email is changing and if new email already exists
+                if (existingEmployee.Email != employee.Email)
+                {
+                    var existingUserWithEmail = await _userManager.FindByEmailAsync(employee.Email);
+                    if (existingUserWithEmail != null && existingUserWithEmail.Id != existingEmployee.UserId)
+                    {
+                        _logger.LogWarning("Email already exists: {Email}", employee.Email);
+                        return BadRequest(new { message = "Email already exists." });
+                    }
+                }
+
+                // Check if username is changing and if new username already exists
+                if (existingEmployee.Username != employee.Username)
+                {
+                    var existingUserWithUsername = await _userManager.FindByNameAsync(employee.Username);
+                    if (existingUserWithUsername != null && existingUserWithUsername.Id != existingEmployee.UserId)
+                    {
+                        _logger.LogWarning("Username already exists: {Username}", employee.Username);
+                        return BadRequest(new { message = "Username already exists." });
+                    }
+                }
+
                 // Update employee properties
                 existingEmployee.Username = employee.Username;
                 existingEmployee.Email = employee.Email;
@@ -258,35 +281,170 @@ namespace e_Governance.Controllers
                 existingEmployee.BranchId = employee.BranchId;
                 existingEmployee.EmployeeTypeId = employee.EmployeeTypeId;
 
-                // Update associated user
+                // Update associated ApplicationUser
                 if (existingEmployee.User != null)
                 {
+                    _logger.LogInformation("Updating ApplicationUser: {UserId}", existingEmployee.User.Id);
+
+                    // Update user properties
                     existingEmployee.User.UserName = employee.Username;
                     existingEmployee.User.Email = employee.Email;
                     existingEmployee.User.Name = employee.Name;
                     existingEmployee.User.Address = employee.Address;
                     existingEmployee.User.DOB = employee.DOB;
                     existingEmployee.User.UserTypeId = employee.UserTypeId;
-                    _context.Update(existingEmployee.User);
+
+                    // Use UserManager to update the user (this handles normalization)
+                    var userUpdateResult = await _userManager.UpdateAsync(existingEmployee.User);
+                    if (!userUpdateResult.Succeeded)
+                    {
+                        _logger.LogError("Failed to update ApplicationUser: {Errors}", userUpdateResult.Errors);
+                        await transaction.RollbackAsync();
+                        return BadRequest(new
+                        {
+                            message = "Failed to update user credentials.",
+                            errors = userUpdateResult.Errors
+                        });
+                    }
+
+                    // Update role if UserTypeId changed
+                    var currentRoles = await _userManager.GetRolesAsync(existingEmployee.User);
+                    string newRole = employee.UserTypeId switch
+                    {
+                        2 => "Clerk",
+                        _ => "Customer"
+                    };
+
+                    if (!currentRoles.Contains(newRole))
+                    {
+                        // Remove old roles and add new role
+                        if (currentRoles.Any())
+                        {
+                            await _userManager.RemoveFromRolesAsync(existingEmployee.User, currentRoles);
+                        }
+                        await _userManager.AddToRoleAsync(existingEmployee.User, newRole);
+                        _logger.LogInformation("Updated user role to: {Role} for user: {UserId}", newRole, existingEmployee.User.Id);
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning("No associated ApplicationUser found for employee: {EmpId}", existingEmployee.EmpId);
                 }
 
+                // Save employee changes
                 _context.Update(existingEmployee);
                 await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
                 _logger.LogInformation("Employee updated successfully with EmpId: {EmpId}", existingEmployee.EmpId);
 
                 return Ok(new { message = "Employee updated successfully!" });
             }
             catch (DbUpdateConcurrencyException ex)
             {
+                await transaction.RollbackAsync();
                 _logger.LogError(ex, "Concurrency error updating employee: {EmpId}", id);
                 if (!EmployeeExists(id))
                     return NotFound(new { message = "Employee not found." });
-                throw;
+                return StatusCode(500, new { message = "Concurrency error occurred. Please try again." });
             }
             catch (Exception ex)
             {
+                await transaction.RollbackAsync();
                 _logger.LogError(ex, "Error in Update for employee: {EmpId}", id);
                 return StatusCode(500, new { message = "An error occurred while updating the employee.", error = ex.Message });
+            }
+        }
+        [HttpGet("by-branch")]
+        public async Task<IActionResult> GetEmployeesByBranch([FromQuery] int? branchId)
+        {
+            try
+            {
+                _logger.LogInformation("Fetching employees for branch ID: {BranchId}", branchId);
+
+                var employees = await _context.Employees
+                    .Include(e => e.Branch)
+                    .Include(e => e.EmployeeType)
+                    .Where(e => e.BranchId == branchId)
+                    .Select(e => new
+                    {
+                        e.EmpId,
+                        Name = e.Name,
+                        e.ContactNo,
+                        e.Status,
+                        e.BranchId,
+                        e.EmployeeTypeId,
+                        e.UserId,
+                        BranchName = e.Branch != null ? e.Branch.Name : "Unknown",
+                        EmployeeTypeName = e.EmployeeType != null ? e.EmployeeType.Name : "Unknown",
+                        e.Email,
+                        e.Username,
+                        e.Address,
+                        e.DOB,
+                        e.UserTypeId
+                    })
+                    .ToListAsync();
+
+                _logger.LogInformation("Successfully fetched {Count} employees for branch ID: {BranchId}", employees.Count, branchId);
+                return Ok(employees);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching employees for branch ID: {BranchId}", branchId);
+                return StatusCode(500, new { message = "An error occurred while retrieving employees.", error = ex.Message });
+            }
+        }
+        [HttpGet("by-current-user")]
+        public async Task<IActionResult> GetCurrentUserEmployee()
+        {
+            try
+            {
+                var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogWarning("User not authenticated");
+                    return Unauthorized(new { message = "User not authenticated." });
+                }
+
+                _logger.LogInformation("Fetching employee for current user ID: {UserId}", userId);
+
+                var employee = await _context.Employees
+                    .Include(e => e.Branch)
+                    .Include(e => e.EmployeeType)
+                    .Include(e => e.User)
+                    .Where(e => e.UserId == userId)
+                    .Select(e => new
+                    {
+                        e.EmpId,
+                        Name = e.Name,
+                        e.ContactNo,
+                        e.Status,
+                        e.BranchId,
+                        e.EmployeeTypeId,
+                        e.UserId,
+                        BranchName = e.Branch != null ? e.Branch.Name : "Unknown",
+                        EmployeeTypeName = e.EmployeeType != null ? e.EmployeeType.Name : "Unknown",
+                        e.Email,
+                        e.Username,
+                        e.Address,
+                        DOB = e.DOB,
+                        e.UserTypeId
+                    })
+                    .FirstOrDefaultAsync();
+
+                if (employee == null)
+                {
+                    _logger.LogWarning("Employee not found for current user ID: {UserId}", userId);
+                    return NotFound(new { message = "Employee profile not found." });
+                }
+
+                _logger.LogInformation("Successfully fetched employee for current user ID: {UserId}", userId);
+                return Ok(employee);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching employee for current user");
+                return StatusCode(500, new { message = "An error occurred while retrieving employee profile.", error = ex.Message });
             }
         }
 

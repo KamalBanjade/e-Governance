@@ -76,13 +76,9 @@
               "target": "Package",
               "version": "[8.0.8, )"
             },
-            "NepaliCalendar": {
+            "NepaliDateConverterNetCore": {
               "target": "Package",
-              "version": "[2.0.15, )"
-            },
-            "NepaliDateConverter": {
-              "target": "Package",
-              "version": "[1.0.6, )"
+              "version": "[1.0.0, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
@@ -108,7 +104,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace e_Governance.Controllers
@@ -39,6 +40,30 @@ namespace e_Governance.Controllers
             }
 
             return paymentMethod;
+        }
+
+        [HttpGet("customer/{customerId}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetCustomerPaymentMethods(int customerId)
+        {
+            var paymentMethods = await _context.Payments
+                .Where(p => p.CusId == customerId)
+                .GroupBy(p => p.PaymentMethod)
+                .Select(g => new
+                {
+                    id = g.Key.PaymentMethodId.ToString(),
+                    name = g.Key.Name,
+                    transactions = g.Count(),
+                    amount = g.Sum(p => p.TotalAmountPaid)
+                })
+                .Where(pm => pm.transactions > 0)
+                .ToListAsync();
+
+            if (!paymentMethods.Any())
+            {
+                return Ok(new List<object>()); // Return empty list if no payment methods found
+            }
+
+            return Ok(paymentMethods);
         }
 
         // POST: api/PaymentMethod
@@ -86,6 +111,38 @@ namespace e_Governance.Controllers
             }
 
             return NoContent();
+        }
+        [HttpGet("by-branch")]
+        public async Task<ActionResult<IEnumerable<object>>> GetPaymentMethodsByBranch([FromQuery] int? branchId)
+        {
+            try
+            {
+                var paymentMethods = await _context.PaymentMethods
+                    .Where(pm => _context.Payments.Any(p => p.PaymentMethodId == pm.PaymentMethodId
+                        && _context.Bills.Any(b => b.BillNo == p.BillNo
+                            && _context.Customers.Any(c => c.CusId == b.CusId && c.RegisteredBranchId == branchId))))
+                    .Select(pm => new
+                    {
+                        pm.PaymentMethodId,
+                        pm.Name,
+                        pm.Status,
+                        pm.LogoURL,
+                        Transactions = _context.Payments.Count(p => p.PaymentMethodId == pm.PaymentMethodId
+                            && _context.Bills.Any(b => b.BillNo == p.BillNo
+                                && _context.Customers.Any(c => c.CusId == b.CusId && c.RegisteredBranchId == branchId))),
+                        TotalAmount = _context.Payments.Where(p => p.PaymentMethodId == pm.PaymentMethodId
+                            && _context.Bills.Any(b => b.BillNo == p.BillNo
+                                && _context.Customers.Any(c => c.CusId == b.CusId && c.RegisteredBranchId == branchId)))
+                            .Sum(p => p.TotalAmountPaid)
+                    })
+                    .ToListAsync();
+
+                return Ok(paymentMethods);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Server error", error = ex.Message });
+            }
         }
 
         // DELETE: api/PaymentMethod/5

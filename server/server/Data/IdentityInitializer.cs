@@ -1,5 +1,6 @@
 ﻿using e_Governance.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
@@ -13,11 +14,20 @@ namespace e_Governance.Data
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-            string[] roles = { "Admin", "Clerk", "Customer" };
+            string[] roles = { "Admin", "Clerk", "Customer", "BranchAdmin" };
+
+            // Create roles if they don't exist
             foreach (var role in roles)
             {
-                if (!await roleManager.RoleExistsAsync(role))
-                    await roleManager.CreateAsync(new IdentityRole(role));
+                var normalizedRoleName = roleManager.NormalizeKey(role);
+                var roleExists = await roleManager.Roles.AnyAsync(r =>
+                    r.NormalizedName == normalizedRoleName);
+
+                if (!roleExists)
+                {
+                    var identityRole = new IdentityRole(role);
+                    await roleManager.CreateAsync(identityRole);
+                }
             }
 
             // Seed a default Admin user
@@ -30,7 +40,8 @@ namespace e_Governance.Data
                     UserName = "admin",
                     Email = adminEmail,
                     Name = "Admin User",
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    UserTypeId = 1 // Assuming 1 is for Admin
                 };
 
                 var result = await userManager.CreateAsync(user, "Admin@123");

@@ -46,6 +46,40 @@
         }
       }
     },
+    "/api/Bills/by-current-user": {
+      "get": {
+        "tags": [
+          "Bills"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Bills/by-branch": {
+      "get": {
+        "tags": [
+          "Bills"
+        ],
+        "parameters": [
+          {
+            "name": "branchId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Bills/customer-bills": {
       "get": {
         "tags": [
@@ -58,40 +92,7 @@
         }
       }
     },
-    "/api/Bills/customer-bills-with-details": {
-      "get": {
-        "tags": [
-          "Bills"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/api/Bills/{id}": {
-      "get": {
-        "tags": [
-          "Bills"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
       "put": {
         "tags": [
           "Bills"
@@ -132,6 +133,27 @@
           }
         }
       },
+      "get": {
+        "tags": [
+          "Bills"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
       "delete": {
         "tags": [
           "Bills"
@@ -156,6 +178,30 @@
     },
     "/api/Bills/mark-overdue": {
       "post": {
+        "tags": [
+          "Bills"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Bills/customer-bills-with-details": {
+      "get": {
+        "tags": [
+          "Bills"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Bills/current-nepali-date": {
+      "get": {
         "tags": [
           "Bills"
         ],
@@ -351,10 +397,201 @@
         }
       }
     },
+    "/api/Branch/user-branch": {
+      "get": {
+        "tags": [
+          "Branch"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Branch"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Branch"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Branch"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/branchadmins": {
+      "get": {
+        "tags": [
+          "BranchAdmin"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "BranchAdmin"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BranchAdmin"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BranchAdmin"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BranchAdmin"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/branchadmins/branches": {
+      "get": {
+        "tags": [
+          "BranchAdmin"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/branchadmins/{id}": {
+      "put": {
+        "tags": [
+          "BranchAdmin"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BranchAdmin"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BranchAdmin"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BranchAdmin"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "BranchAdmin"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/branchadmins/me": {
+      "get": {
+        "tags": [
+          "BranchAdmin"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/branches": {
+      "get": {
+        "tags": [
+          "Branches"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Customers/branches": {
       "get": {
         "tags": [
           "Customers"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Customers/by-branch": {
+      "get": {
+        "tags": [
+          "Customers"
+        ],
+        "parameters": [
+          {
+            "name": "branchId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -892,6 +1129,28 @@
         }
       }
     },
+    "/api/Customers/acquisitions-by-month": {
+      "get": {
+        "tags": [
+          "Customers"
+        ],
+        "parameters": [
+          {
+            "name": "branchId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/DemandType": {
       "get": {
         "tags": [
@@ -1077,6 +1336,54 @@
         }
       }
     },
+    "/api/DemandType/by-branch": {
+      "get": {
+        "tags": [
+          "DemandType"
+        ],
+        "parameters": [
+          {
+            "name": "branchId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DemandType"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DemandType"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DemandType"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/EmployeeDetails": {
       "get": {
         "tags": [
@@ -1197,6 +1504,40 @@
               "format": "int32"
             }
           }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/EmployeeDetails/by-branch": {
+      "get": {
+        "tags": [
+          "EmployeeDetails"
+        ],
+        "parameters": [
+          {
+            "name": "branchId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/EmployeeDetails/by-current-user": {
+      "get": {
+        "tags": [
+          "EmployeeDetails"
         ],
         "responses": {
           "200": {
@@ -1433,6 +1774,49 @@
         }
       }
     },
+    "/api/Payment/by-branch": {
+      "get": {
+        "tags": [
+          "Payment"
+        ],
+        "parameters": [
+          {
+            "name": "branchId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Payment/customer-payments": {
+      "get": {
+        "tags": [
+          "Payment"
+        ],
+        "parameters": [
+          {
+            "name": "cusId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/PaymentMethod": {
       "get": {
         "tags": [
@@ -1618,6 +2002,91 @@
         }
       }
     },
+    "/api/PaymentMethod/customer/{customerId}": {
+      "get": {
+        "tags": [
+          "PaymentMethod"
+        ],
+        "parameters": [
+          {
+            "name": "customerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": { }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/PaymentMethod/by-branch": {
+      "get": {
+        "tags": [
+          "PaymentMethod"
+        ],
+        "parameters": [
+          {
+            "name": "branchId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": { }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/UserAuth/register": {
       "post": {
         "tags": [
@@ -1669,6 +2138,37 @@
             "application/*+json": {
               "schema": {
                 "$ref": "#/components/schemas/RegisterEmployeeViewModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/UserAuth/create-branch-admin": {
+      "post": {
+        "tags": [
+          "UserAuth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterBranchAdminViewModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterBranchAdminViewModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterBranchAdminViewModel"
               }
             }
           }
@@ -1933,6 +2433,42 @@
           "updatedBy": {
             "type": "string",
             "nullable": true
+          },
+          "createdDateNepali": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdMonthNepali": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdYearNepali": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "createdDayNepali": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "updatedDateNepali": {
+            "type": "string",
+            "nullable": true
+          },
+          "updatedMonthNepali": {
+            "type": "string",
+            "nullable": true
+          },
+          "updatedYearNepali": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "updatedDayNepali": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -1963,6 +2499,74 @@
           "status": {
             "type": "string",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "BranchAdmin": {
+        "required": [
+          "address",
+          "branchId",
+          "contactNo",
+          "dob",
+          "email",
+          "name",
+          "status",
+          "username",
+          "userTypeId"
+        ],
+        "type": "object",
+        "properties": {
+          "adminId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "username": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "email": {
+            "minLength": 1,
+            "type": "string",
+            "format": "email"
+          },
+          "name": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "address": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "dob": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "userTypeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "branchId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "branch": {
+            "$ref": "#/components/schemas/Branch"
+          },
+          "contactNo": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "status": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
+          "user": {
+            "$ref": "#/components/schemas/ApplicationUser"
           }
         },
         "additionalProperties": false
@@ -2180,6 +2784,9 @@
         "additionalProperties": false
       },
       "Payment": {
+        "required": [
+          "transactionId"
+        ],
         "type": "object",
         "properties": {
           "paymentId": {
@@ -2200,6 +2807,14 @@
           "paymentMethod": {
             "$ref": "#/components/schemas/PaymentMethod"
           },
+          "cusId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "customer": {
+            "$ref": "#/components/schemas/Customer"
+          },
           "totalAmountPaid": {
             "type": "number",
             "format": "double"
@@ -2217,6 +2832,28 @@
             "format": "date-time"
           },
           "transactionId": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "paymentMonthNepali": {
+            "type": "string",
+            "nullable": true
+          },
+          "paymentYearNepali": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "paymentDayNepali": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "paymentDateNepali": {
+            "type": "string",
+            "nullable": true
+          },
+          "paymentDateNepaliFormatted": {
             "type": "string",
             "nullable": true
           }
@@ -2253,6 +2890,47 @@
             "nullable": true
           },
           "status": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RegisterBranchAdminViewModel": {
+        "required": [
+          "branchId"
+        ],
+        "type": "object",
+        "properties": {
+          "branchId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "username": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "dob": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "userTypeId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "contactNo": {
             "type": "string",
             "nullable": true
           }
