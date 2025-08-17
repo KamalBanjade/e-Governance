@@ -173,7 +173,7 @@ const aggregatePaymentsByMonth = (payments: Payment[]): RevenueData[] => {
     if (payment.paymentMonthNepali && payment.paymentYearNepali) {
       month = payment.paymentMonthNepali;
       year = payment.paymentYearNepali;
-      console.log(`Payment ${index}: Using backend Nepali date - ${month} ${year}`);
+      if (index < 3) console.log(`Payment ${index}: Using backend Nepali date - ${month} ${year}`);
     } else {
       const paymentDate = new Date(payment.paymentDate);
       if (isNaN(paymentDate.getTime())) {
@@ -183,7 +183,7 @@ const aggregatePaymentsByMonth = (payments: Payment[]): RevenueData[] => {
       const converted = convertToNepaliDate(paymentDate);
       month = converted.month;
       year = converted.year;
-      console.log(`Payment ${index}: Converted ${payment.paymentDate} to ${month} ${year}`);
+      if (index < 3) console.log(`Payment ${index}: Converted ${payment.paymentDate} to ${month} ${year}`);
     }
 
     const key = `${month}-${year}`;
@@ -286,7 +286,7 @@ const getChangeDescription = (change: number, metricType: string) => {
   return { direction, isPositive, absChange };
 };
 
-// Helper function to calculate active accounts (paid in last 6 months)
+// Helper function to calculate active users (unique customers with payments in last 6 months)
 const calculateActiveAccounts = (customers: Customer[], payments: Payment[]): number => {
   if (!customers || !payments || customers.length === 0 || payments.length === 0) return 0;
 
@@ -582,10 +582,16 @@ const StatsCard = ({
   );
 };
 
-const AdminDashboard = () => {
+interface DashboardProps {
+  userTypeId: number;
+}
+
+const Dashboard = ({ userTypeId }: DashboardProps) => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
+  const [branchId, setBranchId] = useState<number | null>(null);
+  const [branchName, setBranchName] = useState<string>('');
   const [, setBills] = useState<ExtendedBill[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [customerAcquisitionData, setCustomerAcquisitionData] = useState<CustomerAcquisitionData[]>([]);
@@ -617,6 +623,64 @@ const AdminDashboard = () => {
       return;
     }
 
+    const fetchBranchId = async () => {
+      if (userTypeId !== 4) {
+        setBranchId(null);
+        setBranchName('');
+        return;
+      }
+
+      try {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+          toast.error('No auth token found. Please log in.');
+          navigate('/login');
+          return;
+        }
+
+        const res = await fetch('http://localhost:5008/api/branchadmins/me', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (res.status === 401) {
+          toast.error('Session expired. Please log in again.');
+          navigate('/login');
+          return;
+        }
+
+        if (!res.ok) {
+          throw new Error(`Failed to fetch branch details: ${res.statusText}`);
+        }
+
+        const admin = await res.json();
+        if (!admin) {
+          toast.error('Branch information not found. Please contact your administrator.');
+          return;
+        }
+
+        const fetchedBranchId = admin.BranchId || admin.branchId;
+        const fetchedBranchName = admin.BranchName || admin.branchName || 'My Branch';
+
+        if (!fetchedBranchId) {
+          console.error('Branch admin found but no BranchId:', admin);
+          toast.error('Branch ID not found in your profile. Please contact your administrator.');
+          return;
+        }
+
+        setBranchId(fetchedBranchId);
+        setBranchName(fetchedBranchName);
+      } catch (error) {
+        console.error('Failed to fetch branch ID:', error);
+        toast.error('Failed to load branch information');
+      }
+    };
+
+    fetchBranchId();
+  }, [isAuthenticated, navigate, userTypeId]);
+
+  useEffect(() => {
+    if (userTypeId === 4 && branchId === null) return;
+
     const fetchStats = async () => {
       try {
         setIsLoading(true);
@@ -629,14 +693,17 @@ const AdminDashboard = () => {
 
         console.log('Fetching dashboard data...');
 
+        const isBranchAdmin = userTypeId === 4;
+        const branchQuery = isBranchAdmin && branchId ? `?branchId=${branchId}` : '';
+
         const [customersRes, employeesRes, billsRes, branchesRes, paymentsRes, demandTypesRes, paymentMethodsRes] = await Promise.all([
-          fetch('http://localhost:5008/api/customers', { headers: { Authorization: `Bearer ${token}` } }),
-          fetch('http://localhost:5008/api/employeedetails', { headers: { Authorization: `Bearer ${token}` } }),
-          fetch('http://localhost:5008/api/Bills', { headers: { Authorization: `Bearer ${token}` } }),
-          fetch('http://localhost:5008/api/Branch', { headers: { Authorization: `Bearer ${token}` } }),
-          fetch('http://localhost:5008/api/Payment', { headers: { Authorization: `Bearer ${token}` } }),
-          fetch('http://localhost:5008/api/DemandType', { headers: { Authorization: `Bearer ${token}` } }),
-          fetch('http://localhost:5008/api/PaymentMethod', { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`http://localhost:5008/api/customers${isBranchAdmin ? '/by-branch' + branchQuery : ''}`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`http://localhost:5008/api/employeedetails${isBranchAdmin ? '/by-branch' + branchQuery : ''}`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`http://localhost:5008/api/Bills${isBranchAdmin ? '/by-branch' + branchQuery : ''}`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`http://localhost:5008/api/Branch`, { headers: { Authorization: `Bearer ${token}` } }), // Branches always fetched without filter
+          fetch(`http://localhost:5008/api/Payment${isBranchAdmin ? '/by-branch' + branchQuery : ''}`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`http://localhost:5008/api/DemandType${isBranchAdmin ? '/by-branch' + branchQuery : ''}`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`http://localhost:5008/api/PaymentMethod${isBranchAdmin ? '/by-branch' + branchQuery : ''}`, { headers: { Authorization: `Bearer ${token}` } }),
         ]);
 
         if (customersRes.status === 401 || employeesRes.status === 401 || billsRes.status === 401 ||
@@ -666,10 +733,9 @@ const AdminDashboard = () => {
         ]);
 
         console.log('Fetched payments:', payments.length);
-        console.log('Fetched bills:', bills.length);
         console.log('Sample payment data:', payments[0]);
 
-        const enrichedBills = bills.map((bill) => ({
+        const enrichedBills = bills.map((bill: ExtendedBill) => ({
           ...bill,
           customerName: bill.customer?.name ?? 'Unknown',
           customerAddress: bill.customer?.address ?? '',
@@ -682,13 +748,13 @@ const AdminDashboard = () => {
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
         const newCustomers = customers.filter(c => new Date(c.createdAt) >= thirtyDaysAgo).length;
-
+        
         const activeAccounts = calculateActiveAccounts(customers, payments);
-
-        const pendingBills = enrichedBills.filter(b =>
+        
+        const pendingBills = enrichedBills.filter(b => 
           typeof b.status === 'string' ? b.status.toLowerCase() === 'pending' : false
         ).length;
-
+        
         const prevYearCustomers = customers.filter(c => new Date(c.createdAt).getFullYear() < new Date().getFullYear()).length;
         const currYearCustomers = customers.filter(c => new Date(c.createdAt).getFullYear() === new Date().getFullYear()).length;
         const growthRate = prevYearCustomers > 0 ? ((currYearCustomers - prevYearCustomers) / prevYearCustomers * 100) : 0;
@@ -722,7 +788,7 @@ const AdminDashboard = () => {
         const dynamicBillChange = calculatePendingBillsChange(enrichedBills);
 
         console.log('Total revenue calculated:', totalRevenue);
-        console.log('Active accounts (paid in last 6 months):', activeAccounts);
+        console.log('Active accounts (unique customers with payments in last 6 months):', activeAccounts);
         console.log('Revenue change:', dynamicRevenueChange);
         console.log('Pending bills change:', dynamicBillChange);
 
@@ -756,72 +822,89 @@ const AdminDashboard = () => {
     };
 
     fetchStats();
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, branchId, userTypeId]);
 
-  useEffect(() => {
-    if (!isAuthenticated) {
+  const fetchCustomerAcquisition = async () => {
+  try {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      toast.error('No auth token found. Please log in.');
+      navigate('/login');
+      return;
+    }
+
+    // Prepare the URL based on user type
+    let url = 'http://localhost:5008/api/customers/acquisitions-by-month';
+    
+    // Add branchId parameter only for branch admins (userTypeId 4)
+    if (userTypeId === 4 && branchId) {
+      url += `?branchId=${branchId}`;
+    }
+
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Cache-Control': 'no-cache'
+      }
+    });
+
+    if (res.status === 401) {
       toast.error('Session expired. Please log in again.');
       navigate('/login');
       return;
     }
 
-    const fetchCustomerAcquisition = async () => {
-      try {
-        const token = localStorage.getItem('authToken');
-        if (!token) {
-          toast.error('No auth token found. Please log in.');
-          navigate('/login');
-          return;
-        }
-        const res = await fetch('http://localhost:5008/api/customers/registrations-by-month', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Cache-Control': 'no-cache'
-          }
-        });
+    if (!res.ok) {
+      throw new Error(`Failed to fetch customer acquisition data: ${res.statusText}`);
+    }
 
-        if (res.status === 401) {
-          toast.error('Session expired. Please log in again.');
-          navigate('/login');
-          return;
-        }
-
-        if (!res.ok) {
-          throw new Error(`Failed to fetch customer acquisition data: ${res.statusText}`);
-        }
-
-        const data = await res.json();
-        const aggregatedData: Record<string, CustomerAcquisitionData> = {};
-        data.forEach((item: any) => {
-          const monthYear = `${item.month}-${item.year}`;
-          if (aggregatedData[monthYear]) {
-            aggregatedData[monthYear].NewCustomers += item.newCustomers;
-          } else {
-            aggregatedData[monthYear] = {
-              Month: item.month,
-              Year: item.year,
-              NewCustomers: item.newCustomers,
-              MonthYear: `${item.month} ${item.year}`
-            };
-          }
-        });
-
-        const formattedData = Object.values(aggregatedData).sort((a, b) => {
-          if (a.Year !== b.Year) return a.Year - b.Year;
-          return NEPALI_MONTHS.indexOf(a.Month) - NEPALI_MONTHS.indexOf(b.Month);
-        });
-
-        setCustomerAcquisitionData(formattedData);
-      } catch (error) {
-        console.error('Error fetching customer acquisition:', error);
-        toast.error('Failed to load customer acquisition data.');
-        setCustomerAcquisitionData([]);
+    const data = await res.json();
+    const aggregatedData: Record<string, CustomerAcquisitionData> = {};
+    
+    // Handle both response formats (item.month vs item.Month)
+    data.forEach((item: any) => {
+      const month = item.Month || item.month;
+      const year = item.Year || item.year;
+      const count = item.NewCustomers || item.newCustomers;
+      
+      const monthYear = `${month}-${year}`;
+      if (aggregatedData[monthYear]) {
+        aggregatedData[monthYear].NewCustomers += count;
+      } else {
+        aggregatedData[monthYear] = {
+          Month: month,
+          Year: year,
+          NewCustomers: count,
+          MonthYear: `${month} ${year}`
+        };
       }
-    };
+    });
 
-    fetchCustomerAcquisition();
-  }, [isAuthenticated, navigate]);
+    const formattedData = Object.values(aggregatedData).sort((a, b) => {
+      if (a.Year !== b.Year) return a.Year - b.Year;
+      return NEPALI_MONTHS.indexOf(a.Month) - NEPALI_MONTHS.indexOf(b.Month);
+    });
 
+    setCustomerAcquisitionData(formattedData);
+  } catch (error) {
+    console.error('Error fetching customer acquisition:', error);
+    toast.error('Failed to load customer acquisition data.');
+    setCustomerAcquisitionData([]);
+  }
+};
+
+// Call it in your useEffect
+useEffect(() => {
+  if (userTypeId === 4 && branchId === null) return;
+
+  if (!isAuthenticated) {
+    toast.error('Session expired. Please log in again.');
+    navigate('/login');
+    return;
+  }
+
+  fetchCustomerAcquisition();
+}, [isAuthenticated, navigate, branchId, userTypeId]);
   useEffect(() => {
     if (customerAcquisitionData.length >= 2) {
       const dynamicCustomerChange = calculateCustomerChange(customerAcquisitionData);
@@ -840,7 +923,7 @@ const AdminDashboard = () => {
 
   const COLORS = ['#4CAF50', '#2563EB', '#FF9800', '#F44336', '#9C27B0', '#22C55E'];
 
-  const aggregateBillStatus = (bills: ExtendedBill[]): { name: string; value: number; color: string }[] => {
+  function aggregateBillStatus(bills: ExtendedBill[]): { name: string; value: number; color: string }[] {
     const statusCounts: Record<string, number> = {};
     bills.forEach(bill => {
       const status = typeof bill.status === 'string' ? bill.status : '';
@@ -858,7 +941,7 @@ const AdminDashboard = () => {
       value,
       color: statusColors[name] || COLORS[i % COLORS.length]
     }));
-  };
+  }
 
   if (isLoading) {
     return (
@@ -901,9 +984,9 @@ const AdminDashboard = () => {
             className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8"
           >
             <div>
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">Dashboard Overview</h1>
+              <h1 className="text-3xl font-bold text-gray-800">{userTypeId === 4 ? `Branch Dashboard - ${branchName}` : 'Welcome Back, Admin!'}</h1>
               <p className="text-gray-600">
-                Welcome back! Here's what's happening with your business today.
+                 Here's what's happening {userTypeId === 4 ? 'with your branch' : 'with your business'} today.
               </p>
             </div>
             <div className="flex space-x-2 mt-4 md:mt-0 bg-white p-1 rounded-lg shadow-inner border border-gray-200">
@@ -933,28 +1016,28 @@ const AdminDashboard = () => {
               title="Total Customers"
               value={stats.customers}
               change={stats.customerChange}
-              metricType="customers"
               icon={FiUsers}
+              metricType="customers"
             />
             <StatsCard
               title="Total Revenue"
               value={stats.totalRevenue}
               change={stats.revenueChange}
-              metricType="revenue"
               icon={FiDollarSign}
+              metricType="revenue"
             />
             <StatsCard
               title="Pending Bills"
               value={stats.pendingBills}
               change={stats.billChange}
-              metricType="pendingBills"
               icon={FiClock}
+              metricType="pendingBills"
             />
             <StatsCard
-              title="Active Accounts"
+              title="Active Users"
               value={stats.activeAccounts}
-              metricType="customers"
               icon={FiActivity}
+              metricType="customers"
             />
           </div>
 
@@ -1068,6 +1151,7 @@ const AdminDashboard = () => {
                   <SatisfactionMeter percentage={stats.customerSatisfaction} />
                 </ChartCard>
               </div>
+
             </>
           )}
 
@@ -1283,4 +1367,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default Dashboard;
