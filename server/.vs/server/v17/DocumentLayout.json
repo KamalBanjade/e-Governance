@@ -3,20 +3,44 @@
   "WorkspaceRootPath": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\onedrive\\desktop\\sixth sem\\e-governace\\myfullstackapp\\server\\server\\controllers\\customerscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\controllers\\customerscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Migrations\\20250827174744_Khalti.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:server\\Migrations\\20250827174744_Khalti.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\onedrive\\desktop\\sixth sem\\e-governace\\myfullstackapp\\server\\server\\controllers\\khalticontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\controllers\\khalticontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\onedrive\\desktop\\sixth sem\\e-governace\\myfullstackapp\\server\\server\\models\\khaltimodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\models\\khaltimodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\onedrive\\desktop\\sixth sem\\e-governace\\myfullstackapp\\server\\server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\onedrive\\desktop\\sixth sem\\e-governace\\myfullstackapp\\server\\server\\controllers\\paymentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\controllers\\paymentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\onedrive\\desktop\\sixth sem\\e-governace\\myfullstackapp\\server\\server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\onedrive\\desktop\\sixth sem\\e-governace\\myfullstackapp\\server\\server\\controllers\\paymentmethodcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\controllers\\paymentmethodcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\onedrive\\desktop\\sixth sem\\e-governace\\myfullstackapp\\server\\server\\controllers\\userauthcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\controllers\\userauthcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\onedrive\\desktop\\sixth sem\\e-governace\\myfullstackapp\\server\\server\\controllers\\billcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\controllers\\billcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\onedrive\\desktop\\sixth sem\\e-governace\\myfullstackapp\\server\\server\\controllers\\customerscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\controllers\\customerscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\onedrive\\desktop\\sixth sem\\e-governace\\myfullstackapp\\server\\server\\controllers\\paymentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\controllers\\paymentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\onedrive\\desktop\\sixth sem\\e-governace\\myfullstackapp\\server\\server\\controllers\\billcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\controllers\\billcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\onedrive\\desktop\\sixth sem\\e-governace\\myfullstackapp\\server\\server\\models\\customer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -71,16 +95,8 @@
       "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\models\\registerviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\onedrive\\desktop\\sixth sem\\e-governace\\myfullstackapp\\server\\server\\controllers\\paymentmethodcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\controllers\\paymentmethodcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\onedrive\\desktop\\sixth sem\\e-governace\\myfullstackapp\\server\\server\\controllers\\demandtypecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\controllers\\demandtypecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\onedrive\\desktop\\sixth sem\\e-governace\\myfullstackapp\\server\\server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|solutionrelative:server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{9F021C31-54AF-4DB4-A6A6-15E66CAF01E8}|server\\server.csproj|c:\\users\\kamal\\onedrive\\desktop\\sixth sem\\e-governace\\myfullstackapp\\server\\server\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -223,6 +239,110 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "20250827174744_Khalti.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Migrations\\20250827174744_Khalti.cs",
+              "RelativeDocumentMoniker": "server\\Migrations\\20250827174744_Khalti.cs",
+              "ToolTip": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Migrations\\20250827174744_Khalti.cs",
+              "RelativeToolTip": "server\\Migrations\\20250827174744_Khalti.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-27T17:47:45.742Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "KhaltiController.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Controllers\\KhaltiController.cs",
+              "RelativeDocumentMoniker": "server\\Controllers\\KhaltiController.cs",
+              "ToolTip": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Controllers\\KhaltiController.cs",
+              "RelativeToolTip": "server\\Controllers\\KhaltiController.cs",
+              "ViewState": "AgIAAPQAAAAAAAAAAAAcwAMBAABEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-27T14:20:14.238Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "KhaltiModels.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Models\\KhaltiModels.cs",
+              "RelativeDocumentMoniker": "server\\Models\\KhaltiModels.cs",
+              "ToolTip": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Models\\KhaltiModels.cs",
+              "RelativeToolTip": "server\\Models\\KhaltiModels.cs",
+              "ViewState": "AgIAAH8AAAAAAAAAAAAcwJ4AAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-27T13:54:05.517Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Program.cs",
+              "RelativeDocumentMoniker": "server\\Program.cs",
+              "ToolTip": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Program.cs",
+              "RelativeToolTip": "server\\Program.cs",
+              "ViewState": "AgIAAEEAAAAAAAAAAAAcwFYAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-26T02:44:57.731Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "PaymentController.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Controllers\\PaymentController.cs",
+              "RelativeDocumentMoniker": "server\\Controllers\\PaymentController.cs",
+              "ToolTip": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Controllers\\PaymentController.cs",
+              "RelativeToolTip": "server\\Controllers\\PaymentController.cs",
+              "ViewState": "AgIAAMEBAAAAAAAAAAAcwOgBAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-30T11:28:54.398Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\appsettings.json",
+              "RelativeDocumentMoniker": "server\\appsettings.json",
+              "ToolTip": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\appsettings.json",
+              "RelativeToolTip": "server\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAYwCMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-08-27T14:22:52.437Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "UserAuthController.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Controllers\\UserAuthController.cs",
+              "RelativeDocumentMoniker": "server\\Controllers\\UserAuthController.cs",
+              "ToolTip": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Controllers\\UserAuthController.cs",
+              "RelativeToolTip": "server\\Controllers\\UserAuthController.cs",
+              "ViewState": "AgIAAEMBAAAAAAAAAAAcwLQBAAA8AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-28T05:02:51.812Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "PaymentMethodController.cs",
+              "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Controllers\\PaymentMethodController.cs",
+              "RelativeDocumentMoniker": "server\\Controllers\\PaymentMethodController.cs",
+              "ToolTip": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Controllers\\PaymentMethodController.cs",
+              "RelativeToolTip": "server\\Controllers\\PaymentMethodController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAJEAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-30T11:24:44.044Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
               "Title": "CustomersController.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Controllers\\CustomersController.cs",
               "RelativeDocumentMoniker": "server\\Controllers\\CustomersController.cs",
@@ -235,19 +355,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "PaymentController.cs",
-              "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Controllers\\PaymentController.cs",
-              "RelativeDocumentMoniker": "server\\Controllers\\PaymentController.cs",
-              "ToolTip": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Controllers\\PaymentController.cs",
-              "RelativeToolTip": "server\\Controllers\\PaymentController.cs",
-              "ViewState": "AgIAAMEBAAAAAAAAAAAcwOgBAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-30T11:28:54.398Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 9,
               "Title": "BillController.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Controllers\\BillController.cs",
               "RelativeDocumentMoniker": "server\\Controllers\\BillController.cs",
@@ -259,19 +367,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "UserAuthController.cs",
-              "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Controllers\\UserAuthController.cs",
-              "RelativeDocumentMoniker": "server\\Controllers\\UserAuthController.cs",
-              "ToolTip": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Controllers\\UserAuthController.cs",
-              "RelativeToolTip": "server\\Controllers\\UserAuthController.cs",
-              "ViewState": "AgIAAEMBAAAAAAAAAAAcwLQBAAA8AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-28T05:02:51.812Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 10,
               "Title": "Customer.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Models\\Customer.cs",
               "RelativeDocumentMoniker": "server\\Models\\Customer.cs",
@@ -283,7 +379,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 11,
               "Title": "Payment.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Models\\Payment.cs",
               "RelativeDocumentMoniker": "server\\Models\\Payment.cs",
@@ -295,7 +391,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 12,
               "Title": "EmployeeDetailsController.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Controllers\\EmployeeDetailsController.cs",
               "RelativeDocumentMoniker": "server\\Controllers\\EmployeeDetailsController.cs",
@@ -307,7 +403,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 13,
               "Title": "JwtService.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Services\\JwtService.cs",
               "RelativeDocumentMoniker": "server\\Services\\JwtService.cs",
@@ -319,7 +415,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 14,
               "Title": "BranchController.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Controllers\\BranchController.cs",
               "RelativeDocumentMoniker": "server\\Controllers\\BranchController.cs",
@@ -331,7 +427,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 15,
               "Title": "RegisterEmployeeViewModel.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Models\\DTOs\\RegisterEmployeeViewModel.cs",
               "RelativeDocumentMoniker": "server\\Models\\DTOs\\RegisterEmployeeViewModel.cs",
@@ -343,7 +439,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 16,
               "Title": "EmployeeDetails.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Models\\EmployeeDetails.cs",
               "RelativeDocumentMoniker": "server\\Models\\EmployeeDetails.cs",
@@ -355,7 +451,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 17,
               "Title": "Bill.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Models\\Bill.cs",
               "RelativeDocumentMoniker": "server\\Models\\Bill.cs",
@@ -367,7 +463,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 18,
               "Title": "BranchAdminController.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Controllers\\BranchAdminController.cs",
               "RelativeDocumentMoniker": "server\\Controllers\\BranchAdminController.cs",
@@ -379,7 +475,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 19,
               "Title": "EmployeeType.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Models\\EmployeeType.cs",
               "RelativeDocumentMoniker": "server\\Models\\EmployeeType.cs",
@@ -391,7 +487,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 20,
               "Title": "RegisterBranchAdminViewModel.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Models\\DTOs\\RegisterBranchAdminViewModel.cs",
               "RelativeDocumentMoniker": "server\\Models\\DTOs\\RegisterBranchAdminViewModel.cs",
@@ -403,7 +499,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 21,
               "Title": "BranchAdmin.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Models\\BranchAdmin.cs",
               "RelativeDocumentMoniker": "server\\Models\\BranchAdmin.cs",
@@ -415,7 +511,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 47,
+              "DocumentIndex": 51,
               "Title": "20250810123422_registerupdate.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Migrations\\20250810123422_registerupdate.cs",
               "RelativeDocumentMoniker": "server\\Migrations\\20250810123422_registerupdate.cs",
@@ -427,7 +523,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 22,
               "Title": "RegisterViewModel.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Models\\RegisterViewModel.cs",
               "RelativeDocumentMoniker": "server\\Models\\RegisterViewModel.cs",
@@ -439,19 +535,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
-              "Title": "PaymentMethodController.cs",
-              "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Controllers\\PaymentMethodController.cs",
-              "RelativeDocumentMoniker": "server\\Controllers\\PaymentMethodController.cs",
-              "ToolTip": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Controllers\\PaymentMethodController.cs",
-              "RelativeToolTip": "server\\Controllers\\PaymentMethodController.cs",
-              "ViewState": "AgIAAG0AAAAAAAAAAAAcwJEAAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-30T11:24:44.044Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 23,
               "Title": "DemandTypeController.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Controllers\\DemandTypeController.cs",
               "RelativeDocumentMoniker": "server\\Controllers\\DemandTypeController.cs",
@@ -463,19 +547,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Program.cs",
-              "RelativeDocumentMoniker": "server\\Program.cs",
-              "ToolTip": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Program.cs",
-              "RelativeToolTip": "server\\Program.cs",
-              "ViewState": "AgIAAAIAAAAAAAAAAAAAAAcAAAASAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-26T02:44:57.731Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 24,
               "Title": "ApplicationDbContext.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Data\\ApplicationDbContext.cs",
               "RelativeDocumentMoniker": "server\\Data\\ApplicationDbContext.cs",
@@ -487,7 +559,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 25,
               "Title": "IdentityInitializer.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Data\\IdentityInitializer.cs",
               "RelativeDocumentMoniker": "server\\Data\\IdentityInitializer.cs",
@@ -499,7 +571,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 26,
               "Title": "AdminSeeder.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Data\\AdminSeeder.cs",
               "RelativeDocumentMoniker": "server\\Data\\AdminSeeder.cs",
@@ -511,7 +583,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 27,
               "Title": "ApplicationUser.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Models\\ApplicationUser.cs",
               "RelativeDocumentMoniker": "server\\Models\\ApplicationUser.cs",
@@ -523,7 +595,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 46,
+              "DocumentIndex": 50,
               "Title": "20250801042119_AddNepaliDateFieldsToPayment.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Migrations\\20250801042119_AddNepaliDateFieldsToPayment.cs",
               "RelativeDocumentMoniker": "server\\Migrations\\20250801042119_AddNepaliDateFieldsToPayment.cs",
@@ -535,7 +607,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 44,
+              "DocumentIndex": 48,
               "Title": "20250729083500_AddCusIdToPayment.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Migrations\\20250729083500_AddCusIdToPayment.cs",
               "RelativeDocumentMoniker": "server\\Migrations\\20250729083500_AddCusIdToPayment.cs",
@@ -547,7 +619,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 45,
+              "DocumentIndex": 49,
               "Title": "20250729040015_AddNepaliDateFieldsToBill.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Migrations\\20250729040015_AddNepaliDateFieldsToBill.cs",
               "RelativeDocumentMoniker": "server\\Migrations\\20250729040015_AddNepaliDateFieldsToBill.cs",
@@ -559,7 +631,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 28,
               "Title": "UserType.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Models\\UserType.cs",
               "RelativeDocumentMoniker": "server\\Models\\UserType.cs",
@@ -571,7 +643,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 29,
               "Title": "DemandType.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Models\\DemandType.cs",
               "RelativeDocumentMoniker": "server\\Models\\DemandType.cs",
@@ -583,7 +655,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 30,
               "Title": "LoginViewModel.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Models\\LoginViewModel.cs",
               "RelativeDocumentMoniker": "server\\Models\\LoginViewModel.cs",
@@ -595,7 +667,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 43,
+              "DocumentIndex": 47,
               "Title": "20250720151421_Nullable.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Migrations\\20250720151421_Nullable.cs",
               "RelativeDocumentMoniker": "server\\Migrations\\20250720151421_Nullable.cs",
@@ -607,7 +679,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 42,
+              "DocumentIndex": 46,
               "Title": "20250719035012_Bill Status.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Migrations\\20250719035012_Bill Status.cs",
               "RelativeDocumentMoniker": "server\\Migrations\\20250719035012_Bill Status.cs",
@@ -619,7 +691,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 41,
+              "DocumentIndex": 45,
               "Title": "20250718190159_Customer Acquisition.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Migrations\\20250718190159_Customer Acquisition.cs",
               "RelativeDocumentMoniker": "server\\Migrations\\20250718190159_Customer Acquisition.cs",
@@ -631,7 +703,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 39,
+              "DocumentIndex": 43,
               "Title": "20250710154359_Added payment.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Migrations\\20250710154359_Added payment.cs",
               "RelativeDocumentMoniker": "server\\Migrations\\20250710154359_Added payment.cs",
@@ -643,7 +715,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 40,
+              "DocumentIndex": 44,
               "Title": "20250710062833_Added Bill.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Migrations\\20250710062833_Added Bill.cs",
               "RelativeDocumentMoniker": "server\\Migrations\\20250710062833_Added Bill.cs",
@@ -655,7 +727,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 38,
+              "DocumentIndex": 42,
               "Title": "20250708153758_Updated Employee Model again.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Migrations\\20250708153758_Updated Employee Model again.cs",
               "RelativeDocumentMoniker": "server\\Migrations\\20250708153758_Updated Employee Model again.cs",
@@ -667,7 +739,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 31,
               "Title": "IEmailService.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Services\\IEmailService.cs",
               "RelativeDocumentMoniker": "server\\Services\\IEmailService.cs",
@@ -679,7 +751,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 32,
               "Title": "EmailService.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Services\\EmailService.cs",
               "RelativeDocumentMoniker": "server\\Services\\EmailService.cs",
@@ -691,7 +763,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 37,
+              "DocumentIndex": 41,
               "Title": "20250630115042_UpdatepaymentModel.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Migrations\\20250630115042_UpdatepaymentModel.cs",
               "RelativeDocumentMoniker": "server\\Migrations\\20250630115042_UpdatepaymentModel.cs",
@@ -703,7 +775,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
+              "DocumentIndex": 33,
               "Title": "20250630114843_UpdatepaymentModel.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Migrations\\20250630114843_UpdatepaymentModel.cs",
               "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\..\\source\\repos\\server\\server\\Migrations\\20250630114843_UpdatepaymentModel.cs",
@@ -714,7 +786,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 30,
+              "DocumentIndex": 34,
               "Title": "20250630105951_UpdateBillModel.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Migrations\\20250630105951_UpdateBillModel.cs",
               "RelativeDocumentMoniker": "server\\Migrations\\20250630105951_UpdateBillModel.cs",
@@ -726,7 +798,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 36,
+              "DocumentIndex": 40,
               "Title": "20250629160642_UserIDCustomer.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Migrations\\20250629160642_UserIDCustomer.cs",
               "RelativeDocumentMoniker": "server\\Migrations\\20250629160642_UserIDCustomer.cs",
@@ -738,7 +810,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 31,
+              "DocumentIndex": 35,
               "Title": "launchSettings.json",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Properties\\launchSettings.json",
               "RelativeDocumentMoniker": "server\\Properties\\launchSettings.json",
@@ -750,7 +822,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 32,
+              "DocumentIndex": 36,
               "Title": "20250628095250_AddAuthMode4.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Data\\Migrations\\20250628095250_AddAuthMode4.cs",
               "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\..\\source\\repos\\server\\server\\Data\\Migrations\\20250628095250_AddAuthMode4.cs",
@@ -761,7 +833,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 33,
+              "DocumentIndex": 37,
               "Title": "20250628071542_AddAuthMode3.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Data\\Migrations\\20250628071542_AddAuthMode3.cs",
               "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\..\\source\\repos\\server\\server\\Data\\Migrations\\20250628071542_AddAuthMode3.cs",
@@ -772,7 +844,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 34,
+              "DocumentIndex": 38,
               "Title": "ForgotPasswordDto.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\OneDrive\\Desktop\\sixth Sem\\e-Governace\\MyFullStackApp\\server\\server\\Models\\DTOs\\ForgotPasswordDto.cs",
               "RelativeDocumentMoniker": "server\\Models\\DTOs\\ForgotPasswordDto.cs",
@@ -784,7 +856,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 35,
+              "DocumentIndex": 39,
               "Title": "20250628053327_AddAuthMode2.cs",
               "DocumentMoniker": "C:\\Users\\kamal\\source\\repos\\server\\server\\Data\\Migrations\\20250628053327_AddAuthMode2.cs",
               "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\..\\source\\repos\\server\\server\\Data\\Migrations\\20250628053327_AddAuthMode2.cs",

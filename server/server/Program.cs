@@ -51,6 +51,7 @@ builder.Services.AddAuthorization();
 // ------------------ Custom Services ------------------
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<JwtService>();
+builder.Services.AddHttpClient();
 
 // ------------------ CORS ------------------
 builder.Services.AddCors(options =>

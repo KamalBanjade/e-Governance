@@ -1546,6 +1546,143 @@
         }
       }
     },
+    "/api/Khalti/initiate-payment": {
+      "post": {
+        "tags": [
+          "Khalti"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KhaltiPaymentRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KhaltiPaymentRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/KhaltiPaymentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/KhaltiPaymentResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KhaltiPaymentResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KhaltiPaymentResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Khalti/verify-payment/{pidx}": {
+      "get": {
+        "tags": [
+          "Khalti"
+        ],
+        "parameters": [
+          {
+            "name": "pidx",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/KhaltiLookupResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KhaltiLookupResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KhaltiLookupResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Khalti/handle-callback": {
+      "post": {
+        "tags": [
+          "Khalti"
+        ],
+        "parameters": [
+          {
+            "name": "pidx",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "transaction_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "amount",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "purchase_order_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Payment": {
       "get": {
         "tags": [
@@ -2765,6 +2902,93 @@
           "email": {
             "type": "string",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "KhaltiLookupResponse": {
+        "type": "object",
+        "properties": {
+          "pidx": {
+            "type": "string",
+            "nullable": true
+          },
+          "total_amount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "transaction_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "fee": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "refunded": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "KhaltiPaymentRequest": {
+        "type": "object",
+        "properties": {
+          "billNo": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          },
+          "customerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "customerEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "customerPhone": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "KhaltiPaymentResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "paymentUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "pidx": {
+            "type": "string",
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "transaction_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "fee": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "refunded": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
