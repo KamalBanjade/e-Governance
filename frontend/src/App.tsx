@@ -39,6 +39,7 @@ import { motion } from 'framer-motion';
 import BranchAdminList from './Components/BranchAdminList';
 import BranchAdminForm from './Components/BranchAdminForm';
 import ErrorBoundary from './Components/ErrorBoundary';
+import PaymentCallbackPage from './Components/PaymentCallbackPage';
 
 const AppContent = () => {
   const { isAuthenticated, requiresCustomerProfile, handleLogin, handleLogout, userTypeId } = useAuth();
@@ -267,6 +268,7 @@ const AppContent = () => {
               </RequireRole>
             }
           />
+          <Route path="/payment-callback" element={<PaymentCallbackPage />} />
           <Route
             path="/billform"
             element={

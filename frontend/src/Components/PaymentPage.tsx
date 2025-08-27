@@ -2,9 +2,22 @@ import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { FiCreditCard, FiFileText, FiCheckCircle, FiChevronDown, FiDollarSign, FiCalendar, FiHash } from 'react-icons/fi';
+import { FiCreditCard, FiFileText, FiCheckCircle, FiChevronDown, FiDollarSign, FiCalendar, FiHash, FiExternalLink } from 'react-icons/fi';
 import { getAuthToken } from '../utility/auth';
-import type { Bill, Customer } from '../types/models';
+
+// Assuming these types exist in your types file
+interface Bill {
+    billNo: number;
+    billMonth: string;
+    billYear: string;
+    totalBillAmount: number;
+}
+
+interface Customer {
+    name: string;
+    email?: string;
+    phone?: string;
+}
 
 interface ExtendedBill extends Bill {
     customer?: Customer;
@@ -22,12 +35,20 @@ interface PaymentMethod {
     status: string;
 }
 
+interface KhaltiPaymentResponse {
+    success: boolean;
+    paymentUrl?: string;
+    pidx?: string;
+    message?: string;
+}
+
+
 const PaymentPage = () => {
     const token = getAuthToken();
     const navigate = useNavigate();
     const location = useLocation();
 
-    const [, setCustomer] = useState<Customer | null>(null);
+    const [customer, setCustomer] = useState<Customer | null>(null);
     const [bills, setBills] = useState<ExtendedBill[]>([]);
     const [selectedBill, setSelectedBill] = useState<ExtendedBill | null>(null);
     const [loading, setLoading] = useState(false);
@@ -38,6 +59,9 @@ const PaymentPage = () => {
     const passedBill = location.state?.bill;
     const passedCustomer = location.state?.customer;
     const passedPayment = location.state?.payment;
+
+    // Check if the selected payment method is Khalti (assuming Khalti has a specific ID or name)
+    const isKhaltiSelected = paymentMethods.find(pm => pm.paymentMethodId === selectedPaymentMethod)?.name?.toLowerCase().includes('khalti');
 
     useEffect(() => {
         if (passedBill && passedCustomer) {
@@ -74,7 +98,6 @@ const PaymentPage = () => {
             const data = await response.json();
             console.log('Payment methods data:', data);
 
-            // Filter only active payment methods
             const activePaymentMethods = data.filter((pm: PaymentMethod) => pm.status === 'Active');
             console.log('Active payment methods:', activePaymentMethods);
 
@@ -123,7 +146,82 @@ const PaymentPage = () => {
         if (bill) setSelectedBill(bill);
     };
 
-    const handlePayment = async () => {
+const handleKhaltiPayment = async () => {
+    if (!selectedBill || !customer) {
+        toast.error('Missing bill or customer information.', { position: 'bottom-right' });
+        return;
+    }
+
+    setLoading(true);
+    try {
+        const khaltiPaymentRequest = {
+            billNo: selectedBill.billNo,
+            amount: passedPayment ? passedPayment.totalAmountPaid : selectedBill.totalBillAmount,
+            customerName: customer.name || 'Unknown Customer',
+            customerEmail: customer.email || 'customer@example.com',
+            customerPhone: customer.phone || '9800000000'
+        };
+
+        console.log('Sending Khalti payment request:', JSON.stringify(khaltiPaymentRequest, null, 2));
+        console.log('Selected Bill:', selectedBill);
+        console.log('Customer:', customer);
+        console.log('Passed Payment:', passedPayment);
+
+        const response = await fetch('http://localhost:5008/api/Khalti/initiate-payment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(khaltiPaymentRequest),
+        });
+
+        const responseText = await response.text();
+        console.log('Response Status:', response.status);
+        console.log('Response Text:', responseText);
+
+        if (!response.ok) {
+            let errorMessage = 'Failed to initiate Khalti payment';
+            try {
+                const errorData = JSON.parse(responseText);
+                errorMessage = errorData.message || errorData.Message || errorMessage;
+                console.log('Parsed Error Data:', errorData);
+            } catch (e) {
+                errorMessage = `HTTP ${response.status}: ${responseText}`;
+            }
+            throw new Error(errorMessage);
+        }
+
+        const result: KhaltiPaymentResponse = JSON.parse(responseText);
+        console.log('Khalti Payment Response:', result);
+
+        if (result.success && result.pidx) {
+            // Store payment details in sessionStorage for callback handling
+            sessionStorage.setItem('khalti_payment_details', JSON.stringify({
+                pidx: result.pidx,
+                billNo: selectedBill.billNo,
+                amount: khaltiPaymentRequest.amount
+            }));
+
+            // Construct the wallet URL
+            const walletUrl = `https://test-pay.khalti.com/wallet?pidx=${result.pidx}`;
+            console.log('Navigating to wallet URL:', walletUrl);
+            window.location.href = walletUrl; // Navigate to wallet URL
+        } else {
+            throw new Error(result.message || 'Failed to get payment URL or pidx');
+        }
+    } catch (error) {
+        console.error('Khalti payment error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+        toast.error(`Failed to initiate Khalti payment: ${errorMessage}`, {
+            position: 'bottom-right'
+        });
+    } finally {
+        setLoading(false);
+    }
+};
+
+    const handleRegularPayment = async () => {
         if (!selectedBill || !selectedPaymentMethod) {
             toast.error('Please select a bill and payment method.', { position: 'bottom-right' });
             return;
@@ -154,7 +252,6 @@ const PaymentPage = () => {
                 { position: 'bottom-right', icon: <FiCheckCircle className="text-green-500" /> }
             );
 
-            // Navigate to customer dashboard after successful payment
             setTimeout(() => navigate('/customer-dashboard'), 1500);
         } catch (error) {
             toast.error('Payment failed.', { position: 'bottom-right' });
@@ -164,21 +261,29 @@ const PaymentPage = () => {
         }
     };
 
+    const handlePayment = () => {
+        if (isKhaltiSelected) {
+            handleKhaltiPayment();
+        } else {
+            handleRegularPayment();
+        }
+    };
+
     return (
         <>
             <ToastContainer position="bottom-right" />
             <div className="min-h-screen bg-gradient-to-br from-blue-50 via-green-50 to-gray-100 flex items-center justify-center p-4">
                 <div className="max-w-xl w-full bg-gradient-to-tr from-blue-200 to-green-100 rounded-2xl shadow-2xl overflow-hidden transition-all duration-500 hover:shadow-3xl">
-                    {/* Header - Blue gradient */}
+                    {/* Header */}
                     <div className="bg-gradient-to-tr from-green-100 to-blue-100 p-6">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-3">
                                 <FiCreditCard className="text-3xl text-green-600 animate-pulse" />
                                 <h2 className="text-2xl font-bold text-gray-800">Payment Portal</h2>
                             </div>
-                            {passedCustomer && (
+                            {(passedCustomer || customer) && (
                                 <div className="bg-white/80 backdrop-blur-sm text-blue-800 rounded-full px-4 py-1 text-sm font-medium shadow-sm hover:bg-blue-50 transition-colors duration-200">
-                                    {passedCustomer.name}
+                                    {passedCustomer?.name || customer?.name}
                                 </div>
                             )}
                         </div>
@@ -249,7 +354,6 @@ const PaymentPage = () => {
                                         </div>
                                     </div>
 
-                                    {/* Payment Date and Transaction ID */}
                                     {passedPayment.paymentDate && (
                                         <div className="flex justify-between text-sm text-gray-500 mt-3">
                                             <span className="flex items-center">
@@ -276,6 +380,7 @@ const PaymentPage = () => {
                             </div>
                         )}
 
+                        {/* Payment Methods */}
                         <div className="space-y-6">
                             <label className="block text-gray-800 font-semibold text-xl">Select Payment Method</label>
 
@@ -316,6 +421,7 @@ const PaymentPage = () => {
                                                         }}
                                                     />
                                                 )}
+                                                <span className="text-sm font-medium text-gray-700">{pm.name}</span>
                                             </div>
                                             {selectedPaymentMethod === pm.paymentMethodId && (
                                                 <div className="absolute top-2 right-2">
@@ -327,6 +433,7 @@ const PaymentPage = () => {
                                 </div>
                             )}
                         </div>
+
                         {/* Payment Button */}
                         <button
                             disabled={!selectedBill || !selectedPaymentMethod || loading}
@@ -342,12 +449,21 @@ const PaymentPage = () => {
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                                     </svg>
-                                    Processing Payment...
+                                    {isKhaltiSelected ? 'Redirecting to Khalti...' : 'Processing Payment...'}
                                 </>
                             ) : (
                                 <>
-                                    <FiDollarSign className="text-green-200" />
-                                    <span>Pay Now</span>
+                                    {isKhaltiSelected ? (
+                                        <>
+                                            <FiExternalLink className="text-green-200" />
+                                            <span>Pay with Khalti</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <FiDollarSign className="text-green-200" />
+                                            <span>Pay Now</span>
+                                        </>
+                                    )}
                                 </>
                             )}
                         </button>
@@ -356,6 +472,5 @@ const PaymentPage = () => {
             </div>
         </>
     );
-};
-
+}
 export default PaymentPage;
